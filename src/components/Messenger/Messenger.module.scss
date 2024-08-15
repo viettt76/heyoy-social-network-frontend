@@ -1,0 +1,77 @@
+@import '~/styles/variables';
+
+.messenger-wrapper {
+    display: none;
+    position: fixed;
+    top: 5.4rem;
+    right: 2.6rem;
+    background-color: #fff;
+    width: 36rem;
+    max-height: 46rem;
+    box-shadow: 0 0 6px 0 $box-shadow;
+    padding: 0.8rem 0.8rem;
+    border-radius: 0.8rem;
+    overflow-y: auto;
+
+    &.showMessenger {
+        display: block;
+    }
+
+    .search-wrapper {
+        display: flex;
+        align-items: center;
+        border: 1px solid $border;
+        padding: 0.6rem 1.2rem;
+        border-radius: 2rem;
+        margin: 0.8rem 0.8rem 0;
+
+        .search-icon {
+            font-size: 1.6rem;
+        }
+
+        .search-input {
+            flex: 1;
+            font-size: 1.5rem;
+            border: none;
+            outline: none;
+            margin-left: 1rem;
+        }
+    }
+
+    .conversation-wrapper {
+        margin-top: 1rem;
+
+        .conversation {
+            display: flex;
+            align-items: center;
+            padding: 0.8rem 0.8rem;
+            cursor: pointer;
+
+            &:hover {
+                background-color: $background-color-greyish;
+            }
+
+            & + .conversation {
+                margin-top: 1.6rem;
+            }
+
+            .avatar {
+                width: 5.6rem;
+                height: 5.6rem;
+                border-radius: 50%;
+                margin-right: 0.8rem;
+            }
+
+            .name {
+                font-size: 1.5rem;
+                color: #050505;
+                font-weight: 500;
+            }
+
+            .last-message {
+                font-size: 1.3rem;
+                color: #65676b;
+            }
+        }
+    }
+}

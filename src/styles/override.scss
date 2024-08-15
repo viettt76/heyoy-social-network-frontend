@@ -1,0 +1,44 @@
+@import 'variables';
+
+* {
+    margin: 0;
+    padding: 0;
+}
+
+html,
+body {
+    font-size: 62.5%;
+}
+
+body {
+    font-family: $font-family;
+}
+
+ul,
+li,
+ol {
+    list-style: none;
+}
+
+a {
+    text-decoration: none;
+}
+
+.fz-16 {
+    font-size: 1.6rem;
+}
+
+/** 
+    React tooltip
+**/
+.react-tooltip {
+    font-size: 1.6rem;
+    z-index: 999;
+}
+
+/**
+    React toastify
+**/
+.Toastify__toast-body {
+    font-size: 1.6rem;
+}
