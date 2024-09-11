@@ -1,7 +1,7 @@
 import axios from '~/utils/axios';
 
 export const signUpService = ({ firstName, lastName, username, password }) => {
-    return axios.post('/user/signup', {
+    return axios.post('/auth/signup', {
         firstName,
         lastName,
         username,
@@ -10,16 +10,16 @@ export const signUpService = ({ firstName, lastName, username, password }) => {
 };
 
 export const loginService = ({ username, password }) => {
-    return axios.post('/user/login', {
+    return axios.post('/auth/login', {
         username,
         password,
     });
 };
 
 export const getPersonalInfoService = () => {
-    return axios.get('/user/personal-info');
+    return axios.get('/auth/personal-info');
 };
 
 export const logoutService = () => {
-    return axios.post('/user/logout');
+    return axios.post('/auth/logout');
 };

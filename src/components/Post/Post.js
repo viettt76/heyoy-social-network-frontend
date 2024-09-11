@@ -8,6 +8,17 @@ import { faEarthAmerica, faLock, faUserGroup } from '@fortawesome/free-solid-svg
 import logo from '~/assets/imgs/logo.png';
 import styles from './Post.module.scss';
 import { LikeIcon, LoveIcon, LoveLoveIcon, HaHaIcon, WowIcon, SadIcon, AngryIcon } from '~/components/Icons';
+import avatarDefault from '~/assets/imgs/avatar-default.png';
+import {
+    cancelReleasedEmotionPostService,
+    getAllEmotionsService,
+    releaseEmotionPostService,
+} from '~/services/postServices';
+import _ from 'lodash';
+import socket from '~/socket';
+import moment from 'moment';
+import { useSelector } from 'react-redux';
+import { userInfoSelector } from '~/redux/selectors';
 
 // eslint-disable-next-line react/display-name
 const CustomToggle = forwardRef(({ children, onClick }, ref) => (
@@ -86,20 +97,54 @@ const Comment = ({ comment }) => {
     );
 };
 
-const Post = () => {
+const Post = ({ postInfo }) => {
+    const {
+        id,
+        posterId,
+        firstName,
+        lastName,
+        avatar,
+        groupName,
+        createAt,
+        visibility,
+        content,
+        currentEmotionId,
+        currentEmotionName,
+        emotions = [],
+        pictures = [],
+    } = postInfo;
+    const userInfo = useSelector(userInfoSelector);
+
     const [writeComment, setWriteComment] = useState('');
 
     const writeCommentRef = useRef(null);
 
-    const images = [logo, logo, logo, logo, logo];
+    const [copyEmotions, setCopyEmotions] = useState(emotions);
+    const [emotionsCustom, setEmotionsCustom] = useState([]);
+    const [mostEmotions, setMostEmotions] = useState([]);
+    const [currentEmotionNameCustom, setCurrentEmotionNameCustom] = useState(currentEmotionName);
+
+    useEffect(() => {
+        const emoCus = _.groupBy(copyEmotions, 'emotion.name');
+        setEmotionsCustom(emoCus);
+
+        const mostEmo = _.sortBy(emoCus, 'length').reverse();
+        if (mostEmo.length > 0) {
+            setMostEmotions([mostEmo[0][0]?.emotion?.name]);
+            if (mostEmo.length > 1) {
+                setMostEmotions((prev) => [...prev, mostEmo[1][0]?.emotion?.name]);
+            }
+        }
+    }, [copyEmotions]);
+
     const maxVisibleImages = 4;
     let visibleImages;
     let remainingImages;
-    if (images?.length > maxVisibleImages) {
-        visibleImages = images.slice(0, maxVisibleImages - 1);
-        remainingImages = images.length - maxVisibleImages + 1;
+    if (pictures?.length > maxVisibleImages) {
+        visibleImages = pictures.slice(0, maxVisibleImages - 1);
+        remainingImages = pictures.length - maxVisibleImages + 1;
     } else {
-        visibleImages = [...images];
+        visibleImages = [...pictures];
     }
 
     const commentList = [
@@ -185,15 +230,140 @@ const Post = () => {
         writeCommentRef.current.focus();
     };
 
+    const [emotionsType, setEmotionsType] = useState([]);
+
+    useEffect(() => {
+        const fetchAllEmotions = async () => {
+            try {
+                const res = await getAllEmotionsService();
+                setEmotionsType(res);
+            } catch (error) {
+                console.log(error);
+            }
+        };
+        fetchAllEmotions();
+    }, []);
+
+    const emotionComponentMap = {
+        Thích: LikeIcon,
+        'Yêu thích': LoveIcon,
+        'Thương thương': LoveLoveIcon,
+        Haha: HaHaIcon,
+        Wow: WowIcon,
+        Buồn: SadIcon,
+        'Phẫn nộ': AngryIcon,
+    };
+
+    const emotionClassMap = {
+        Thích: styles['like-emotion'],
+        'Yêu thích': styles['love-emotion'],
+        'Thương thương': styles['loveLove-emotion'],
+        Haha: styles['haha-emotion'],
+        Wow: styles['wow-emotion'],
+        Buồn: styles['sad-emotion'],
+        'Phẫn nộ': styles['angry-emotion'],
+    };
+
+    const CurrentEmotion = emotionComponentMap[currentEmotionNameCustom];
+
+    useEffect(() => {
+        socket.on(
+            'releaseEmotion',
+            ({
+                id: emoPostId,
+                postId,
+                userId: reactorId,
+                firstName: reactorFirstName,
+                lastName: reactorLastName,
+                avatar: reactorAvatar,
+                emotionTypeId,
+                emotionTypeName,
+            }) => {
+                if (id === postId) {
+                    setCopyEmotions((prev) => [
+                        ...prev,
+                        {
+                            id: emoPostId,
+                            emotion: {
+                                id: emotionTypeId,
+                                name: emotionTypeName,
+                            },
+                            userInfo: {
+                                id: reactorId,
+                                firstName: reactorFirstName,
+                                lastName: reactorLastName,
+                                avatar: reactorAvatar,
+                            },
+                        },
+                    ]);
+                }
+            },
+        );
+
+        socket.on('updateEmotion', ({ id: emoPostId, postId, emotionTypeId, emotionTypeName }) => {
+            if (id === postId) {
+                setCopyEmotions((prev) => {
+                    const clone = _.cloneDeep(prev);
+                    const emo = _.find(clone, { id: emoPostId });
+                    emo.emotion.id = emotionTypeId;
+                    emo.emotion.name = emotionTypeName;
+                    return clone;
+                });
+            }
+        });
+    }, [id]);
+
+    const [showEmotionList, setShowEmotionList] = useState(false);
+    const handleReleaseEmotion = async (emotionId) => {
+        try {
+            setShowEmotionList(false);
+            await releaseEmotionPostService({ postId: id, emotionId });
+            setCurrentEmotionNameCustom(emotionsType.find((emo) => emo.id === emotionId).name);
+        } catch (error) {
+            console.log(error);
+        }
+    };
+
+    useEffect(() => {
+        socket.on('cancelReleasedEmotion', ({ postId, userId: userCancelReleaseEmotionId }) => {
+            if (userInfo.id === userCancelReleaseEmotionId) {
+                setCurrentEmotionNameCustom(null);
+            }
+            if (id === postId) {
+                setCopyEmotions((prev) => {
+                    const clone = _.filter(prev, (e) => e?.userInfo?.id !== userCancelReleaseEmotionId);
+                    return clone;
+                });
+            }
+        });
+    }, [id]);
+
+    const handleCancelReleasedEmotion = async () => {
+        try {
+            await cancelReleasedEmotionPostService({ postId: id });
+        } catch (error) {
+            console.log(error);
+        }
+    };
+
     return (
         <div className={clsx(styles['post-wrapper'])}>
             <div className={clsx(styles['post-header'])}>
-                <img className={clsx(styles['avatar-user'])} src={logo} />
+                <Link to={`/profile/${posterId}`}>
+                    <img
+                        className={clsx(styles['avatar-user'])}
+                        src={avatar || avatarDefault}
+                        onError={(e) => {
+                            e.target.onerror = null;
+                            e.target.src = avatarDefault;
+                        }}
+                    />
+                </Link>
                 <div>
-                    <h5 className={clsx(styles['post-username'])}>Hoàng Việt</h5>
+                    <h5 className={clsx(styles['post-username'])}>{`${lastName} ${firstName}`}</h5>
                     <div className={clsx('d-flex', styles['add-info'])}>
-                        <span>Quốc</span>
-                        <span>21 phút</span>
+                        {groupName && <span>Quốc</span>}
+                        <span>{moment(createAt).format('DD/MM/YYYY')}</span>
                         <span>
                             <FontAwesomeIcon icon={faEarthAmerica} />
                             {/* <FontAwesomeIcon icon={faUserGroup} />
@@ -202,24 +372,7 @@ const Post = () => {
                     </div>
                 </div>
             </div>
-            <div className={clsx(styles['post-content'], styles['background'])}>
-                <div>
-                    Ngày 20/7/2024, sự kiện “Ngày hội Gia đình phòng, chống đuối nước trẻ em” hưởng ứng Ngày Thế giới
-                    phòng chống đuối nước 2024 sẽ được tổ chức tại Trung tâm văn hoá tỉnh Nghệ An - TP. Vinh, Nghệ An
-                    với nhiều hoạt động tương tác cho cả gia đình.
-                </div>
-                <div>
-                    Sự kiện được tổ chức bởi Cục Trẻ em (Bộ LĐTB&XH) phối hợp với Quỹ từ thiện Bloomberg, Hoa Kỳ; Tổ
-                    chức Y tế Thế giới tại Việt Nam và Tổ chức Campaign For Tobacco-Free Kids, với chủ đề “Đuối Nước -
-                    Khoảnh Khắc Sinh tồn”.
-                </div>
-                <div>
-                    Thông qua các hoạt động trải nghiệm bổ ích, trẻ sẽ được nâng cao kiến thức, nhận thức về phòng,
-                    chống đuối nước và được trang bị những kỹ năng an toàn cần thiết. Đặc biệt, với hoạt động “Giải
-                    cứu”, phụ huynh và trẻ có thể cùng nhau luyện tập kỹ năng cứu đuối thông qua mô phỏng thao tác cứu
-                    người trong tình huống nguy hiểm.
-                </div>
-            </div>
+            <div className={clsx(styles['post-content'], styles['background'])}>{content && <div>{content}</div>}</div>
             <div
                 className={clsx(styles['images-layout'], {
                     [styles[`layout-${visibleImages?.length}`]]: remainingImages <= 0 || !remainingImages,
@@ -228,8 +381,8 @@ const Post = () => {
             >
                 {visibleImages?.map((img, index) => {
                     return (
-                        <Link to={img} className={clsx(styles['image-wrapper'])} key={`image-${index}`}>
-                            <img src={img} />
+                        <Link className={clsx(styles['image-wrapper'])} key={`image-${index}`}>
+                            <img src={img?.pictureUrl} />
                         </Link>
                     );
                 })}
@@ -237,61 +390,60 @@ const Post = () => {
             </div>
             <div className={clsx(styles['emotions-amount-of-comments'])}>
                 <div className={clsx(styles['emotions-wrapper'])}>
-                    <div className={clsx(styles['emotion'])}>
-                        <LikeIcon width={18} height={18} />
-                    </div>
-                    <div className={clsx(styles['emotion'])}>
-                        <LoveIcon width={18} height={18} />
-                    </div>
-                    <div className={clsx(styles['emotion'])}>
-                        <LoveLoveIcon width={18} height={18} />
-                    </div>
-                    <div className={clsx(styles['emotion'])}>
-                        <HaHaIcon width={18} height={18} />
-                    </div>
-                    <div className={clsx(styles['emotion'])}>
-                        <WowIcon width={18} height={18} />
-                    </div>
-                    <div className={clsx(styles['emotion'])}>
-                        <SadIcon width={18} height={18} />
-                    </div>
-                    <div className={clsx(styles['emotion'])}>
-                        <AngryIcon width={18} height={18} />
-                    </div>
-                    <div className={clsx(styles['amount-of-emotions'])}>180</div>
+                    {mostEmotions?.map((emo) => {
+                        const Icon = emotionComponentMap[emo];
+                        return (
+                            <div key={`most-emotion-${emo}`} className={clsx(styles['emotion'])}>
+                                <Icon width={18} height={18} />
+                            </div>
+                        );
+                    })}
+                    {copyEmotions?.length > 0 && (
+                        <div className={clsx(styles['amount-of-emotions'])}>{copyEmotions?.length}</div>
+                    )}
                 </div>
+
                 <div className={clsx(styles['amount-of-comments-wrapper'])}>
                     <span>32 bình luận</span>
                     <span>32 chia sẻ</span>
                 </div>
             </div>
             <div className={clsx(styles['user-actions-wrapper'])}>
-                <div className={clsx(styles['user-action'], styles['show-emotion-list'])}>
-                    <FontAwesomeIcon icon={faThumbsUp} />
-                    <span>Thích</span>
-                    <ul className={clsx(styles['emotion-list'])}>
-                        <li className={clsx(styles['emotion'])}>
-                            <LikeIcon width={39} height={39} />
-                        </li>
-                        <li className={clsx(styles['emotion'])}>
-                            <LoveIcon width={39} height={39} />
-                        </li>
-                        <li className={clsx(styles['emotion'])}>
-                            <LoveLoveIcon width={39} height={39} />
-                        </li>
-                        <li className={clsx(styles['emotion'])}>
-                            <HaHaIcon width={39} height={39} />
-                        </li>
-                        <li className={clsx(styles['emotion'])}>
-                            <WowIcon width={39} height={39} />
-                        </li>
-                        <li className={clsx(styles['emotion'])}>
-                            <SadIcon width={39} height={39} />
-                        </li>
-                        <li className={clsx(styles['emotion'])}>
-                            <AngryIcon width={39} height={39} />
-                        </li>
-                    </ul>
+                <div
+                    className={clsx(styles['user-action'], styles['show-emotion-list'])}
+                    onMouseEnter={() => setShowEmotionList(true)}
+                >
+                    {currentEmotionNameCustom ? (
+                        <div onClick={handleCancelReleasedEmotion}>
+                            <CurrentEmotion width={20} height={20} />
+                            <span
+                                className={clsx(emotionClassMap[currentEmotionNameCustom], styles['released-emotion'])}
+                            >
+                                {currentEmotionNameCustom}
+                            </span>
+                        </div>
+                    ) : (
+                        <div onClick={() => handleReleaseEmotion(1)}>
+                            <FontAwesomeIcon icon={faThumbsUp} />
+                            <span>Thích</span>
+                        </div>
+                    )}
+                    {showEmotionList && (
+                        <ul className={clsx(styles['emotion-list'], {})}>
+                            {emotionsType?.map((emotion) => {
+                                const Icon = emotionComponentMap[emotion?.name];
+                                return (
+                                    <li
+                                        key={`emotion-${emotion?.id}`}
+                                        className={clsx(styles['emotion'])}
+                                        onClick={() => handleReleaseEmotion(emotion?.id)}
+                                    >
+                                        <Icon width={39} height={39} />
+                                    </li>
+                                );
+                            })}
+                        </ul>
+                    )}
                 </div>
                 <div className={clsx(styles['user-action'])} onClick={handleFocusSendComment}>
                     <FontAwesomeIcon icon={faComment} />
@@ -312,7 +464,7 @@ const Post = () => {
                         <div className={clsx(styles['comment-sorting-style-item'])}>Bình luận nhiều cảm xúc nhất</div>
                     </Dropdown.Menu>
                 </Dropdown>
-                <div className={clsx(styles['comment-list'])}>
+                {/* <div className={clsx(styles['comment-list'])}>
                     {commentList?.map((comment) => {
                         return (
                             <div key={`comment-${comment?.id}`}>
@@ -320,7 +472,7 @@ const Post = () => {
                             </div>
                         );
                     })}
-                </div>
+                </div> */}
                 <div className={clsx(styles['write-comment-wrapper'])}>
                     <input
                         ref={writeCommentRef}

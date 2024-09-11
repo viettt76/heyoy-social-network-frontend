@@ -1,4 +1,4 @@
-export const LikeIcon = ({ width = '18px', height = '18xp' }) => {
+export const LikeIcon = ({ width = '1.8rem', height = '1.8rem' }) => {
     return (
         <img
             height={height}
@@ -9,7 +9,7 @@ export const LikeIcon = ({ width = '18px', height = '18xp' }) => {
     );
 };
 
-export const LoveIcon = ({ width = '18px', height = '18xp' }) => {
+export const LoveIcon = ({ width = '1.8rem', height = '1.8rem' }) => {
     return (
         <img
             height={height}
@@ -20,7 +20,7 @@ export const LoveIcon = ({ width = '18px', height = '18xp' }) => {
     );
 };
 
-export const LoveLoveIcon = ({ width = '18px', height = '18xp' }) => {
+export const LoveLoveIcon = ({ width = '1.8rem', height = '1.8rem' }) => {
     return (
         <img
             height={height}
@@ -31,7 +31,7 @@ export const LoveLoveIcon = ({ width = '18px', height = '18xp' }) => {
     );
 };
 
-export const HaHaIcon = ({ width = '18px', height = '18xp' }) => {
+export const HaHaIcon = ({ width = '1.8rem', height = '1.8rem' }) => {
     return (
         <img
             height={height}
@@ -42,7 +42,7 @@ export const HaHaIcon = ({ width = '18px', height = '18xp' }) => {
     );
 };
 
-export const WowIcon = ({ width = '18px', height = '18xp' }) => {
+export const WowIcon = ({ width = '1.8rem', height = '1.8rem' }) => {
     return (
         <img
             height={height}
@@ -53,7 +53,7 @@ export const WowIcon = ({ width = '18px', height = '18xp' }) => {
     );
 };
 
-export const SadIcon = ({ width = '18px', height = '18xp' }) => {
+export const SadIcon = ({ width = '1.8rem', height = '1.8rem' }) => {
     return (
         <img
             height={height}
@@ -64,7 +64,7 @@ export const SadIcon = ({ width = '18px', height = '18xp' }) => {
     );
 };
 
-export const AngryIcon = ({ width = '18px', height = '18xp' }) => {
+export const AngryIcon = ({ width = '1.8rem', height = '1.8rem' }) => {
     return (
         <img
             height={height}

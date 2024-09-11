@@ -1,4 +1,4 @@
-import { SAVE_USER_INFO } from '../actions/userActions';
+import { SAVE_USER_INFO, CLEAR_USER_INFO } from '../actions/userActions';
 
 const initialState = {
     id: null,
@@ -21,6 +21,20 @@ const userReducer = (state = initialState, action) => {
                 lastName: action.payload?.lastName,
                 age: action.payload?.age,
                 avatar: action.payload?.avatar,
+                homeTown: action.payload?.homeTown,
+                school: action.payload?.school,
+                workplace: action.payload?.workplace,
+            };
+        case CLEAR_USER_INFO:
+            return {
+                id: null,
+                firstName: null,
+                lastName: null,
+                age: null,
+                avatar: null,
+                homeTown: null,
+                school: null,
+                workplace: null,
             };
         default:
             return state;

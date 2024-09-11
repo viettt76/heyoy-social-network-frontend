@@ -2,25 +2,30 @@ import clsx from 'clsx';
 import { useEffect, useRef, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { Button, Col, Form, Modal, Row } from 'react-bootstrap';
-import { useDispatch, useSelector } from 'react-redux';
-import { userInfoSelector } from '~/redux/selectors';
+import { useDispatch } from 'react-redux';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faEye, faEyeSlash } from '@fortawesome/free-regular-svg-icons';
 import styles from './Login.module.scss';
 import customToastify from '~/utils/customToastify';
-import { getPersonalInfoService, loginService, signUpService } from '~/services/userServices';
+import { getPersonalInfoService, loginService, signUpService } from '~/services/authServices';
 import * as actions from '~/redux/actions';
 
 function Login() {
     const navigate = useNavigate(null);
     const dispatch = useDispatch();
-    const userInfo = useSelector(userInfoSelector);
 
     useEffect(() => {
-        if (userInfo.id) {
+        if (localStorage.getItem('isAuthenticated')) {
             navigate('/');
         }
-    }, [userInfo, navigate]);
+    }, []);
+
+    useEffect(() => {
+        if (localStorage.getItem('showToastOnLogin')) {
+            customToastify.info('Bạn đã hết phiên đăng nhập');
+            localStorage.removeItem('showToastOnLogin');
+        }
+    }, []);
 
     const [loginInfo, setLoginInfo] = useState({ username: '', password: '' });
     const [showPasswordLogin, setShowPasswordLogin] = useState(false);
@@ -72,16 +77,24 @@ function Login() {
                 setValidatedFormLogin(true);
             } else {
                 await loginService(loginInfo);
+                localStorage.setItem('isAuthenticated', true);
                 navigate('/');
-                const fetchGetPersonalInfo = async () => {
-                    try {
-                        const res = await getPersonalInfoService();
-                        dispatch(actions.saveUserInfo(res?.data));
-                    } catch (error) {
-                        console.log(error);
-                    }
+                const fetchPersonalInfo = async () => {
+                    const res = await getPersonalInfoService();
+                    dispatch(
+                        actions.saveUserInfo({
+                            id: res?.id,
+                            firstName: res?.firstName,
+                            lastName: res?.lastName,
+                            age: res?.age,
+                            avatar: res?.avatar,
+                            homeTown: res?.homeTown,
+                            school: res?.school,
+                            workplace: res?.workplace,
+                        }),
+                    );
                 };
-                fetchGetPersonalInfo();
+                fetchPersonalInfo();
             }
         } catch (error) {
             setErrorLogin('Tài khoản hoặc mật khẩu của bạn không chính xác');
@@ -127,6 +140,7 @@ function Login() {
                     confirmPassword: '',
                 });
 
+                setShowPasswordSignUp(false);
                 setValidatedFormSignUp(false);
                 setShowFormSignUp(false);
             }

@@ -25,7 +25,7 @@ const Sidebar = () => {
                     </Link>
                 </li>
                 <li>
-                    <Link className={clsx(styles['sidebar-feature'])}>
+                    <Link to="/friends" className={clsx(styles['sidebar-feature'])}>
                         <FontAwesomeIcon icon={faUserGroup} className={clsx(styles['sidebar-feature-icon'])} />
                         <div className={clsx(styles['sidebar-feature-label'])}>Bạn bè</div>
                     </Link>

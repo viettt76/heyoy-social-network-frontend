@@ -1,23 +1,23 @@
 import clsx from 'clsx';
 import styles from './UserDashboard.module.scss';
 import { Link, useNavigate } from 'react-router-dom';
-import { logoutService } from '~/services/userServices';
-import { useEffect } from 'react';
+import { logoutService } from '~/services/authServices';
+import { useDispatch } from 'react-redux';
+import * as actions from '~/redux/actions';
 
 const UserDashboard = ({ userDashboardRef, showUserDashboard }) => {
-    const navigate = useNavigate(null);
-
-    useEffect(() => {
-        // navigate('/login');
-    }, []);
+    const navigate = useNavigate();
+    const dispatch = useDispatch();
 
     const handleLogout = async () => {
         try {
+            dispatch(actions.clearUserInfo());
+            localStorage.removeItem('isAuthenticated');
             await logoutService();
         } catch (error) {
             console.log(error);
         } finally {
-            navigate('/profile');
+            navigate('/login');
         }
     };
 

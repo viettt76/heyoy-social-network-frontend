@@ -4,7 +4,7 @@ const OnlyHeaderLayout = ({ children }) => {
     return (
         <div>
             <Header />
-            <div>{children}</div>
+            {children}
         </div>
     );
 };

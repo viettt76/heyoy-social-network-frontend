@@ -8,7 +8,7 @@
     background-color: #fff;
     width: 36rem;
     max-height: 46rem;
-    box-shadow: 0 0 6px 0 $box-shadow;
+    box-shadow: 0 0 0.6rem 0 $box-shadow;
     padding: 0.8rem 0.8rem;
     border-radius: 0.8rem;
     overflow-y: auto;
@@ -20,7 +20,7 @@
     .search-wrapper {
         display: flex;
         align-items: center;
-        border: 1px solid $border;
+        border: 0.1rem solid $border;
         padding: 0.6rem 1.2rem;
         border-radius: 2rem;
         margin: 0.8rem 0.8rem 0;

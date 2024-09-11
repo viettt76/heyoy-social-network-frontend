@@ -12,6 +12,7 @@ body {
 
 body {
     font-family: $font-family;
+    color: $text;
 }
 
 ul,
@@ -24,8 +25,23 @@ a {
     text-decoration: none;
 }
 
-.fz-16 {
-    font-size: 1.6rem;
+input[type='number']::-webkit-outer-spin-button,
+input[type='number']::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+}
+
+input[type='number'] {
+    -moz-appearance: textfield;
+}
+
+input[type='password']::-ms-reveal,
+input[type='password']::-webkit-search-clear-button,
+input[type='password']::-webkit-search-decoration,
+input[type='password']::-webkit-search-input,
+input[type='password']::-webkit-search-submit-button,
+input[type='password']::-webkit-search-cancel-button {
+    display: none;
 }
 
 /** 

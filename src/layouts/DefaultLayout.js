@@ -8,7 +8,7 @@ const DefaultLayout = ({ children }) => {
             <Header />
             <div className="d-flex justify-content-between">
                 <Sidebar />
-                {children}
+                <div>{children}</div>
                 <FriendsList />
             </div>
         </div>
