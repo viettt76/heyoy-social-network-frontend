@@ -27,3 +27,20 @@ export const cancelReleasedEmotionPostService = ({ postId }) => {
 export const getMyPostService = () => {
     return axios.get('/posts/me');
 };
+
+export const sendCommentService = ({ postId, parentCommentId = null, content }) => {
+    return axios.post('/posts/comment', {
+        postId,
+        parentCommentId,
+        content,
+    });
+};
+
+export const getCommentsService = (postId) => {
+    return axios.get(`/posts/comments/${postId}`, {
+        params: {
+            sortField: 'createdAt',
+            sortType: 'DESC',
+        },
+    });
+};
