@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom';
 import { useSelector } from 'react-redux';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faUserGroup, faUsers } from '@fortawesome/free-solid-svg-icons';
-import avatarDefault from '~/assets/imgs/avatar-default.png';
+import defaultAvatar from '~/assets/imgs/default-avatar.png';
 import styles from './Sidebar.module.scss';
 import { userInfoSelector } from '~/redux/selectors';
 
@@ -17,7 +17,7 @@ const Sidebar = () => {
                     <Link to="/profile" className={clsx(styles['sidebar-feature'])}>
                         <img
                             className={clsx(styles['sidebar-feature-avatar'], styles['sidebar-feature-icon'])}
-                            src={userInfo.avatar ? '' : avatarDefault}
+                            src={userInfo.avatar ? '' : defaultAvatar}
                         />
                         <div className={clsx(styles['sidebar-feature-label'])}>
                             {userInfo.lastName} {userInfo.firstName}

@@ -1,6 +1,6 @@
 import clsx from 'clsx';
 import styles from './WritePost.module.scss';
-import avatar from '~/assets/imgs/avatar-default.png';
+import avatar from '~/assets/imgs/default-avatar.png';
 import { Link } from 'react-router-dom';
 import { Modal } from 'react-bootstrap';
 import { useEffect, useState } from 'react';

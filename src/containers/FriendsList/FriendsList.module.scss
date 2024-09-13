@@ -1,3 +1,5 @@
+@import '~/styles/variables';
+
 .friends-list-wrapper {
     margin-top: 2rem;
     width: 28rem;
@@ -28,14 +30,35 @@
     .friend {
         display: flex;
         align-items: center;
-        padding-top: 0.6rem;
-        padding-bottom: 0.6rem;
+        padding: 0.8rem;
+        cursor: pointer;
+        border-radius: 0.8rem;
+
+        &:hover {
+            background-color: $background-color-gray;
+        }
 
         .friend-avatar {
-            width: 2.8rem;
-            height: 2.8rem;
-            border-radius: 50%;
-            margin-right: 0.6rem;
+            position: relative;
+
+            img {
+                width: 2.8rem;
+                height: 2.8rem;
+                border-radius: 50%;
+                margin-right: 0.6rem;
+            }
+
+            &::before {
+                content: '';
+                display: block;
+                background-color: green;
+                width: 0.8rem;
+                height: 0.8rem;
+                position: absolute;
+                border-radius: 50%;
+                bottom: 0;
+                right: 0.8rem;
+            }
         }
 
         .friend-name {

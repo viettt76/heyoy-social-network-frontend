@@ -7,12 +7,17 @@ const initialState = {
 const chatReducer = (state = initialState, action) => {
     switch (action.type) {
         case OPEN_CHAT:
+            if (state.openChats.some((chat) => chat?.id === action.payload?.id)) {
+                return {
+                    ...state,
+                };
+            }
             return {
                 ...state,
-                openChats: [...state.openChats].unshift(action.payload),
+                openChats: [action.payload, ...state.openChats],
             };
         case CLOSE_CHAT: {
-            const i = state.openChats.indexOf((c) => c === action.payload);
+            const i = state.openChats.indexOf((c) => c?.id === action.payload);
             state.openChats.splice(i, 1);
 
             return {

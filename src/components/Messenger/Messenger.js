@@ -1,6 +1,6 @@
 import clsx from 'clsx';
 import styles from './Messenger.module.scss';
-import avatar from '~/assets/imgs/avatar-default.png';
+import avatar from '~/assets/imgs/default-avatar.png';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faMagnifyingGlass } from '@fortawesome/free-solid-svg-icons';
 

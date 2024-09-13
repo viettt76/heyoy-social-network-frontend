@@ -1,71 +1,54 @@
 import clsx from 'clsx';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import _ from 'lodash';
-import logo from '~/assets/imgs/logo.png';
 import styles from './FriendsList.module.scss';
 import ChatPopup from '~/components/ChatPopup';
+import socket from '~/socket';
+import defaultAvatar from '~/assets/imgs/default-avatar.png';
+import * as actions from '~/redux/actions';
+import { useDispatch, useSelector } from 'react-redux';
+import { openChatsSelector } from '~/redux/selectors';
 
 const FriendsList = () => {
-    const [chatList, setChatList] = useState([]);
+    const dispatch = useDispatch();
 
-    const friendsList = [
-        {
-            id: '01',
-            avatar: logo,
-            name: 'Hoàng Việt',
-        },
-        {
-            id: '03',
-            avatar: logo,
-            name: 'Vũ',
-        },
-        {
-            id: '9',
-            avatar: logo,
-            name: 'Huyền',
-        },
-        {
-            id: '015',
-            avatar: logo,
-            name: 'Văn',
-        },
-    ];
+    const openChats = useSelector(openChatsSelector);
+
+    const [onlineFriends, setOnlineFriends] = useState([]);
+
+    useEffect(() => {
+        socket.on('friendsOnline', (resOnlineFriends) => {
+            setOnlineFriends(resOnlineFriends);
+        });
+    }, []);
 
     const addToChatList = (friend) => {
-        const i = _.findIndex(chatList, {
-            id: friend?.id,
-            avatar: friend?.avatar,
-            name: friend?.name,
-        });
-        if (i !== -1) {
-            _.pullAt(chatList, [i]);
-        }
-        const cloneChatList = [...chatList];
-        cloneChatList.unshift({
-            id: friend?.id,
-            avatar: friend?.avatar,
-            name: friend?.name,
-        });
-        setChatList(cloneChatList);
+        dispatch(actions.openChat(friend));
     };
 
     return (
         <div>
             <ul className={clsx(styles['friends-list-wrapper'])}>
-                {friendsList?.map((friend, index) => {
+                {onlineFriends?.map((friend, index) => {
                     return (
                         <li
                             key={`friend-${index}`}
                             className={clsx(styles['friend'])}
                             onClick={() => addToChatList(friend)}
                         >
-                            <img className={clsx(styles['friend-avatar'])} src={friend?.avatar} />
-                            <div className={clsx(styles['friend-name'])}>{friend?.name}</div>
+                            <div className={clsx(styles['friend-avatar'])}>
+                                <img src={friend?.avatar || defaultAvatar} />
+                            </div>
+                            <div
+                                className={clsx(styles['friend-name'])}
+                            >{`${friend?.lastName} ${friend?.firstName}`}</div>
                         </li>
                     );
                 })}
             </ul>
-            {/* <ChatPopup /> */}
+            {openChats?.map((friend, index) => {
+                return <ChatPopup key={`chat-${index}`} friend={friend} />;
+            })}
         </div>
     );
 };

@@ -1,6 +1,6 @@
 import clsx from 'clsx';
 import styles from './Friend.module.scss';
-import avatar from '~/assets/imgs/avatar-default.png';
+import avatar from '~/assets/imgs/default-avatar.png';
 
 const Friend = ({
     type,

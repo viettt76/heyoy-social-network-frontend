@@ -6,7 +6,7 @@ import { faComment, faThumbsUp } from '@fortawesome/free-regular-svg-icons';
 import { faEarthAmerica, faLock, faShare, faUserGroup } from '@fortawesome/free-solid-svg-icons';
 import styles from './Post.module.scss';
 import { LikeIcon, LoveIcon, LoveLoveIcon, HaHaIcon, WowIcon, SadIcon, AngryIcon } from '~/components/Icons';
-import avatarDefault from '~/assets/imgs/avatar-default.png';
+import defaultAvatar from '~/assets/imgs/default-avatar.png';
 import {
     cancelReleasedEmotionPostService,
     getAllEmotionsService,
@@ -213,10 +213,10 @@ const PostContent = ({ postInfo, handleShowWriteComment, showModal, handleShowMo
                 <Link to={`/profile/${posterId}`}>
                     <img
                         className={clsx(styles['avatar-user'])}
-                        src={avatar || avatarDefault}
+                        src={avatar || defaultAvatar}
                         onError={(e) => {
                             e.target.onerror = null;
-                            e.target.src = avatarDefault;
+                            e.target.src = defaultAvatar;
                         }}
                     />
                 </Link>
@@ -275,7 +275,7 @@ const PostContent = ({ postInfo, handleShowWriteComment, showModal, handleShowMo
                     onMouseEnter={() => setShowEmotionList(true)}
                 >
                     {currentEmotionNameCustom ? (
-                        <div onClick={handleCancelReleasedEmotion}>
+                        <div className={clsx(styles['user-action-emotion'])} onClick={handleCancelReleasedEmotion}>
                             <CurrentEmotion width={20} height={20} />
                             <span
                                 className={clsx(emotionClassMap[currentEmotionNameCustom], styles['released-emotion'])}
@@ -284,7 +284,7 @@ const PostContent = ({ postInfo, handleShowWriteComment, showModal, handleShowMo
                             </span>
                         </div>
                     ) : (
-                        <div onClick={() => handleReleaseEmotion(1)}>
+                        <div className={clsx(styles['user-action-emotion'])} onClick={() => handleReleaseEmotion(1)}>
                             <FontAwesomeIcon icon={faThumbsUp} />
                             <span>Thích</span>
                         </div>

@@ -48,8 +48,6 @@ function App() {
                     })}
                 </Routes>
             </Suspense>
-            <ChatPopup />
-            <ChatPopup />
             <ToastContainer />
         </BrowserRouter>
     );

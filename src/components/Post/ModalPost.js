@@ -3,7 +3,7 @@ import { Dropdown, Modal } from 'react-bootstrap';
 import clsx from 'clsx';
 import styles from './Post.module.scss';
 import { LikeIcon, LoveIcon, LoveLoveIcon, HaHaIcon, WowIcon, SadIcon, AngryIcon } from '~/components/Icons';
-import avatarDefault from '~/assets/imgs/avatar-default.png';
+import defaultAvatar from '~/assets/imgs/default-avatar.png';
 import { getCommentsService, sendCommentService } from '~/services/postServices';
 import moment from 'moment';
 import PostContent from './PostContent';
@@ -29,7 +29,7 @@ const Comment = ({ comment }) => {
         <div className={clsx(styles['comment'])}>
             <img
                 className={clsx(styles['commentator-avatar'])}
-                src={comment?.commentatorInfo?.avatar || avatarDefault}
+                src={comment?.commentatorInfo?.avatar || defaultAvatar}
             />
             <div className={clsx(styles['comment-info-wrapper'])}>
                 <div className={clsx(styles['commentator-name-comment-content'])}>
@@ -165,9 +165,9 @@ const ModalPost = ({ postInfo, show, handleClose }) => {
     }, [id]);
 
     return (
-        <Modal show={show} onHide={handleClose}>
+        <Modal className={clsx(styles['modal'])} show={show} onHide={handleClose}>
             <Modal.Body className={clsx(styles['modal-body'])}>
-                <div className={clsx(styles['post-content-wrapper'])}>
+                <div className={clsx(styles['modal-post-content-wrapper'])}>
                     <PostContent postInfo={postInfo} showModal={true} handleFocusSendComment={handleFocusSendComment} />
                     {comments?.length > 0 ? (
                         <div className={clsx(styles['comment-list-wrapper'])}>
