@@ -4,6 +4,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import { logoutService } from '~/services/authServices';
 import { useDispatch } from 'react-redux';
 import * as actions from '~/redux/actions';
+import socket from '~/socket';
 
 const UserDashboard = ({ userDashboardRef, showUserDashboard }) => {
     const navigate = useNavigate();
@@ -14,6 +15,7 @@ const UserDashboard = ({ userDashboardRef, showUserDashboard }) => {
             dispatch(actions.clearUserInfo());
             localStorage.removeItem('isAuthenticated');
             await logoutService();
+            socket.disconnect();
         } catch (error) {
             console.log(error);
         } finally {

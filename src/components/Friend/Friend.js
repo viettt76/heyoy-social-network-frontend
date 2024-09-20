@@ -9,7 +9,9 @@ const Friend = ({
     lastName = '',
     numberOfCommonFriends = 0,
     handleSendFriendRequest,
+    handleRefuseFriendRequest,
     handleAcceptFriendship,
+    handleShowModalUnfriend,
 }) => {
     return (
         <div className={clsx(styles['friend-wrapper'])}>
@@ -22,7 +24,12 @@ const Friend = ({
                 {type === 'friend' && (
                     <div className={clsx(styles['actions'])}>
                         <button className="btn btn-primary fz-16 w-100">Nhắn tin</button>
-                        <button className="btn btn-danger fz-16 w-100 mt-2">Huỷ kết bạn</button>
+                        <button
+                            className="btn btn-danger fz-16 w-100 mt-2"
+                            onClick={() => handleShowModalUnfriend(id, firstName, lastName)}
+                        >
+                            Huỷ kết bạn
+                        </button>
                     </div>
                 )}
                 {type === 'friend-request' && (
@@ -30,7 +37,12 @@ const Friend = ({
                         <button className="btn btn-primary fz-16 w-100" onClick={() => handleAcceptFriendship(id)}>
                             Chấp nhận
                         </button>
-                        <button className="btn btn-danger fz-16 w-100 mt-2">Từ chối</button>
+                        <button
+                            className="btn btn-danger fz-16 w-100 mt-2"
+                            onClick={() => handleRefuseFriendRequest(id)}
+                        >
+                            Từ chối
+                        </button>
                     </div>
                 )}
                 {type === 'friend-suggestion' && (

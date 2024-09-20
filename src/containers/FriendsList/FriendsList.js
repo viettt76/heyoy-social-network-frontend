@@ -17,9 +17,16 @@ const FriendsList = () => {
     const [onlineFriends, setOnlineFriends] = useState([]);
 
     useEffect(() => {
-        socket.on('friendsOnline', (resOnlineFriends) => {
+        socket.emit('getFriendsOnline');
+
+        const handleFriendOnline = (resOnlineFriends) => {
             setOnlineFriends(resOnlineFriends);
-        });
+        };
+        socket.on('friendsOnline', handleFriendOnline);
+
+        return () => {
+            socket.off('friendsOnline', handleFriendOnline);
+        };
     }, []);
 
     const addToChatList = (friend) => {
@@ -29,6 +36,7 @@ const FriendsList = () => {
     return (
         <div>
             <ul className={clsx(styles['friends-list-wrapper'])}>
+                <div className={clsx(styles['title'])}>Bạn bè</div>
                 {onlineFriends?.map((friend, index) => {
                     return (
                         <li
@@ -36,7 +44,11 @@ const FriendsList = () => {
                             className={clsx(styles['friend'])}
                             onClick={() => addToChatList(friend)}
                         >
-                            <div className={clsx(styles['friend-avatar'])}>
+                            <div
+                                className={clsx(styles['friend-avatar'], {
+                                    [[styles['is-online']]]: friend?.isOnline,
+                                })}
+                            >
                                 <img src={friend?.avatar || defaultAvatar} />
                             </div>
                             <div

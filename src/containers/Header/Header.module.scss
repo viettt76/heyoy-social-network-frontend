@@ -43,4 +43,20 @@
             user-select: none;
         }
     }
+
+    .avatar {
+        margin-left: 2.4rem;
+        display: flex;
+        align-items: center;
+
+        span {
+            font-size: 1.6rem;
+            margin-right: 0.6rem;
+        }
+
+        img {
+            border-radius: 50%;
+            border: 0.1rem solid $border;
+        }
+    }
 }

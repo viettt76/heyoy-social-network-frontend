@@ -9,6 +9,7 @@ import styles from './Login.module.scss';
 import customToastify from '~/utils/customToastify';
 import { getPersonalInfoService, loginService, signUpService } from '~/services/authServices';
 import * as actions from '~/redux/actions';
+import socket from '~/socket';
 
 function Login() {
     const navigate = useNavigate(null);
@@ -93,10 +94,12 @@ function Login() {
                             workplace: res?.workplace,
                         }),
                     );
+                    socket.connect();
                 };
                 fetchPersonalInfo();
             }
         } catch (error) {
+            console.log(error);
             setErrorLogin('Tài khoản hoặc mật khẩu của bạn không chính xác');
         }
     };

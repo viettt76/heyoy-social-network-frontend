@@ -148,7 +148,7 @@ const ModalPost = ({ postInfo, show, handleClose }) => {
     console.log(comments);
 
     useEffect(() => {
-        socket.on('newComment', (newComment) => {
+        const handleNewComment = (newComment) => {
             if (id === newComment.postId) {
                 setComments((prev) => [
                     {
@@ -161,7 +161,12 @@ const ModalPost = ({ postInfo, show, handleClose }) => {
                     ...prev,
                 ]);
             }
-        });
+        };
+        socket.on('newComment', handleNewComment);
+
+        return () => {
+            socket.off('newComment', handleNewComment);
+        };
     }, [id]);
 
     return (

@@ -27,6 +27,31 @@
             font-size: 1.6rem;
             font-weight: 600;
             line-height: 1.6rem;
+            display: flex;
+            align-items: center;
+
+            .avatar {
+                margin-right: 0.8rem;
+                position: relative;
+
+                img {
+                    width: 3.2rem;
+                    height: 3.2rem;
+                    border-radius: 50%;
+                }
+
+                &.is-online::before {
+                    content: '';
+                    display: block;
+                    background-color: green;
+                    width: 1rem;
+                    height: 1rem;
+                    position: absolute;
+                    border-radius: 50%;
+                    bottom: 0;
+                    right: 0.2rem;
+                }
+            }
         }
 
         .chat-close {

@@ -1,23 +1,20 @@
-import { useEffect, useRef } from 'react';
+import { useRef } from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faMagnifyingGlass } from '@fortawesome/free-solid-svg-icons';
-import { faBell, faMessage, faUser } from '@fortawesome/free-regular-svg-icons';
+import { faBell, faMessage } from '@fortawesome/free-regular-svg-icons';
 import { Tooltip as ReactTooltip } from 'react-tooltip';
 import { Link } from 'react-router-dom';
 import clsx from 'clsx';
 import styles from './Header.module.scss';
 import logo from '~/assets/imgs/logo.png';
-import UserDashboard from '~/components/UserDashboard';
 import useClickOutside from '~/hook/useClickOutside';
 import Messenger from '~/components/Messenger';
+import defaultAvatar from '~/assets/imgs/default-avatar.png';
+import { useSelector } from 'react-redux';
+import { userInfoSelector } from '~/redux/selectors';
 
 const Header = () => {
-    const userDashboardIconRef = useRef(null);
-    const {
-        ref: userDashboardRef,
-        isComponentVisible: showUserDashboard,
-        setIsComponentVisible: setShowUserDashboard,
-    } = useClickOutside(false, userDashboardIconRef);
+    const userInfo = useSelector(userInfoSelector);
 
     const messengerIconRef = useRef(null);
     const {
@@ -61,25 +58,13 @@ const Header = () => {
                     <FontAwesomeIcon className={clsx(styles['action-user-icon'])} icon={faBell} />
                     <ReactTooltip className="fz-16" id="tool-tip-notification" place="bottom" content="Thông báo" />
                 </div>
-                <div>
-                    <div
-                        ref={userDashboardIconRef}
-                        onClick={() => setShowUserDashboard(!showUserDashboard)}
-                        className={clsx(
-                            'position-relative d-flex justify-content-center align-items-center fz-16',
-                            styles['action-user'],
-                        )}
-                        data-tooltip-id="tool-tip-account"
-                    >
-                        <FontAwesomeIcon className={clsx(styles['action-user-icon'])} icon={faUser} />
-                        <ReactTooltip
-                            className="fz-16"
-                            id="tool-tip-account"
-                            place="bottom-start"
-                            content="Tài khoản"
-                        />
-                    </div>
-                    <UserDashboard userDashboardRef={userDashboardRef} showUserDashboard={showUserDashboard} />
+                <div className={clsx(styles['avatar'])}>
+                    <span>
+                        {userInfo?.lastName} {userInfo?.firstName}
+                    </span>
+                    <Link to="/profile">
+                        <img src={userInfo?.avatar || defaultAvatar} />
+                    </Link>
                 </div>
             </div>
         </div>

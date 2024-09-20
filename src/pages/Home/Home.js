@@ -32,12 +32,13 @@ const Home = () => {
     }, []);
 
     useEffect(() => {
-        socket.on('newPost', (newPost) => {
+        const handleNewPost = (newPost) => {
             setPosts((prev) => [newPost, ...prev]);
-        });
+        };
+        socket.on('newPost', handleNewPost);
 
         return () => {
-            socket.disconnect();
+            socket.off('newPost', handleNewPost);
         };
     }, []);
 

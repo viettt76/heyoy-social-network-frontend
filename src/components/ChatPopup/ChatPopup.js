@@ -74,7 +74,7 @@ const ChatPopup = ({ friend }) => {
     };
 
     useEffect(() => {
-        socket.on('newMessage', (newMessage) => {
+        const handleNewMessage = (newMessage) => {
             if (newMessage.receiver === userInfo?.id) {
                 setMessages((prev) => [
                     ...prev,
@@ -85,13 +85,27 @@ const ChatPopup = ({ friend }) => {
                     },
                 ]);
             }
-        });
+        };
+        socket.on('newMessage', handleNewMessage);
+
+        return () => {
+            socket.off('newMessage', handleNewMessage);
+        };
     }, [userInfo?.id]);
 
     return (
         <div className={clsx(styles['chat-wrapper'])}>
             <div className={clsx(styles['chat-header'])}>
-                <div className={clsx(styles['chat-receiver'])}>{`${friend?.lastName} ${friend?.firstName}`}</div>
+                <div className={clsx(styles['chat-receiver'])}>
+                    <div
+                        className={clsx(styles['avatar'], {
+                            [[styles['is-online']]]: friend?.isOnline,
+                        })}
+                    >
+                        <img src={friend?.avatar || defaultAvatar} />
+                    </div>
+                    <div className={clsx(styles['name'])}>{`${friend?.lastName} ${friend?.firstName}`}</div>
+                </div>
                 <FontAwesomeIcon
                     icon={faXmark}
                     className={clsx(styles['chat-close'])}
@@ -99,31 +113,37 @@ const ChatPopup = ({ friend }) => {
                 />
             </div>
             <div ref={endOfMessagesRef} className={clsx(styles['chat-container'])}>
-                {messages?.map((message, index) => {
-                    return (
-                        <div
-                            key={`chat-${index}`}
-                            className={clsx(styles['message-wrapper'], {
-                                [[styles['message-current-user']]]: message?.sender === userInfo?.id,
-                            })}
-                        >
-                            {(index === 0 && message.sender === userInfo?.id) ||
-                                (messages[index - 1]?.sender !== messages[index]?.sender &&
-                                    message?.sender === friend?.id && (
-                                        <img
-                                            className={clsx(styles['message-avatar'])}
-                                            src={friend?.avatar || defaultAvatar}
-                                        />
-                                    ))}
-                            <div className={clsx(styles['message'])}>{message?.message}</div>
-                            {processingMessage &&
-                                _.findLast(messages, { sender: userInfo?.id }) &&
-                                _.isEqual(_.findLast(messages, { sender: userInfo?.id }), message) && (
-                                    <div className={clsx(styles['process-message'])}>{processingMessage}</div>
-                                )}
-                        </div>
-                    );
-                })}
+                {messages?.length > 0 ? (
+                    messages?.map((message, index) => {
+                        return (
+                            <div
+                                key={`chat-${index}`}
+                                className={clsx(styles['message-wrapper'], {
+                                    [[styles['message-current-user']]]: message?.sender === userInfo?.id,
+                                })}
+                            >
+                                {(index === 0 && message.sender === userInfo?.id) ||
+                                    (messages[index - 1]?.sender !== messages[index]?.sender &&
+                                        message?.sender === friend?.id && (
+                                            <img
+                                                className={clsx(styles['message-avatar'])}
+                                                src={friend?.avatar || defaultAvatar}
+                                            />
+                                        ))}
+                                <div className={clsx(styles['message'])}>{message?.message}</div>
+                                {processingMessage &&
+                                    _.findLast(messages, { sender: userInfo?.id }) &&
+                                    _.isEqual(_.findLast(messages, { sender: userInfo?.id }), message) && (
+                                        <div className={clsx(styles['process-message'])}>{processingMessage}</div>
+                                    )}
+                            </div>
+                        );
+                    })
+                ) : (
+                    <div className="mt-5 text-center fz-16">
+                        Hãy bắt đầu cuộc trò chuyện với {`${friend?.lastName} ${friend?.firstName}`}
+                    </div>
+                )}
                 <div></div>
             </div>
             <div className={clsx(styles['chat-footer'])}>

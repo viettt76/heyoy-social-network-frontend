@@ -2,8 +2,13 @@ import Friend from '~/components/Friend';
 import clsx from 'clsx';
 import styles from './FriendRequests.module.scss';
 import { useEffect, useState } from 'react';
-import { acceptFriendshipService, getFriendRequestService } from '~/services/relationshipServices';
+import {
+    acceptFriendshipService,
+    getFriendRequestService,
+    refuseFriendRequestService,
+} from '~/services/relationshipServices';
 import _ from 'lodash';
+import socket from '~/socket';
 
 const FriendRequests = () => {
     const [friendRequests, setFriendRequests] = useState([]);
@@ -20,11 +25,34 @@ const FriendRequests = () => {
         fetchFriendRequest();
     }, []);
 
+    useEffect(() => {
+        const handleNewFriendRequest = (friendInfo) => {
+            setFriendRequests((prev) => [friendInfo, ...prev]);
+        };
+        socket.on('newFriendRequest', handleNewFriendRequest);
+
+        return () => {
+            socket.off('newFriendRequest', handleNewFriendRequest);
+        };
+    }, []);
+
     const handleAcceptFriendship = async (id) => {
         try {
             await acceptFriendshipService(id);
             setFriendRequests((prev) => {
                 const frs = _.filter(prev, (f) => f.id !== id);
+                return frs;
+            });
+        } catch (error) {
+            console.log(error);
+        }
+    };
+
+    const handleRefuseFriendRequest = async (senderId) => {
+        try {
+            await refuseFriendRequestService(senderId);
+            setFriendRequests((prev) => {
+                const frs = _.filter(prev, (f) => f.id !== senderId);
                 return frs;
             });
         } catch (error) {
@@ -49,6 +77,7 @@ const FriendRequests = () => {
                             lastName={request?.lastName}
                             numberOfCommonFriends={request?.numberOfCommonFriends}
                             handleAcceptFriendship={handleAcceptFriendship}
+                            handleRefuseFriendRequest={handleRefuseFriendRequest}
                         />
                     ))}
                 </div>

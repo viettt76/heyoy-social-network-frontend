@@ -118,40 +118,37 @@ const PostContent = ({ postInfo, handleShowWriteComment, showModal, handleShowMo
     const CurrentEmotion = emotionComponentMap[currentEmotionNameCustom];
 
     useEffect(() => {
-        socket.on(
-            'releaseEmotion',
-            ({
-                id: emoPostId,
-                postId,
-                userId: reactorId,
-                firstName: reactorFirstName,
-                lastName: reactorLastName,
-                avatar: reactorAvatar,
-                emotionTypeId,
-                emotionTypeName,
-            }) => {
-                if (id === postId) {
-                    setCopyEmotions((prev) => [
-                        ...prev,
-                        {
-                            id: emoPostId,
-                            emotion: {
-                                id: emotionTypeId,
-                                name: emotionTypeName,
-                            },
-                            userInfo: {
-                                id: reactorId,
-                                firstName: reactorFirstName,
-                                lastName: reactorLastName,
-                                avatar: reactorAvatar,
-                            },
+        const handleReleaseEmotion = ({
+            id: emoPostId,
+            postId,
+            userId: reactorId,
+            firstName: reactorFirstName,
+            lastName: reactorLastName,
+            avatar: reactorAvatar,
+            emotionTypeId,
+            emotionTypeName,
+        }) => {
+            if (id === postId) {
+                setCopyEmotions((prev) => [
+                    ...prev,
+                    {
+                        id: emoPostId,
+                        emotion: {
+                            id: emotionTypeId,
+                            name: emotionTypeName,
                         },
-                    ]);
-                }
-            },
-        );
+                        userInfo: {
+                            id: reactorId,
+                            firstName: reactorFirstName,
+                            lastName: reactorLastName,
+                            avatar: reactorAvatar,
+                        },
+                    },
+                ]);
+            }
+        };
 
-        socket.on('updateEmotion', ({ id: emoPostId, postId, emotionTypeId, emotionTypeName }) => {
+        const handleUpdateEmotion = ({ id: emoPostId, postId, emotionTypeId, emotionTypeName }) => {
             if (id === postId) {
                 setCopyEmotions((prev) => {
                     const clone = _.cloneDeep(prev);
@@ -163,7 +160,15 @@ const PostContent = ({ postInfo, handleShowWriteComment, showModal, handleShowMo
                     return clone;
                 });
             }
-        });
+        };
+
+        socket.on('releaseEmotion', handleReleaseEmotion);
+        socket.on('updateEmotion', handleUpdateEmotion);
+
+        return () => {
+            socket.off('releaseEmotiff', handleReleaseEmotion);
+            socket.off('updateEmotion', handleUpdateEmotion);
+        };
     }, [id]);
 
     const [showEmotionList, setShowEmotionList] = useState(false);
@@ -178,7 +183,7 @@ const PostContent = ({ postInfo, handleShowWriteComment, showModal, handleShowMo
     };
 
     useEffect(() => {
-        socket.on('cancelReleasedEmotion', ({ postId, userId: userCancelReleaseEmotionId }) => {
+        const handleCancelReleasedEmotion = ({ postId, userId: userCancelReleaseEmotionId }) => {
             if (userInfo.id === userCancelReleaseEmotionId) {
                 setCurrentEmotionNameCustom(null);
             }
@@ -188,7 +193,12 @@ const PostContent = ({ postInfo, handleShowWriteComment, showModal, handleShowMo
                     return clone;
                 });
             }
-        });
+        };
+        socket.on('cancelReleasedEmotion', handleCancelReleasedEmotion);
+
+        return () => {
+            socket.off('cancelReleasedEmotion', handleCancelReleasedEmotion);
+        };
     }, [id, userInfo.id]);
 
     const handleCancelReleasedEmotion = async () => {
@@ -200,11 +210,16 @@ const PostContent = ({ postInfo, handleShowWriteComment, showModal, handleShowMo
     };
 
     useEffect(() => {
-        socket.on('newComment-numberOfComments', (postId) => {
+        const handleNewCommentNumberOfComments = (postId) => {
             if (id === postId) {
                 setNumberOfComments((prev) => prev + 1);
             }
-        });
+        };
+        socket.on('newComment-numberOfComments', handleNewCommentNumberOfComments);
+
+        return () => {
+            socket.off('newComment-numberOfComments', handleNewCommentNumberOfComments);
+        };
     }, [id]);
 
     return (

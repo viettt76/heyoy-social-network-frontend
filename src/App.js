@@ -2,7 +2,6 @@ import React, { Suspense, useEffect, useState } from 'react';
 import { BrowserRouter, Route, Routes, useLocation, useNavigate } from 'react-router-dom';
 import routes from './routes';
 import DefaultLayout from './layouts/DefaultLayout';
-import ChatPopup from './components/ChatPopup/ChatPopup';
 import { useDispatch } from 'react-redux';
 import { getPersonalInfoService } from './services/authServices';
 import { ToastContainer } from 'react-toastify';
@@ -19,6 +18,7 @@ function NavigateFunctionComponent() {
     }
     return <></>;
 }
+
 function App() {
     return (
         <BrowserRouter>
