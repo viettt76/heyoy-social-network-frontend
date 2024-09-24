@@ -22,6 +22,17 @@
     }
 }
 
+@keyframes pullUp {
+    from {
+        transform: scaleY(1);
+        opacity: 1;
+    }
+    to {
+        transform: scaleY(0);
+        opacity: 0;
+    }
+}
+
 .post-wrapper {
     width: 100%;
     margin-bottom: 2rem;
@@ -328,12 +339,14 @@
 
             .comment-info-wrapper {
                 margin-left: 0.6rem;
+                width: 100%;
 
                 .commentator-name-comment-content {
                     background-color: $background-color-medium-gray;
                     padding: 0.8rem 1.2rem;
                     border-radius: 1.2rem;
                     display: inline-block;
+                    max-width: 60rem;
 
                     .commentator-name {
                         font-size: 1.3rem;
@@ -360,6 +373,7 @@
                     }
 
                     .comment-action {
+                        position: relative;
                         display: flex;
                         align-items: center;
                         font-size: 1.2rem;
@@ -408,6 +422,34 @@
                     }
                 }
 
+                .reply-comment-wrapper {
+                    transform-origin: top;
+                    transition: transform 0.4s, opacity 0.4s;
+
+                    &.show {
+                        transform: scaleY(1);
+                        opacity: 1;
+                        animation: dropDown 0.4s forwards;
+                    }
+
+                    &.hide {
+                        transform: scaleY(0);
+                        opacity: 0;
+                        animation: pullUp 0.4s forwards;
+                    }
+
+                    .reply-comment-input {
+                        width: 100%;
+                        font-size: 1.5rem;
+                        border: none;
+                        outline: none;
+                        background-color: $background-color-medium-gray;
+                        border-radius: 1.6rem;
+                        line-height: 2.4rem;
+                        padding: 0.8rem 1.2rem;
+                    }
+                }
+
                 .fz-14 {
                     font-size: 1.4rem;
                     cursor: pointer;
@@ -418,8 +460,7 @@
 }
 
 .modal {
-    // CSS override .modal-content of bootstrap
-    div {
+    :global(.modal-dialog) {
         max-width: 700px !important;
     }
 }
@@ -463,7 +504,7 @@
 
     &.animation {
         animation: dropDown 0.4s linear;
-        transform-origin: top center;
+        transform-origin: top;
     }
 
     &.position-fixed {

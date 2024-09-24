@@ -27,3 +27,11 @@ export const acceptFriendshipService = (friendId) => {
 export const unfriendService = (friendId) => {
     return axios.delete(`/relationships/${friendId}`);
 };
+
+export const getSentFriendRequestsService = () => {
+    return axios.get('/relationships/sent-requests');
+};
+
+export const cancelFriendRequestService = (receiverId) => {
+    return axios.delete(`/relationships/sent-request/${receiverId}`);
+};

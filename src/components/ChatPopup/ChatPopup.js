@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import clsx from 'clsx';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faThumbsUp, faXmark } from '@fortawesome/free-solid-svg-icons';
@@ -10,8 +10,10 @@ import * as actions from '~/redux/actions';
 import { getMessagesWithFriendService, sendMessageWithFriendService } from '~/services/chatServices';
 import socket from '~/socket';
 import _ from 'lodash';
+import useClickOutside from '~/hook/useClickOutside';
 
 const ChatPopup = ({ friend }) => {
+    const { ref: chatPopupRef, isComponentVisible: isFocus, setIsComponentVisible: setIsFocus } = useClickOutside(true);
     const userInfo = useSelector(userInfoSelector);
     const dispatch = useDispatch();
 
@@ -38,9 +40,10 @@ const ChatPopup = ({ friend }) => {
         endOfMessagesRef.current.scrollTop = endOfMessagesRef.current.scrollHeight;
     }, [messages]);
 
-    const handleCloseChatPopup = () => {
+    const handleCloseChatPopup = useCallback(() => {
         dispatch(actions.closeChat(friend?.id));
-    };
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [friend?.id]);
 
     const handleSendMessage = async () => {
         try {
@@ -93,9 +96,21 @@ const ChatPopup = ({ friend }) => {
         };
     }, [userInfo?.id]);
 
+    useEffect(() => {
+        window.onkeydown = (e) => {
+            if (isFocus && e.key === 'Escape') {
+                handleCloseChatPopup();
+            }
+        };
+    }, [handleCloseChatPopup, isFocus]);
+
     return (
-        <div className={clsx(styles['chat-wrapper'])}>
-            <div className={clsx(styles['chat-header'])}>
+        <div className={clsx(styles['chat-wrapper'])} ref={chatPopupRef} onClick={() => setIsFocus(true)}>
+            <div
+                className={clsx(styles['chat-header'], {
+                    [[styles['is-focus']]]: isFocus,
+                })}
+            >
                 <div className={clsx(styles['chat-receiver'])}>
                     <div
                         className={clsx(styles['avatar'], {

@@ -69,6 +69,12 @@
                 font-weight: 500;
                 color: $text;
             }
+
+            .sidebar-feature-avatar {
+                border-radius: 50%;
+                border: 0.1rem solid $border;
+                margin-right: 0.6rem;
+            }
         }
     }
 }

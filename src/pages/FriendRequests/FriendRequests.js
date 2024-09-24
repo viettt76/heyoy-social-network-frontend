@@ -29,10 +29,16 @@ const FriendRequests = () => {
         const handleNewFriendRequest = (friendInfo) => {
             setFriendRequests((prev) => [friendInfo, ...prev]);
         };
+        const handleCancelFriendRequest = (senderId) => {
+            setFriendRequests((prev) => prev.filter((fq) => fq.id !== senderId));
+        };
+
         socket.on('newFriendRequest', handleNewFriendRequest);
+        socket.on('cancelFriendRequest', handleCancelFriendRequest);
 
         return () => {
             socket.off('newFriendRequest', handleNewFriendRequest);
+            socket.off('cancelFriendRequest', handleCancelFriendRequest);
         };
     }, []);
 

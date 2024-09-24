@@ -16,10 +16,6 @@ export const loginService = ({ username, password }) => {
     });
 };
 
-export const getPersonalInfoService = () => {
-    return axios.get('/auth/personal-info');
-};
-
 export const logoutService = () => {
     return axios.post('/auth/logout');
 };

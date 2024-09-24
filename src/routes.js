@@ -9,6 +9,7 @@ import Profile from '~/pages/Profile/Profile';
 import MyFriends from '~/pages/MyFriends';
 import FriendRequests from '~/pages/FriendRequests';
 import FriendSuggestions from '~/pages/FriendSuggestions';
+import SentFriendRequests from './pages/SentFriendRequests';
 
 const routes = [
     { path: '/', element: Home },
@@ -16,6 +17,7 @@ const routes = [
     { path: '/profile', element: Profile, layout: OnlyHeaderLayout },
     { path: '/friends', element: MyFriends, layout: FriendsLayout },
     { path: '/friends/requests', element: FriendRequests, layout: FriendsLayout },
+    { path: '/friends/sent-requests', element: SentFriendRequests, layout: FriendsLayout },
     { path: '/friends/suggestions', element: FriendSuggestions, layout: FriendsLayout },
 ];
 

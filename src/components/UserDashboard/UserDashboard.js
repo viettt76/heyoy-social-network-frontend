@@ -5,10 +5,17 @@ import { logoutService } from '~/services/authServices';
 import { useDispatch } from 'react-redux';
 import * as actions from '~/redux/actions';
 import socket from '~/socket';
+import defaultAvatar from '~/assets/imgs/default-avatar.png';
+import { useSelector } from 'react-redux';
+import { userInfoSelector } from '~/redux/selectors';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faGear, faRightFromBracket } from '@fortawesome/free-solid-svg-icons';
 
 const UserDashboard = ({ userDashboardRef, showUserDashboard }) => {
     const navigate = useNavigate();
     const dispatch = useDispatch();
+
+    const userInfo = useSelector(userInfoSelector);
 
     const handleLogout = async () => {
         try {
@@ -32,14 +39,19 @@ const UserDashboard = ({ userDashboardRef, showUserDashboard }) => {
         >
             <li className={clsx(styles['dashboard-item'])}>
                 <Link className={clsx(styles['dashboard-link'])} to="/profile">
-                    Trang cá nhân
+                    <img className={clsx(styles['dashboard-avatar'])} src={userInfo?.avatar || defaultAvatar} />
+                    {`${userInfo?.lastName} ${userInfo?.firstName}`}
                 </Link>
             </li>
             <li className={clsx(styles['dashboard-item'])}>
-                <Link className={clsx(styles['dashboard-link'])}>Cài đặt</Link>
+                <Link className={clsx(styles['dashboard-link'])}>
+                    <FontAwesomeIcon icon={faGear} className={clsx(styles['dashboard-link-icon'])} />
+                    Cài đặt
+                </Link>
             </li>
             <li className={clsx(styles['dashboard-item'])}>
                 <div className={clsx(styles['dashboard-link'])} onClick={handleLogout}>
+                    <FontAwesomeIcon icon={faRightFromBracket} className={clsx(styles['dashboard-link-icon'])} />
                     Đăng xuất
                 </div>
             </li>

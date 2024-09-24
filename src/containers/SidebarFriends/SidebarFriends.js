@@ -25,6 +25,14 @@ const SidebarFriends = () => {
                 Lời mời kết bạn
             </Link>
             <Link
+                to="/friends/sent-requests"
+                className={clsx(styles['sidebar-item'], {
+                    [[styles['active']]]: location.pathname === '/friends/sent-requests',
+                })}
+            >
+                Lời mời đã gửi
+            </Link>
+            <Link
                 to="/friends/suggestions"
                 className={clsx(styles['sidebar-item'], {
                     [[styles['active']]]: location.pathname === '/friends/suggestions',

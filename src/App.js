@@ -1,12 +1,12 @@
 import React, { Suspense, useEffect, useState } from 'react';
 import { BrowserRouter, Route, Routes, useLocation, useNavigate } from 'react-router-dom';
-import routes from './routes';
-import DefaultLayout from './layouts/DefaultLayout';
+import routes from '~/routes';
+import DefaultLayout from '~/layouts/DefaultLayout';
 import { useDispatch } from 'react-redux';
-import { getPersonalInfoService } from './services/authServices';
+import { getPersonalInfoService } from '~/services/userServices';
 import { ToastContainer } from 'react-toastify';
 import * as actions from '~/redux/actions';
-import { SetupInterceptors } from './utils/axios';
+import { SetupInterceptors } from '~/utils/axios';
 
 function NavigateFunctionComponent() {
     let navigate = useNavigate();
@@ -66,7 +66,7 @@ function FetchUserInfo() {
                         id: res?.id,
                         firstName: res?.firstName,
                         lastName: res?.lastName,
-                        age: res?.age,
+                        birthday: res?.birthday,
                         avatar: res?.avatar,
                         homeTown: res?.homeTown,
                         school: res?.school,

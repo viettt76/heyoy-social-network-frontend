@@ -29,7 +29,6 @@ const MyFriends = () => {
         };
 
         const handleUnfriend = (friendId) => {
-            console.log(friendId);
             setFriends((prev) => prev.filter((f) => f?.id !== friendId));
         };
 

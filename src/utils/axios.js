@@ -24,7 +24,7 @@ export const SetupInterceptors = (navigate) => {
         async function (error) {
             const { config } = error;
 
-            if (error.response.status == 401) {
+            if (error.response?.status == 401) {
                 navigate('/login');
                 store.dispatch(clearUserInfo());
                 localStorage.removeItem('isAuthenticated');

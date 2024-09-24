@@ -7,7 +7,8 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faEye, faEyeSlash } from '@fortawesome/free-regular-svg-icons';
 import styles from './Login.module.scss';
 import customToastify from '~/utils/customToastify';
-import { getPersonalInfoService, loginService, signUpService } from '~/services/authServices';
+import { getPersonalInfoService } from '~/services/userServices';
+import { loginService, signUpService } from '~/services/authServices';
 import * as actions from '~/redux/actions';
 import socket from '~/socket';
 
@@ -82,18 +83,20 @@ function Login() {
                 navigate('/');
                 const fetchPersonalInfo = async () => {
                     const res = await getPersonalInfoService();
+
                     dispatch(
                         actions.saveUserInfo({
                             id: res?.id,
                             firstName: res?.firstName,
                             lastName: res?.lastName,
-                            age: res?.age,
+                            birthday: res?.birthday,
                             avatar: res?.avatar,
                             homeTown: res?.homeTown,
                             school: res?.school,
                             workplace: res?.workplace,
                         }),
                     );
+
                     socket.connect();
                 };
                 fetchPersonalInfo();

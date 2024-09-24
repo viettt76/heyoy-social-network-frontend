@@ -12,6 +12,7 @@ const Friend = ({
     handleRefuseFriendRequest,
     handleAcceptFriendship,
     handleShowModalUnfriend,
+    handleCancelFriendRequest,
 }) => {
     return (
         <div className={clsx(styles['friend-wrapper'])}>
@@ -49,6 +50,16 @@ const Friend = ({
                     <div className={clsx(styles['actions'])}>
                         <button className="btn btn-primary fz-16 w-100" onClick={() => handleSendFriendRequest(id)}>
                             Thêm bạn bè
+                        </button>
+                    </div>
+                )}
+                {type === 'sent-friend-request' && (
+                    <div className={clsx(styles['actions'])}>
+                        <button
+                            className="btn btn-danger fz-16 w-100 mt-2"
+                            onClick={() => handleCancelFriendRequest(id)}
+                        >
+                            Huỷ
                         </button>
                     </div>
                 )}

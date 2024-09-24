@@ -4,7 +4,7 @@ const initialState = {
     id: null,
     firstName: null,
     lastName: null,
-    age: null,
+    birthday: null,
     avatar: null,
     homeTown: null,
     school: null,
@@ -16,21 +16,19 @@ const userReducer = (state = initialState, action) => {
         case SAVE_USER_INFO:
             return {
                 ...state,
-                id: action.payload?.id,
-                firstName: action.payload?.firstName,
-                lastName: action.payload?.lastName,
-                age: action.payload?.age,
-                avatar: action.payload?.avatar,
-                homeTown: action.payload?.homeTown,
-                school: action.payload?.school,
-                workplace: action.payload?.workplace,
+                ...Object.keys(action.payload || {}).reduce((acc, key) => {
+                    if (action.payload[key] !== null) {
+                        acc[key] = action.payload[key];
+                    }
+                    return acc;
+                }, {}),
             };
         case CLEAR_USER_INFO:
             return {
                 id: null,
                 firstName: null,
                 lastName: null,
-                age: null,
+                birthday: null,
                 avatar: null,
                 homeTown: null,
                 school: null,

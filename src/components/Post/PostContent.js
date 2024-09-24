@@ -15,9 +15,9 @@ import {
 } from '~/services/postServices';
 import _ from 'lodash';
 import socket from '~/socket';
-import moment from 'moment';
 import { useSelector } from 'react-redux';
 import { userInfoSelector } from '~/redux/selectors';
+import { format } from 'date-fns';
 
 const PostContent = ({ postInfo, handleShowWriteComment, showModal, handleShowModal, handleFocusSendComment }) => {
     const {
@@ -27,7 +27,7 @@ const PostContent = ({ postInfo, handleShowWriteComment, showModal, handleShowMo
         lastName,
         avatar,
         groupName,
-        createAt,
+        createdAt,
         visibility,
         content,
         currentEmotionId,
@@ -184,10 +184,9 @@ const PostContent = ({ postInfo, handleShowWriteComment, showModal, handleShowMo
 
     useEffect(() => {
         const handleCancelReleasedEmotion = ({ postId, userId: userCancelReleaseEmotionId }) => {
-            if (userInfo.id === userCancelReleaseEmotionId) {
+            if (userInfo.id === userCancelReleaseEmotionId && id === postId) {
                 setCurrentEmotionNameCustom(null);
-            }
-            if (id === postId) {
+
                 setCopyEmotions((prev) => {
                     const clone = _.filter(prev, (e) => e?.userInfo?.id !== userCancelReleaseEmotionId);
                     return clone;
@@ -239,7 +238,7 @@ const PostContent = ({ postInfo, handleShowWriteComment, showModal, handleShowMo
                     <h5 className={clsx(styles['post-username'])}>{`${lastName} ${firstName}`}</h5>
                     <div className={clsx('d-flex', styles['add-info'])}>
                         {groupName && <span>Quốc</span>}
-                        <span>{moment(createAt).format('DD/MM/YYYY')}</span>
+                        <span>{format(new Date(createdAt), 'dd/MM/yyyy')}</span>
                         <span>
                             <FontAwesomeIcon icon={faEarthAmerica} />
                             {/* <FontAwesomeIcon icon={faUserGroup} />

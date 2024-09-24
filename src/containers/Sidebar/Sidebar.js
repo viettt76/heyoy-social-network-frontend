@@ -1,30 +1,16 @@
 import clsx from 'clsx';
-import { Link, useLocation, useNavigate } from 'react-router-dom';
+import { Link, useLocation } from 'react-router-dom';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faGear, faHouse, faPlus, faRightFromBracket, faUserGroup } from '@fortawesome/free-solid-svg-icons';
+import { faGear, faHouse, faPlus, faUserGroup } from '@fortawesome/free-solid-svg-icons';
 import styles from './Sidebar.module.scss';
-import { useDispatch } from 'react-redux';
-import { logoutService } from '~/services/authServices';
-import * as actions from '~/redux/actions';
-import socket from '~/socket';
+import { useSelector } from 'react-redux';
+import { userInfoSelector } from '~/redux/selectors';
+import defaultAvatar from '~/assets/imgs/default-avatar.png';
 
 const Sidebar = () => {
-    const location = useLocation();
-    const navigate = useNavigate();
-    const dispatch = useDispatch();
+    const userInfo = useSelector(userInfoSelector);
 
-    const handleLogout = async () => {
-        try {
-            dispatch(actions.clearUserInfo());
-            localStorage.removeItem('isAuthenticated');
-            await logoutService();
-            socket.disconnect();
-        } catch (error) {
-            console.log(error);
-        } finally {
-            navigate('/login');
-        }
-    };
+    const location = useLocation();
 
     return (
         <div className={clsx(styles['min-h-100vh'])}>
@@ -33,6 +19,15 @@ const Sidebar = () => {
                     <span>Heyoy</span>
                 </div>
                 <ul className={clsx(styles['sidebar-group'])}>
+                    <li>
+                        <Link to="/profile" className={clsx(styles['sidebar-feature'])}>
+                            <img
+                                src={userInfo?.avatar || defaultAvatar}
+                                className={clsx(styles['sidebar-feature-avatar'])}
+                            />
+                            <div className={clsx(styles['sidebar-feature-label'])}>Trang cá nhân</div>
+                        </Link>
+                    </li>
                     <li>
                         <Link
                             to="/"
@@ -64,17 +59,6 @@ const Sidebar = () => {
                         <Link to="/" className={clsx(styles['sidebar-feature'])}>
                             <FontAwesomeIcon icon={faGear} className={clsx(styles['sidebar-feature-icon'])} />
                             <div className={clsx(styles['sidebar-feature-label'])}>Settings</div>
-                        </Link>
-                    </li>
-                    <li>
-                        <Link to="/" className={clsx(styles['sidebar-feature'])}>
-                            <FontAwesomeIcon
-                                icon={faRightFromBracket}
-                                className={clsx(styles['sidebar-feature-icon'])}
-                            />
-                            <div className={clsx(styles['sidebar-feature-label'])} onClick={handleLogout}>
-                                Đăng xuất
-                            </div>
                         </Link>
                     </li>
                 </ul>
