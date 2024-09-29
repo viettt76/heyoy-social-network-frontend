@@ -8,6 +8,7 @@ import defaultAvatar from '~/assets/imgs/default-avatar.png';
 import * as actions from '~/redux/actions';
 import { useDispatch, useSelector } from 'react-redux';
 import { openChatsSelector } from '~/redux/selectors';
+import ChatGroupPopup from '~/components/ChatGroupPopup';
 
 const FriendsList = () => {
     const dispatch = useDispatch();
@@ -58,8 +59,11 @@ const FriendsList = () => {
                     );
                 })}
             </ul>
-            {openChats?.map((friend, index) => {
-                return <ChatPopup key={`chat-${index}`} friend={friend} />;
+            {openChats?.slice(0, 2)?.map((item) => {
+                if (item?.isGroupChat) {
+                    return <ChatGroupPopup key={`group-chat-${item?.id}`} group={item} />;
+                }
+                return <ChatPopup key={`friend-chat-${item?.id}`} friend={item} />;
             })}
         </div>
     );

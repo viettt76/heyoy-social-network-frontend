@@ -10,3 +10,27 @@ export const sendMessageWithFriendService = ({ friendId, message }) => {
         message: message,
     });
 };
+
+export const createGroupChatService = ({ name, avatar, members }) => {
+    return axios.post('/chat/group-chat', {
+        name,
+        avatar,
+        members,
+    });
+};
+
+export const getGroupChatsService = () => {
+    return axios.get('/chat/group-chat');
+};
+
+export const getMessagesOfGroupChatService = (groupChatId) => {
+    return axios.get(`chat/group-chat/messages/${groupChatId}`);
+};
+
+export const sendGroupChatMessageService = ({ groupChatId, message, picture }) => {
+    return axios.post('/chat/group-chat/message', {
+        groupChatId,
+        message,
+        picture,
+    });
+};

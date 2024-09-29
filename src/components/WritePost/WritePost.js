@@ -1,6 +1,6 @@
 import clsx from 'clsx';
 import styles from './WritePost.module.scss';
-import avatar from '~/assets/imgs/default-avatar.png';
+import defaultAvatar from '~/assets/imgs/default-avatar.png';
 import { Link } from 'react-router-dom';
 import { Modal } from 'react-bootstrap';
 import { useEffect, useState } from 'react';
@@ -11,13 +11,14 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faXmark } from '@fortawesome/free-solid-svg-icons';
 import axios from 'axios';
 import { useDispatch, useSelector } from 'react-redux';
-import { loadingSelector } from '~/redux/selectors';
+import { loadingSelector, userInfoSelector } from '~/redux/selectors';
 import * as actions from '~/redux/actions';
 import OverlayLoading from '~/components/OverlayLoading';
 
 const WritePost = () => {
     const dispatch = useDispatch();
     const loading = useSelector(loadingSelector);
+    const userInfo = useSelector(userInfoSelector);
 
     const [showModalWritePost, setShowModalWritePost] = useState(false);
     const handleShowModalWritePost = () => setShowModalWritePost(true);
@@ -92,8 +93,8 @@ const WritePost = () => {
     return (
         <div className={clsx(styles['write-post'])}>
             {loading?.WritePost && <OverlayLoading />}
-            <Link to="/profile">
-                <img className={clsx(styles['avatar'])} src={avatar} />
+            <Link to={`/profile/${userInfo?.id}`}>
+                <img className={clsx(styles['avatar'])} src={userInfo?.avatar || defaultAvatar} />
             </Link>
             <div className={clsx(styles['input'])} onClick={handleShowModalWritePost}>
                 Đăng bài
@@ -104,7 +105,7 @@ const WritePost = () => {
                 </Modal.Header>
                 <Modal.Body>
                     <div className="d-flex align-items-center">
-                        <img className={clsx(styles['avatar'])} src={avatar} />
+                        <img className={clsx(styles['avatar'])} src={userInfo?.avatar || defaultAvatar} />
                         <div>
                             <h6 className={clsx(styles['name'])}>Hoàng Việt</h6>
                             <div className={clsx(styles['visibility'])}>Bạn bè</div>

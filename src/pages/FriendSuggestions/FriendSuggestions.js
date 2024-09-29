@@ -42,6 +42,7 @@ const FriendSuggestions = () => {
                         id={suggestion?.id}
                         firstName={suggestion?.firstName}
                         lastName={suggestion?.lastName}
+                        avatar={suggestion?.avatar}
                         numberOfCommonFriends={suggestion?.numberOfCommonFriends}
                         handleSendFriendRequest={handleSendFriendRequest}
                     />

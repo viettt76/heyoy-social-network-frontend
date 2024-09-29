@@ -1,4 +1,4 @@
-import Header from '~/containers/Header';
+import Header from '~/components/Header';
 
 const OnlyHeaderLayout = ({ children }) => {
     return (

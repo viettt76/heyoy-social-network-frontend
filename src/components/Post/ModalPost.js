@@ -188,7 +188,7 @@ const ModalPost = ({ postInfo, show, handleClose }) => {
     useEffect(() => {
         const fetchComments = async () => {
             try {
-                const res = await getCommentsService(id);
+                const res = await getCommentsService({ postId: id });
                 setComments(res?.comments);
             } catch (error) {
                 console.log(error);

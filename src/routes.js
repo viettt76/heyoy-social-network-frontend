@@ -14,7 +14,7 @@ import SentFriendRequests from './pages/SentFriendRequests';
 const routes = [
     { path: '/', element: Home },
     { path: '/login', element: Login, layout: null },
-    { path: '/profile', element: Profile, layout: OnlyHeaderLayout },
+    { path: '/profile/:userId', element: Profile, layout: OnlyHeaderLayout },
     { path: '/friends', element: MyFriends, layout: FriendsLayout },
     { path: '/friends/requests', element: FriendRequests, layout: FriendsLayout },
     { path: '/friends/sent-requests', element: SentFriendRequests, layout: FriendsLayout },

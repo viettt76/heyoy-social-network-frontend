@@ -85,6 +85,7 @@ const MyFriends = () => {
                             id={friend?.id}
                             firstName={friend?.firstName}
                             lastName={friend?.lastName}
+                            avatar={friend?.avatar}
                             numberOfCommonFriends={friend?.numberOfCommonFriends}
                             handleShowModalUnfriend={handleShowModalUnfriend}
                         />

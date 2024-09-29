@@ -2,20 +2,35 @@ import { useCallback, useEffect, useRef, useState } from 'react';
 import clsx from 'clsx';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faThumbsUp, faXmark } from '@fortawesome/free-solid-svg-icons';
-import styles from './ChatPopup.module.scss';
+import styles from './ChatGroupPopup.module.scss';
 import defaultAvatar from '~/assets/imgs/default-avatar.png';
 import { useDispatch, useSelector } from 'react-redux';
 import { userInfoSelector } from '~/redux/selectors';
 import * as actions from '~/redux/actions';
-import { getMessagesWithFriendService, sendMessageWithFriendService } from '~/services/chatServices';
+import { getMessagesOfGroupChatService, sendGroupChatMessageService } from '~/services/chatServices';
 import socket from '~/socket';
 import _ from 'lodash';
 import useClickOutside from '~/hook/useClickOutside';
 
-const ChatPopup = ({ friend }) => {
+const ChatPopupGroup = ({ group }) => {
     const { ref: chatPopupRef, isComponentVisible: isFocus, setIsComponentVisible: setIsFocus } = useClickOutside(true);
     const userInfo = useSelector(userInfoSelector);
     const dispatch = useDispatch();
+
+    useEffect(() => {
+        socket.emit('joinGroupChat', group?.id);
+    }, [group?.id]);
+
+    useEffect(() => {
+        const handleNewGroupChatMessage = (newGroupChatMessage) => {
+            setMessages((prev) => [...prev, newGroupChatMessage]);
+        };
+        socket.on('newGroupChatMessage', handleNewGroupChatMessage);
+
+        return () => {
+            socket.off('newGroupChatMessage', handleNewGroupChatMessage);
+        };
+    }, [userInfo?.id]);
 
     const endOfMessagesRef = useRef(null);
 
@@ -27,23 +42,25 @@ const ChatPopup = ({ friend }) => {
     useEffect(() => {
         const fetchMessages = async () => {
             try {
-                const res = await getMessagesWithFriendService(friend?.id);
-                setMessages(res);
+                if (group?.id) {
+                    const res = await getMessagesOfGroupChatService(group?.id);
+                    setMessages(res);
+                }
             } catch (error) {
                 console.log(error);
             }
         };
         fetchMessages();
-    }, [friend]);
+    }, [group]);
 
     useEffect(() => {
         endOfMessagesRef.current.scrollTop = endOfMessagesRef.current.scrollHeight;
     }, [messages]);
 
     const handleCloseChatPopup = useCallback(() => {
-        dispatch(actions.closeChat(friend?.id));
+        dispatch(actions.closeChat(group?.id));
         // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [friend?.id]);
+    }, [group?.id]);
 
     const handleSendMessage = async () => {
         try {
@@ -58,7 +75,8 @@ const ChatPopup = ({ friend }) => {
             const clone = sendMessage;
             setSendMessage('');
             setProcessingMessage('Đang xử lý');
-            const res = await sendMessageWithFriendService({ friendId: friend?.id, message: clone });
+
+            const res = await sendGroupChatMessageService({ groupChatId: group?.id, message: clone });
             setMessages((prev) => {
                 const index = _.findIndex(prev, { id: null, message: clone });
 
@@ -69,32 +87,13 @@ const ChatPopup = ({ friend }) => {
 
                 return updatedMessages;
             });
+
             setProcessingMessage('');
         } catch (error) {
             console.log(error);
             setProcessingMessage('Lỗi');
         }
     };
-
-    useEffect(() => {
-        const handleNewMessage = (newMessage) => {
-            if (newMessage.receiver === userInfo?.id) {
-                setMessages((prev) => [
-                    ...prev,
-                    {
-                        id: newMessage?.id,
-                        sender: newMessage?.sender,
-                        message: newMessage?.message,
-                    },
-                ]);
-            }
-        };
-        socket.on('newMessage', handleNewMessage);
-
-        return () => {
-            socket.off('newMessage', handleNewMessage);
-        };
-    }, [userInfo?.id]);
 
     useEffect(() => {
         window.onkeydown = (e) => {
@@ -112,16 +111,10 @@ const ChatPopup = ({ friend }) => {
                 })}
             >
                 <div className={clsx(styles['chat-receiver'])}>
-                    <div
-                        className={clsx(styles['avatar'], {
-                            [[styles['is-online']]]: friend?.isOnline,
-                        })}
-                    >
-                        <img src={friend?.avatar || defaultAvatar} />
+                    <div className={clsx(styles['avatar'])}>
+                        <img src={group?.avatar || defaultAvatar} />
                     </div>
-                    {friend?.lastName && friend?.firstName && (
-                        <div className={clsx(styles['name'])}>{`${friend?.lastName} ${friend?.firstName}`}</div>
-                    )}
+                    {group?.name && <div className={clsx(styles['name'])}>{`${group?.name}`}</div>}
                 </div>
                 <FontAwesomeIcon
                     icon={faXmark}
@@ -137,14 +130,16 @@ const ChatPopup = ({ friend }) => {
                                 key={`chat-${index}`}
                                 className={clsx(styles['message-wrapper'], {
                                     [[styles['message-current-user']]]: message?.sender === userInfo?.id,
+                                    ['mt-3']: messages[index - 1]?.sender !== messages[index]?.sender,
                                 })}
                             >
-                                {messages[index - 1]?.sender !== message?.sender && message?.sender === friend?.id && (
-                                    <img
-                                        className={clsx(styles['message-avatar'])}
-                                        src={friend?.avatar || defaultAvatar}
-                                    />
-                                )}
+                                {messages[index - 1]?.sender !== messages[index]?.sender &&
+                                    message.sender !== userInfo?.id && (
+                                        <img
+                                            className={clsx(styles['message-avatar'])}
+                                            src={message?.senderAvatar || defaultAvatar}
+                                        />
+                                    )}
                                 <div className={clsx(styles['message'])}>{message?.message}</div>
                                 {processingMessage &&
                                     _.findLast(messages, { sender: userInfo?.id }) &&
@@ -155,9 +150,7 @@ const ChatPopup = ({ friend }) => {
                         );
                     })
                 ) : (
-                    <div className="mt-5 text-center fz-16">
-                        Hãy bắt đầu cuộc trò chuyện với {`${friend?.lastName} ${friend?.firstName}`}
-                    </div>
+                    <div className="mt-5 text-center fz-16">Hãy bắt đầu cuộc trò chuyện với {group?.name}</div>
                 )}
                 <div></div>
             </div>
@@ -185,4 +178,4 @@ const ChatPopup = ({ friend }) => {
     );
 };
 
-export default ChatPopup;
+export default ChatPopupGroup;

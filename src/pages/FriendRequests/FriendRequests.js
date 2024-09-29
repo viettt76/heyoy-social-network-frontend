@@ -81,6 +81,7 @@ const FriendRequests = () => {
                             id={request?.id}
                             firstName={request?.firstName}
                             lastName={request?.lastName}
+                            avatar={request?.avatar}
                             numberOfCommonFriends={request?.numberOfCommonFriends}
                             handleAcceptFriendship={handleAcceptFriendship}
                             handleRefuseFriendRequest={handleRefuseFriendRequest}

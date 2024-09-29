@@ -1,12 +1,13 @@
 import clsx from 'clsx';
 import styles from './Friend.module.scss';
-import avatar from '~/assets/imgs/default-avatar.png';
+import defaultAvatar from '~/assets/imgs/default-avatar.png';
 
 const Friend = ({
     type,
     id,
     firstName = '',
     lastName = '',
+    avatar,
     numberOfCommonFriends = 0,
     handleSendFriendRequest,
     handleRefuseFriendRequest,
@@ -16,7 +17,7 @@ const Friend = ({
 }) => {
     return (
         <div className={clsx(styles['friend-wrapper'])}>
-            <img className={clsx(styles['friend-avatar'])} src={avatar} />
+            <img className={clsx(styles['friend-avatar'])} src={avatar || defaultAvatar} />
             <div className={clsx(styles['friend-detail'])}>
                 <div className={clsx(styles['friend-name'])}>{`${lastName} ${firstName}`}</div>
                 {numberOfCommonFriends > 0 && (

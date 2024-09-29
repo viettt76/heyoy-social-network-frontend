@@ -1,5 +1,5 @@
-import Header from '~/containers/Header';
-import SidebarFriends from '~/containers/SidebarFriends';
+import Header from '~/components/Header';
+import SidebarFriends from '~/components/SidebarFriends';
 
 const FriendsLayout = ({ children }) => {
     return (

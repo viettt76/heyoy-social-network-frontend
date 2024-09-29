@@ -1,6 +1,6 @@
-import Header from '~/containers/Header';
-import Sidebar from '~/containers/Sidebar';
-import FriendsList from '../containers/FriendsList/FriendsList';
+import Header from '~/components/Header';
+import Sidebar from '~/components/Sidebar';
+import FriendsList from '~/components/FriendsList';
 
 const DefaultLayout = ({ children }) => {
     return (

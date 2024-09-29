@@ -38,7 +38,7 @@ const UserDashboard = ({ userDashboardRef, showUserDashboard }) => {
             })}
         >
             <li className={clsx(styles['dashboard-item'])}>
-                <Link className={clsx(styles['dashboard-link'])} to="/profile">
+                <Link className={clsx(styles['dashboard-link'])} to={`/profile/${userInfo?.id}`}>
                     <img className={clsx(styles['dashboard-avatar'])} src={userInfo?.avatar || defaultAvatar} />
                     {`${userInfo?.lastName} ${userInfo?.firstName}`}
                 </Link>

@@ -1,6 +1,6 @@
 import { parseISO, format } from 'date-fns';
 
-export const calculateTime = (iso8601) => {
+export const calculateTime = (iso8601 = '') => {
     if (!iso8601) return null;
     const date = parseISO(iso8601);
 

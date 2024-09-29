@@ -47,7 +47,7 @@ const PostContent = ({ postInfo, handleShowWriteComment, showModal, handleShowMo
     useEffect(() => {
         const fetchComments = async () => {
             try {
-                const res = await getCommentsService(id);
+                const res = await getCommentsService({ postId: id });
                 setNumberOfComments(res?.numberOfComments);
             } catch (error) {
                 console.log(error);

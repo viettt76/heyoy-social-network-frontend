@@ -4,6 +4,7 @@ import styles from './SentFriendRequests.module.scss';
 import { useEffect, useState } from 'react';
 import { getSentFriendRequestsService, cancelFriendRequestService } from '~/services/relationshipServices';
 import _ from 'lodash';
+import socket from '~/socket';
 
 const SentFriendRequests = () => {
     const [sentFriendRequests, setSentFriendRequests] = useState([]);
@@ -18,6 +19,21 @@ const SentFriendRequests = () => {
             }
         };
         fetchSentFriendRequests();
+    }, []);
+
+    useEffect(() => {
+        const handleFriendRequestDenied = (denierId) => {
+            setSentFriendRequests((prev) => prev.filter((fq) => fq?.id !== denierId));
+        };
+        const handleFriendRequestAccept = ({ id }) => {
+            setSentFriendRequests((prev) => prev.filter((fq) => fq?.id !== id));
+        };
+        socket.on('friendRequestDenied', handleFriendRequestDenied);
+        socket.on('acceptFriendRequest', handleFriendRequestAccept);
+
+        return () => {
+            socket.off('friendRequestDenied', handleFriendRequestDenied);
+        };
     }, []);
 
     const handleCancelFriendRequest = async (receiverId) => {
@@ -47,6 +63,7 @@ const SentFriendRequests = () => {
                             id={request?.id}
                             firstName={request?.firstName}
                             lastName={request?.lastName}
+                            avatar={request?.avatar}
                             numberOfCommonFriends={request?.numberOfCommonFriends}
                             handleCancelFriendRequest={handleCancelFriendRequest}
                         />

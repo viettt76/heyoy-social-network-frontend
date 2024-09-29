@@ -24,8 +24,8 @@ export const cancelReleasedEmotionPostService = ({ postId }) => {
     return axios.delete(`/posts/emotion/${postId}`);
 };
 
-export const getMyPostService = () => {
-    return axios.get('/posts/me');
+export const getMyPostService = (userId) => {
+    return axios.get(`/posts/user/${userId}`);
 };
 
 export const sendCommentService = ({ postId, parentCommentId = null, content }) => {
@@ -36,11 +36,11 @@ export const sendCommentService = ({ postId, parentCommentId = null, content }) 
     });
 };
 
-export const getCommentsService = (postId) => {
+export const getCommentsService = ({ postId, sortField = 'createdAt', sortType = 'DESC' }) => {
     return axios.get(`/posts/comments/${postId}`, {
         params: {
-            sortField: 'createdAt',
-            sortType: 'DESC',
+            sortField,
+            sortType,
         },
     });
 };

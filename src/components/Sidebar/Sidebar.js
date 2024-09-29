@@ -20,7 +20,7 @@ const Sidebar = () => {
                 </div>
                 <ul className={clsx(styles['sidebar-group'])}>
                     <li>
-                        <Link to="/profile" className={clsx(styles['sidebar-feature'])}>
+                        <Link to={`/profile/${userInfo?.id}`} className={clsx(styles['sidebar-feature'])}>
                             <img
                                 src={userInfo?.avatar || defaultAvatar}
                                 className={clsx(styles['sidebar-feature-avatar'])}

@@ -3,7 +3,7 @@ import { BrowserRouter, Route, Routes, useLocation, useNavigate } from 'react-ro
 import routes from '~/routes';
 import DefaultLayout from '~/layouts/DefaultLayout';
 import { useDispatch } from 'react-redux';
-import { getPersonalInfoService } from '~/services/userServices';
+import { getMyInfoService } from '~/services/userServices';
 import { ToastContainer } from 'react-toastify';
 import * as actions from '~/redux/actions';
 import { SetupInterceptors } from '~/utils/axios';
@@ -60,7 +60,7 @@ function FetchUserInfo() {
     useEffect(() => {
         const fetchPersonalInfo = async () => {
             try {
-                const res = await getPersonalInfoService();
+                const res = await getMyInfoService();
                 dispatch(
                     actions.saveUserInfo({
                         id: res?.id,

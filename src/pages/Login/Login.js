@@ -7,7 +7,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faEye, faEyeSlash } from '@fortawesome/free-regular-svg-icons';
 import styles from './Login.module.scss';
 import customToastify from '~/utils/customToastify';
-import { getPersonalInfoService } from '~/services/userServices';
+import { getMyInfoService } from '~/services/userServices';
 import { loginService, signUpService } from '~/services/authServices';
 import * as actions from '~/redux/actions';
 import socket from '~/socket';
@@ -82,7 +82,7 @@ function Login() {
                 localStorage.setItem('isAuthenticated', true);
                 navigate('/');
                 const fetchPersonalInfo = async () => {
-                    const res = await getPersonalInfoService();
+                    const res = await getMyInfoService();
 
                     dispatch(
                         actions.saveUserInfo({
@@ -319,9 +319,11 @@ function Login() {
                                         }
                                         onChange={handleChangeFormSignUp}
                                     />
-                                    <Form.Control.Feedback className="fz-16" type="invalid">
-                                        Mật khẩu xác nhận sai
-                                    </Form.Control.Feedback>
+                                    {validatedFormSignUp && signUpInfo.password !== signUpInfo.confirmPassword && (
+                                        <Form.Control.Feedback className="fz-16" type="invalid">
+                                            Mật khẩu xác nhận sai
+                                        </Form.Control.Feedback>
+                                    )}
                                 </Form.Group>
                             </Form>
                         </Modal.Body>
