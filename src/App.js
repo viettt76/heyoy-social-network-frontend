@@ -1,5 +1,5 @@
 import React, { Suspense, useEffect, useState } from 'react';
-import { BrowserRouter, Route, Routes, useLocation, useNavigate } from 'react-router-dom';
+import { HashRouter, Route, Routes, useLocation, useNavigate } from 'react-router-dom';
 import routes from '~/routes';
 import DefaultLayout from '~/layouts/DefaultLayout';
 import { useDispatch } from 'react-redux';
@@ -31,7 +31,7 @@ function NavigateFunctionComponent() {
 
 function App() {
     return (
-        <BrowserRouter>
+        <HashRouter>
             <NavigateFunctionComponent />
             <ScrollToTop />
             <FetchUserInfo />
@@ -60,7 +60,7 @@ function App() {
                 </Routes>
             </Suspense>
             <ToastContainer />
-        </BrowserRouter>
+        </HashRouter>
     );
 }
 
