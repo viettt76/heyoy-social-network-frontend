@@ -3,6 +3,7 @@
 .profile-wrapper {
     margin-top: 1rem;
     max-width: 88rem !important;
+    margin-bottom: 4rem;
 
     .header {
         display: flex;
@@ -72,63 +73,92 @@
         }
     }
 
-    .container {
-        margin-top: 1.8rem;
+    .profile-tabs-wrapper {
+        margin-top: 2rem;
 
-        .sidebar {
-            .sidebar-item {
-                padding: 1.2rem;
-                box-shadow: 0 0 0.3rem 0rem $box-shadow;
+        .profile-tabs {
+            font-size: 1.6rem;
+            padding: 0.8rem 1.2rem;
+            margin: 0 0.8rem;
+            color: $text;
+            font-weight: 600;
+            border-radius: 1rem;
 
-                & + .sidebar-item {
-                    margin-top: 1.4rem;
-                }
+            &.active {
+                color: $main-color;
+                border-bottom: 0.2rem solid $main-color;
+            }
 
-                .sidebar-item-title {
-                    font-size: 2rem;
-                    font-weight: 700;
-                }
+            &:first-child {
+                margin-left: 0;
+            }
 
-                .see-all-imgs {
-                    font-size: 1.7rem;
-                    color: rgb(0, 100, 209);
-                    cursor: pointer;
-                }
+            &:hover {
+                background-color: $background-color-medium-gray;
+            }
+        }
+    }
+}
 
-                .sidebar-item-content {
-                    margin-top: 1rem;
+.container {
+    margin-top: 1.8rem;
+    width: 88rem !important;
 
-                    &.introduction {
-                        font-size: 1.5rem;
+    .sidebar {
+        .sidebar-item {
+            padding: 1.2rem;
+            box-shadow: 0 0 0.3rem 0rem $box-shadow;
 
-                        .sidebar-item-content-item {
-                            margin: 0.8rem 0;
+            & + .sidebar-item {
+                margin-top: 1.4rem;
+            }
 
-                            .sidebar-item-content-item-icon {
-                                width: 2.6rem;
-                                font-size: 1.6rem;
-                            }
-                        }
+            .sidebar-item-title {
+                font-size: 2rem;
+                font-weight: 700;
+            }
 
-                        .btn-add-intro {
-                            padding: 0.6rem 1.6rem;
-                            width: 100%;
-                            border: none;
-                            border-radius: 0.8rem;
-                            font-weight: 600;
+            .see-all-imgs {
+                font-size: 1.7rem;
+                color: rgb(0, 100, 209);
+                cursor: pointer;
+            }
+
+            .sidebar-item-content {
+                margin-top: 1rem;
+
+                &.introduction {
+                    font-size: 1.5rem;
+
+                    .sidebar-item-content-item {
+                        margin: 0.8rem 0;
+
+                        .sidebar-item-content-item-icon {
+                            width: 2.6rem;
+                            font-size: 1.6rem;
                         }
                     }
 
-                    .picture-wrapper {
-                        display: grid;
-                        grid-template-columns: auto auto auto;
-                        grid-template-rows: auto auto auto;
-                        gap: 0.4rem;
+                    .btn-add-intro {
+                        padding: 0.6rem 1.6rem;
+                        width: 100%;
+                        border: none;
+                        border-radius: 0.8rem;
+                        font-weight: 600;
+                    }
+                }
 
-                        img {
-                            width: 100%;
-                            height: auto;
-                        }
+                .picture-wrapper {
+                    display: grid;
+                    grid-template-columns: repeat(3, 1fr);
+                    max-height: calc(107px * 3 + 0.4rem * 2);
+                    gap: 0.4rem;
+                    overflow: hidden;
+
+                    img {
+                        width: 100%;
+                        height: 107px;
+                        object-fit: cover;
                     }
                 }
             }

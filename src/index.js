@@ -8,6 +8,8 @@ import 'bootstrap/dist/css/bootstrap.min.css';
 import 'react-toastify/dist/ReactToastify.css';
 import 'tippy.js/dist/tippy.css';
 import 'react-datepicker/dist/react-datepicker.css';
+import 'react-photo-view/dist/react-photo-view.css';
+
 import '~/styles/index.scss';
 
 ReactDOM.render(

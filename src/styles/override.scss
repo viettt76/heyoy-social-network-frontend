@@ -8,11 +8,26 @@
 html,
 body {
     font-size: 62.5%;
+    scroll-behavior: auto !important;
+}
+
+html {
+    overflow-y: scroll;
 }
 
 body {
     font-family: $font-family;
     color: $text;
+}
+
+::-webkit-scrollbar {
+    width: 10px;
+    overflow: overlay;
+}
+
+::-webkit-scrollbar-thumb {
+    background-color: rgba(0, 0, 0, 0.5);
+    border-radius: 10px;
 }
 
 ul,

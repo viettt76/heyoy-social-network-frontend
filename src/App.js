@@ -8,6 +8,16 @@ import { ToastContainer } from 'react-toastify';
 import * as actions from '~/redux/actions';
 import { SetupInterceptors } from '~/utils/axios';
 
+const ScrollToTop = () => {
+    const { pathname } = useLocation();
+
+    useEffect(() => {
+        window.scrollTo(0, 0);
+    }, [pathname]);
+
+    return null;
+};
+
 function NavigateFunctionComponent() {
     let navigate = useNavigate();
     const [ran, setRan] = useState(false);
@@ -23,6 +33,7 @@ function App() {
     return (
         <BrowserRouter>
             <NavigateFunctionComponent />
+            <ScrollToTop />
             <FetchUserInfo />
             <Suspense fallback={<div></div>}>
                 <Routes>
