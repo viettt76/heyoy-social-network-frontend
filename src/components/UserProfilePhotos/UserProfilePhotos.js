@@ -21,17 +21,21 @@ const UserProfilePhotos = ({ userId }) => {
 
     return (
         <PhotoProvider>
-            <div className={clsx('container', styles['photos-wrapper'])}>
-                {pictures.map((picture) => (
-                    <PhotoView key={`picture-${picture?.pictureId}`} src={picture?.pictureUrl}>
-                        <img
-                            src={picture?.pictureUrl}
-                            alt={`picture-${picture?.pictureId}`}
-                            className={clsx(styles['photo'])}
-                        />
-                    </PhotoView>
-                ))}
-            </div>
+            {pictures?.length > 0 ? (
+                <div className={clsx('container', styles['photos-wrapper'])}>
+                    {pictures.map((picture) => (
+                        <PhotoView key={`picture-${picture?.pictureId}`} src={picture?.pictureUrl}>
+                            <img
+                                src={picture?.pictureUrl}
+                                alt={`picture-${picture?.pictureId}`}
+                                className={clsx(styles['photo'])}
+                            />
+                        </PhotoView>
+                    ))}
+                </div>
+            ) : (
+                <div className="text-center fz-16">Không có ảnh nào</div>
+            )}
         </PhotoProvider>
     );
 };
