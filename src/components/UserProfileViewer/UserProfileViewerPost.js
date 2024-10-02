@@ -3,16 +3,12 @@ import { faBuilding, faCakeCandles, faGraduationCap, faLocationDot } from '@fort
 import clsx from 'clsx';
 import styles from './UserProfileViewer.module.scss';
 import Post from '~/components/Post';
-import logo from '~/assets/imgs/logo.png';
 import { useEffect, useState } from 'react';
 import { getMyPostService } from '~/services/postServices';
 import { getPicturesOfUserService, getUserInfoService } from '~/services/userServices';
 import WritePost from '~/components/WritePost';
-import socket from '~/socket';
-import defaultAvatar from '~/assets/imgs/default-avatar.png';
 import { calculateTime } from '~/utils/commonUtils';
 import { Link, useParams } from 'react-router-dom';
-import UserProfileViewerHeader from './UserProfileViewerHeader';
 
 const UserProfileViewerPost = () => {
     const { userId } = useParams();

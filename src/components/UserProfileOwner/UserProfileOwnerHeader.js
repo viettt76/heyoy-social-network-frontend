@@ -5,7 +5,7 @@ import styles from './UserProfileOwner.module.scss';
 import { useDispatch, useSelector } from 'react-redux';
 import { userInfoSelector } from '~/redux/selectors';
 import { useState } from 'react';
-import { Button, Modal } from 'react-bootstrap';
+import { Button, Dropdown, Modal } from 'react-bootstrap';
 import { updateMyInfoService } from '~/services/userServices';
 import * as actions from '~/redux/actions';
 import Cropper from 'react-easy-crop';
@@ -13,7 +13,7 @@ import axios from 'axios';
 import defaultAvatar from '~/assets/imgs/default-avatar.png';
 import { Link, useLocation } from 'react-router-dom';
 
-const UserProfileOwnerHeader = () => {
+const UserProfileOwnerHeader = ({ handleOnViewMode }) => {
     const dispatch = useDispatch();
     const userInfo = useSelector(userInfoSelector);
 
@@ -170,7 +170,15 @@ const UserProfileOwnerHeader = () => {
                     </label>
                     <input type="file" id="change-avatar-input" hidden onChange={handleChooseFile} />
                     <div className={clsx(styles['header-right-menu'])}>
-                        <FontAwesomeIcon icon={faEllipsis} />
+                        <Dropdown>
+                            <Dropdown.Toggle id="dropdown-basic">
+                                <FontAwesomeIcon className={clsx(styles['header-right-menu-icon'])} icon={faEllipsis} />
+                            </Dropdown.Toggle>
+
+                            <Dropdown.Menu>
+                                <Dropdown.Item onClick={handleOnViewMode}>Xem với view người khác</Dropdown.Item>
+                            </Dropdown.Menu>
+                        </Dropdown>
                     </div>
                 </div>
             </div>

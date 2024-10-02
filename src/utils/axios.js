@@ -3,8 +3,7 @@ import store from '~/redux/store';
 import { clearUserInfo } from '~/redux/actions';
 
 const instance = axios.create({
-    // baseURL: 'http://localhost:8080',
-    baseURL: 'https://heyoy-social-network-backend.vercel.app/',
+    baseURL: import.meta.env.VITE_BACKEND_URL,
     withCredentials: true,
 });
 

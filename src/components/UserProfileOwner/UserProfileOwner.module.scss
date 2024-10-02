@@ -56,10 +56,12 @@
             }
 
             .header-right-menu {
-                font-size: 1.5rem;
-                font-weight: 600;
+                // font-size: 1.5rem;
+                //         // font-weight: 600;
                 background-color: $background-color-medium-gray;
-                padding: 0.6rem 1.2rem;
+                padding: 0.6rem;
+                display: flex;
+                align-items: center;
                 border-radius: 0.8rem;
                 cursor: pointer;
                 -webkit-user-select: none;
@@ -68,6 +70,28 @@
 
                 &:hover {
                     background-color: $background-color-dark-gray;
+                }
+
+                :global(.dropdown-toggle.btn) {
+                    background-color: transparent;
+                    border: none;
+
+                    .header-right-menu-icon {
+                        font-size: 1.5rem;
+                        font-weight: 600;
+                        color: #000;
+                    }
+                    &::after {
+                        display: none;
+                    }
+                }
+
+                :global(.dropdown-menu) {
+                    font-size: 1.6rem;
+
+                    :global(.dropdown-item) {
+                        padding: 0.4rem 0.8rem;
+                    }
                 }
             }
         }
@@ -280,4 +304,34 @@
             background-color: $background-color-gray;
         }
     }
+}
+
+.view-mode-wrapper {
+    padding: 0.4rem 10rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    box-shadow: 0 0 0 1px $box-shadow;
+    position: sticky;
+    top: 56px;
+    left: 0;
+    right: 0;
+    background-color: #fff;
+    z-index: 99999;
+
+    .view-mode-text {
+        font-size: 1.6rem;
+        color: $main-color;
+    }
+
+    .view-mode-btn {
+        font-size: 1.6rem;
+        color: $main-color;
+        cursor: pointer;
+        padding: 0.6rem 2rem;
+    }
+}
+
+.user-profile-viewer-view-mode {
+    margin-top: 44px;
 }

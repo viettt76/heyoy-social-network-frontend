@@ -52,6 +52,8 @@ const Messenger = ({ messengerRef, showMessenger }) => {
         }
     };
 
+    console.log(groupChats);
+
     useEffect(() => {
         const fetchGetGroupChats = async () => {
             try {
@@ -109,24 +111,27 @@ const Messenger = ({ messengerRef, showMessenger }) => {
                         </div>
                     </div>
                 </div> */}
-
-                    {groupChats?.map((groupChat) => {
-                        return (
-                            <div
-                                key={`group-chat-${groupChat?.id}`}
-                                className={clsx(styles['conversation-wrapper'])}
-                                onClick={() => addGroupToChatList(groupChat)}
-                            >
-                                <div className={clsx(styles['conversation'])}>
-                                    <img className={clsx(styles['avatar'])} src={groupChat?.avatar || defaultAvatar} />
-                                    <div>
-                                        <h6 className={clsx(styles['name'])}>{groupChat?.name}</h6>
-                                        <div className={clsx(styles['last-message'])}>Không biết nữa</div>
+                    {groupChats?.length > 0 &&
+                        groupChats?.map((groupChat) => {
+                            return (
+                                <div
+                                    key={`group-chat-${groupChat?.id}`}
+                                    className={clsx(styles['conversation-wrapper'])}
+                                    onClick={() => addGroupToChatList(groupChat)}
+                                >
+                                    <div className={clsx(styles['conversation'])}>
+                                        <img
+                                            className={clsx(styles['avatar'])}
+                                            src={groupChat?.avatar || defaultAvatar}
+                                        />
+                                        <div>
+                                            <h6 className={clsx(styles['name'])}>{groupChat?.name}</h6>
+                                            <div className={clsx(styles['last-message'])}>Không biết nữa</div>
+                                        </div>
                                     </div>
                                 </div>
-                            </div>
-                        );
-                    })}
+                            );
+                        })}
                 </div>
             ) : (
                 <div>
