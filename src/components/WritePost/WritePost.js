@@ -14,6 +14,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { loadingSelector, userInfoSelector } from '~/redux/selectors';
 import * as actions from '~/redux/actions';
 import OverlayLoading from '~/components/OverlayLoading';
+import { uploadToCloudinary } from '~/utils/commonUtils';
 
 const WritePost = () => {
     const dispatch = useDispatch();
@@ -65,18 +66,7 @@ const WritePost = () => {
             const imagesUrl = [];
             dispatch(actions.startLoading('WritePost'));
             if (imagesUpload.length > 0) {
-                const uploadPromises = imagesUpload.map(async (fileUpload) => {
-                    let formData = new FormData();
-
-                    formData.append('api_key', import.meta.env.VITE_CLOUDINARY_KEY);
-                    formData.append('file', fileUpload);
-                    formData.append('public_id', `file_${Date.now()}`);
-                    formData.append('timestamp', (Date.now() / 1000) | 0);
-                    formData.append('upload_preset', import.meta.env.VITE_CLOUDINARY_UPLOAD_PRESET);
-
-                    const res = await axios.post(import.meta.env.VITE_CLOUDINARY_URL, formData);
-                    return res.data?.secure_url;
-                });
+                const uploadPromises = imagesUpload.map((fileUpload) => uploadToCloudinary(fileUpload));
 
                 const uploadedUrls = await Promise.all(uploadPromises);
                 imagesUrl.push(...uploadedUrls);

@@ -24,7 +24,7 @@ export const getGroupChatsService = () => {
 };
 
 export const getMessagesOfGroupChatService = (groupChatId) => {
-    return axios.get(`chat/group-chat/messages/${groupChatId}`);
+    return axios.get(`/chat/group-chat/messages/${groupChatId}`);
 };
 
 export const sendGroupChatMessageService = ({ groupChatId, message, picture }) => {
@@ -33,4 +33,23 @@ export const sendGroupChatMessageService = ({ groupChatId, message, picture }) =
         message,
         picture,
     });
+};
+
+export const getGroupMembersService = (groupChatId) => {
+    return axios.get(`/chat/group-chat/members/${groupChatId}`);
+};
+
+export const updateGroupMembersService = ({ groupChatId, members }) => {
+    return axios.post(`/chat/group-chat/members`, {
+        groupChatId,
+        members,
+    });
+};
+
+export const getLatestConversationsService = () => {
+    return axios.get('/chat/latest');
+};
+
+export const updateGroupAvatarService = ({ groupChatId, avatar }) => {
+    return axios.patch(`/chat/group-chat/avatar/${groupChatId}`, { avatar });
 };

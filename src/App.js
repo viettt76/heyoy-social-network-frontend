@@ -8,6 +8,11 @@ import { ToastContainer } from 'react-toastify';
 import * as actions from '~/redux/actions';
 import { SetupInterceptors } from '~/utils/axios';
 
+import { useSelector } from 'react-redux';
+import { openChatsSelector } from '~/redux/selectors';
+import ChatGroupPopup from '~/components/ChatGroupPopup';
+import ChatPopup from '~/components/ChatPopup';
+
 const ScrollToTop = () => {
     const { pathname } = useLocation();
 
@@ -30,11 +35,19 @@ function NavigateFunctionComponent() {
 }
 
 function App() {
+    const openChats = useSelector(openChatsSelector);
+
     return (
         <BrowserRouter>
             <NavigateFunctionComponent />
             <ScrollToTop />
             <FetchUserInfo />
+            {openChats?.slice(0, 2)?.map((item, index) => {
+                if (item?.isGroupChat) {
+                    return <ChatGroupPopup index={index} key={`group-chat-${item?.id}`} group={item} />;
+                }
+                return <ChatPopup index={index} key={`friend-chat-${item?.id}`} friend={item} />;
+            })}
             <Suspense fallback={<div></div>}>
                 <Routes>
                     {routes.map((route, index) => {

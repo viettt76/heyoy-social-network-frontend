@@ -7,7 +7,7 @@ import { Route, Routes } from 'react-router-dom';
 import { useSelector } from 'react-redux';
 import { userInfoSelector } from '~/redux/selectors';
 import UserProfileOwnerPost from './UserProfileOwnerPost';
-import UserProfilePhotos from '../UserProfilePhotos';
+import UserProfilePhotos from '~/components/UserProfilePhotos';
 
 const UserProfileOwner = () => {
     const userInfo = useSelector(userInfoSelector);

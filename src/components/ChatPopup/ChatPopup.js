@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 import clsx from 'clsx';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faThumbsUp, faXmark } from '@fortawesome/free-solid-svg-icons';
+import { faChevronDown, faPhone, faThumbsUp, faVideo, faXmark } from '@fortawesome/free-solid-svg-icons';
 import styles from './ChatPopup.module.scss';
 import defaultAvatar from '~/assets/imgs/default-avatar.png';
 import { useDispatch, useSelector } from 'react-redux';
@@ -12,7 +12,7 @@ import socket from '~/socket';
 import _ from 'lodash';
 import useClickOutside from '~/hook/useClickOutside';
 
-const ChatPopup = ({ friend }) => {
+const ChatPopup = ({ index, friend }) => {
     const { ref: chatPopupRef, isComponentVisible: isFocus, setIsComponentVisible: setIsFocus } = useClickOutside(true);
     const userInfo = useSelector(userInfoSelector);
     const dispatch = useDispatch();
@@ -104,8 +104,32 @@ const ChatPopup = ({ friend }) => {
         };
     }, [handleCloseChatPopup, isFocus]);
 
+    const [showSetting, setShowSetting] = useState(false);
+    const handleShowSetting = () => setShowSetting(true);
+
+    const [isOnline, setIsOnline] = useState(false);
+
+    useEffect(() => {
+        socket.emit('checkFriendOnline', friend?.id);
+
+        const handleIsFriendOnline = (isFriendOnline) => {
+            setIsOnline(isFriendOnline);
+        };
+
+        socket.on('isFriendOnline', handleIsFriendOnline);
+
+        return () => {
+            socket.off('isFriendOnline', handleIsFriendOnline);
+        };
+    }, [friend?.id]);
+
     return (
-        <div className={clsx(styles['chat-wrapper'])} ref={chatPopupRef} onClick={() => setIsFocus(true)}>
+        <div
+            style={{ right: index === 0 ? '3rem' : '38rem', zIndex: 2 - index }}
+            className={clsx(styles['chat-wrapper'])}
+            ref={chatPopupRef}
+            onClick={() => setIsFocus(true)}
+        >
             <div
                 className={clsx(styles['chat-header'], {
                     [[styles['is-focus']]]: isFocus,
@@ -114,7 +138,7 @@ const ChatPopup = ({ friend }) => {
                 <div className={clsx(styles['chat-receiver'])}>
                     <div
                         className={clsx(styles['avatar'], {
-                            [[styles['is-online']]]: friend?.isOnline,
+                            [[styles['is-online']]]: isOnline,
                         })}
                     >
                         <img src={friend?.avatar || defaultAvatar} />
@@ -122,6 +146,13 @@ const ChatPopup = ({ friend }) => {
                     {friend?.lastName && friend?.firstName && (
                         <div className={clsx(styles['name'])}>{`${friend?.lastName} ${friend?.firstName}`}</div>
                     )}
+                    <FontAwesomeIcon
+                        className={clsx(styles['chat-options'])}
+                        icon={faChevronDown}
+                        onClick={handleShowSetting}
+                    />
+                    <FontAwesomeIcon className={clsx(styles['chat-options'])} icon={faPhone} />
+                    <FontAwesomeIcon className={clsx(styles['chat-options'])} icon={faVideo} />
                 </div>
                 <FontAwesomeIcon
                     icon={faXmark}

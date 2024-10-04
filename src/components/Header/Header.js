@@ -1,7 +1,6 @@
 import { useRef } from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faMagnifyingGlass, faUser } from '@fortawesome/free-solid-svg-icons';
-import { faBell, faMessage } from '@fortawesome/free-regular-svg-icons';
 import { Tooltip as ReactTooltip } from 'react-tooltip';
 import { Link } from 'react-router-dom';
 import clsx from 'clsx';
@@ -10,6 +9,7 @@ import logo from '~/assets/imgs/logo.png';
 import useClickOutside from '~/hook/useClickOutside';
 import Messenger from '~/components/Messenger';
 import UserDashboard from '~/components/UserDashboard';
+import { BellIcon, MessengerIcon } from '~/components/Icons';
 
 const Header = () => {
     const userDashboardIconRef = useRef(null);
@@ -48,17 +48,21 @@ const Header = () => {
                         data-tooltip-id="tool-tip-message"
                         onClick={() => setShowMessenger(!showMessenger)}
                     >
-                        <FontAwesomeIcon className={clsx(styles['action-user-icon'])} icon={faMessage} />
+                        <MessengerIcon className={clsx(styles['action-user-icon'])} />
                         <ReactTooltip id="tool-tip-message" place="bottom" content="Tin nhắn" />
                     </div>
-                    <Messenger messengerRef={messengerRef} showMessenger={showMessenger} />
+                    <Messenger
+                        messengerRef={messengerRef}
+                        showMessenger={showMessenger}
+                        setShowMessenger={setShowMessenger}
+                    />
                 </div>
 
                 <div
                     className={clsx('d-flex justify-content-center align-items-center fz-16', styles['action-user'])}
                     data-tooltip-id="tool-tip-notification"
                 >
-                    <FontAwesomeIcon className={clsx(styles['action-user-icon'])} icon={faBell} />
+                    <BellIcon className={clsx(styles['action-user-icon'])} />
                     <ReactTooltip className="fz-16" id="tool-tip-notification" place="bottom" content="Thông báo" />
                 </div>
                 <div>

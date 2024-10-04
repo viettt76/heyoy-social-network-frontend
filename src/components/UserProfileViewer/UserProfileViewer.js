@@ -3,7 +3,7 @@ import styles from './UserProfileViewer.module.scss';
 import UserProfileViewerHeader from './UserProfileViewerHeader';
 import { Route, Routes, useParams } from 'react-router-dom';
 import UserProfileViewerPost from './UserProfileViewerPost';
-import UserProfilePhotos from '../UserProfilePhotos';
+import UserProfilePhotos from '~/components/UserProfilePhotos';
 
 const UserProfileViewer = () => {
     const { userId } = useParams();

@@ -1,19 +1,192 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 import clsx from 'clsx';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faThumbsUp, faXmark } from '@fortawesome/free-solid-svg-icons';
+import { faChevronDown, faThumbsUp, faXmark } from '@fortawesome/free-solid-svg-icons';
 import styles from './ChatGroupPopup.module.scss';
 import defaultAvatar from '~/assets/imgs/default-avatar.png';
 import { useDispatch, useSelector } from 'react-redux';
 import { userInfoSelector } from '~/redux/selectors';
 import * as actions from '~/redux/actions';
-import { getMessagesOfGroupChatService, sendGroupChatMessageService } from '~/services/chatServices';
+import {
+    getGroupMembersService,
+    getMessagesOfGroupChatService,
+    sendGroupChatMessageService,
+    updateGroupAvatarService,
+    updateGroupMembersService,
+} from '~/services/chatServices';
 import socket from '~/socket';
 import _ from 'lodash';
 import useClickOutside from '~/hook/useClickOutside';
+import Menu from '~/components/Menu';
+import { Link } from 'react-router-dom';
+import { ArrowIcon } from '../Icons';
+import { Button, Modal } from 'react-bootstrap';
+import Cropper from 'react-easy-crop';
+import axios from 'axios';
+import { getCroppedImg, uploadToCloudinary } from '~/utils/commonUtils';
 
-const ChatPopupGroup = ({ group }) => {
-    const { ref: chatPopupRef, isComponentVisible: isFocus, setIsComponentVisible: setIsFocus } = useClickOutside(true);
+const GroupMembersLayout = ({ groupId }) => {
+    const [groupMembers, setGroupMembers] = useState([]);
+
+    useEffect(() => {
+        let isMounted = true;
+
+        const fetchGroupMembers = async () => {
+            try {
+                const res = await getGroupMembersService(groupId);
+                if (isMounted) {
+                    setGroupMembers(res);
+                }
+            } catch (error) {
+                if (isMounted) {
+                    console.log(error);
+                }
+            }
+        };
+
+        fetchGroupMembers();
+
+        return () => {
+            isMounted = false;
+        };
+    }, [groupId]);
+
+    return (
+        <div className={clsx(styles['group-member-wrapper'])}>
+            <h1 className="text-center">Thành viên</h1>
+            <div>
+                {groupMembers?.map((member) => {
+                    return (
+                        <Link
+                            to={`/profile/${member?.memberId}`}
+                            className={clsx(styles['group-member-item-wrapper'])}
+                            key={`member-${member?.memberId}`}
+                        >
+                            <img
+                                className={clsx(styles['group-member-item-avatar'])}
+                                src={member?.user?.avatar || defaultAvatar}
+                                alt={`${member?.user?.lastName} ${member?.user?.firstName}`}
+                            />
+                            <div className={clsx(styles['group-member-item-name'])}>
+                                {member?.user?.lastName} {member?.user?.firstName}
+                            </div>
+                        </Link>
+                    );
+                })}
+            </div>
+        </div>
+    );
+};
+
+const AddGroupMembersLayout = ({ groupId, handleSetActiveMenu }) => {
+    const [onlineFriends, setOnlineFriends] = useState([]);
+    const [groupMembers, setGroupMembers] = useState([]);
+    const [friendsCanAddToGroup, setFriendsCanAddToGroup] = useState([]);
+    const [addGroupMembers, setAddGroupMembers] = useState([]);
+
+    useEffect(() => {
+        let isMounted = true;
+
+        const fetchGroupMembers = async () => {
+            try {
+                const res = await getGroupMembersService(groupId);
+                if (isMounted) {
+                    setGroupMembers(res);
+                }
+            } catch (error) {
+                if (isMounted) {
+                    console.log(error);
+                }
+            }
+        };
+
+        fetchGroupMembers();
+
+        return () => {
+            isMounted = false;
+        };
+    }, [groupId]);
+
+    useEffect(() => {
+        socket.emit('getFriendsOnline');
+
+        const handleFriendOnline = (resOnlineFriends) => {
+            setOnlineFriends(resOnlineFriends);
+        };
+        socket.on('friendsOnline', handleFriendOnline);
+
+        return () => {
+            socket.off('friendsOnline', handleFriendOnline);
+        };
+    }, []);
+
+    useEffect(() => {
+        const filterOnlineFriends = onlineFriends.filter(
+            (friend) => !groupMembers.some((member) => member?.memberId === friend?.id),
+        );
+        setFriendsCanAddToGroup(filterOnlineFriends);
+    }, [groupMembers, onlineFriends]);
+
+    const handleAddGroupMembers = async () => {
+        try {
+            await updateGroupMembersService({ groupChatId: groupId, members: addGroupMembers });
+            handleSetActiveMenu('main');
+        } catch (error) {
+            console.log(error);
+        }
+    };
+
+    return (
+        <div className={clsx(styles['group-member-wrapper'])}>
+            <div className={clsx(styles['btn-add'])} onClick={handleAddGroupMembers}>
+                Thêm
+            </div>
+            <h1 className="text-center">Bạn bè</h1>
+            <div>
+                {friendsCanAddToGroup?.map((friend) => {
+                    return (
+                        <label
+                            htmlFor={`group-member-item-checkbox-${friend?.id}`}
+                            className={clsx(styles['group-member-item-wrapper'])}
+                            key={`member-${friend?.id}`}
+                        >
+                            <div className="d-flex align-items-center">
+                                <img
+                                    className={clsx(styles['group-member-item-avatar'])}
+                                    src={friend?.avatar || defaultAvatar}
+                                    alt={`${friend?.lastName} ${friend?.firstName}`}
+                                />
+                                <div className={clsx(styles['group-member-item-name'])}>
+                                    {friend?.lastName} {friend?.firstName}
+                                </div>
+                            </div>
+                            <div className={clsx(styles['group-member-item-checkbox'])}>
+                                <input
+                                    id={`group-member-item-checkbox-${friend?.id}`}
+                                    value={friend?.id}
+                                    type="checkbox"
+                                    onChange={(e) => {
+                                        setAddGroupMembers((prev) => [...prev, e.target.value]);
+                                    }}
+                                />
+                                <label htmlFor={`group-member-item-checkbox-${friend?.id}`}></label>
+                            </div>
+                        </label>
+                    );
+                })}
+            </div>
+        </div>
+    );
+};
+
+const ChatPopupGroup = ({ index, group }) => {
+    const modalUpdateAvatarRef = useRef(null);
+
+    const {
+        ref: chatPopupRef,
+        isComponentVisible: isFocus,
+        setIsComponentVisible: setIsFocus,
+    } = useClickOutside(true, modalUpdateAvatarRef);
     const userInfo = useSelector(userInfoSelector);
     const dispatch = useDispatch();
 
@@ -103,8 +276,189 @@ const ChatPopupGroup = ({ group }) => {
         };
     }, [handleCloseChatPopup, isFocus]);
 
+    const settingMenuRef = useRef(null);
+
+    const {
+        ref: btnSettingRef,
+        isComponentVisible: showSetting,
+        setIsComponentVisible: setShowSetting,
+    } = useClickOutside(false, settingMenuRef);
+
+    const handleShowSetting = () => setShowSetting(true);
+
+    const handleSetActiveMenu = (menu) => {
+        menuRef.current.setActiveMenu(menu);
+    };
+
+    const [updateAvatar, setUpdateAvatar] = useState(null);
+    const [showModalUpdateAvatar, setShowModalUpdateAvatar] = useState(false);
+
+    const handleChooseFile = (e) => {
+        const file = e.target.files[0];
+
+        if (file) {
+            const reader = new FileReader();
+
+            reader.onload = (s) => {
+                setUpdateAvatar(s.target.result);
+                setShowModalUpdateAvatar(true);
+            };
+
+            reader.readAsDataURL(file);
+        }
+    };
+
+    const handleHideModalUpdateAvatar = () => setShowModalUpdateAvatar(false);
+
+    const [crop, setCrop] = useState({ x: 0, y: 0 });
+    const [zoom, setZoom] = useState(1);
+    const [croppedAreaPixels, setCroppedAreaPixels] = useState(null);
+
+    const onCropComplete = (croppedArea, croppedAreaPixels) => {
+        setCroppedAreaPixels(croppedAreaPixels);
+    };
+
+    const handleSave = async () => {
+        try {
+            const croppedImage = await getCroppedImg(updateAvatar, croppedAreaPixels);
+            const file = await fetch(croppedImage)
+                .then((res) => res.blob())
+                .then((blob) => new File([blob], 'cropped-image.jpg', { type: 'image/jpeg' }));
+            const imageUrl = await uploadToCloudinary(file);
+            await updateGroupAvatarService({ groupChatId: group?.id, avatar: imageUrl });
+
+            dispatch(actions.updateGroupChatAvatar({ groupId: group?.id, avatar: imageUrl }));
+            handleHideModalUpdateAvatar();
+        } catch (error) {
+            console.error('Failed to crop image', error);
+        }
+    };
+
+    const menuItems = [
+        {
+            id: 'main',
+            depthLevel: 1,
+            menu: [
+                [
+                    {
+                        label: (
+                            <div>
+                                <label
+                                    htmlFor="change-group-chat-avatar-input"
+                                    className={clsx(styles['edit-profile-btn'])}
+                                >
+                                    <span>Ảnh đại diện nhóm</span>
+                                </label>
+                                <input
+                                    type="file"
+                                    id="change-group-chat-avatar-input"
+                                    hidden
+                                    onChange={handleChooseFile}
+                                />
+                            </div>
+                        ),
+                    },
+                ],
+                [
+                    {
+                        label: 'Thành viên nhóm',
+                        goToMenu: 'groupMembers',
+                    },
+                    ...(userInfo?.id === group?.administratorId
+                        ? [
+                              {
+                                  label: 'Thêm thành viên',
+                                  goToMenu: 'addGroupMembers',
+                              },
+                          ]
+                        : []),
+                ],
+            ],
+        },
+        {
+            id: 'groupMembers',
+            back: 'main',
+            leftIcon: <ArrowIcon />,
+            depthLevel: 2,
+            menu: [
+                {
+                    label: <GroupMembersLayout groupId={group?.id} />,
+                    className: clsx(styles['hover-not-background']),
+                },
+            ],
+        },
+        {
+            id: 'addGroupMembers',
+            back: 'main',
+            leftIcon: <ArrowIcon />,
+            depthLevel: 2,
+            menu: [
+                {
+                    label: <AddGroupMembersLayout groupId={group?.id} handleSetActiveMenu={handleSetActiveMenu} />,
+                    className: clsx(styles['hover-not-background']),
+                },
+            ],
+        },
+    ];
+
+    const menuRef = useRef(null);
+
     return (
-        <div className={clsx(styles['chat-wrapper'])} ref={chatPopupRef} onClick={() => setIsFocus(true)}>
+        <div
+            style={{ right: index === 0 ? '3rem' : '38rem', zIndex: 2 - index }}
+            className={clsx(styles['chat-wrapper'])}
+            ref={chatPopupRef}
+            onClick={() => setIsFocus(true)}
+        >
+            <Modal
+                ref={modalUpdateAvatarRef}
+                className={clsx(styles['modal'])}
+                show={showModalUpdateAvatar}
+                onHide={handleHideModalUpdateAvatar}
+            >
+                <Modal.Header>
+                    <Modal.Title>Chọn ảnh đại diện</Modal.Title>
+                </Modal.Header>
+                <Modal.Body className={clsx(styles['modal-body'])}>
+                    <div className={clsx(styles['crop-container'])}>
+                        <Cropper
+                            image={updateAvatar}
+                            crop={crop}
+                            zoom={zoom}
+                            aspect={1}
+                            onCropChange={setCrop}
+                            onCropComplete={onCropComplete}
+                            onZoomChange={setZoom}
+                            cropShape="round"
+                            showGrid={false}
+                        />
+                    </div>
+                    <div className={clsx(styles['controls'])}>
+                        <input
+                            type="range"
+                            value={zoom}
+                            min={1}
+                            max={3}
+                            step={0.1}
+                            aria-labelledby="Zoom"
+                            onChange={(e) => {
+                                setZoom(e.target.value);
+                            }}
+                            className={clsx(styles['zoom-range'])}
+                        />
+                    </div>
+                </Modal.Body>
+                <Modal.Footer>
+                    <div className="d-flex align-items-revert">
+                        <div className={clsx(styles['btn-cancel'])} onClick={handleHideModalUpdateAvatar}>
+                            Huỷ
+                        </div>
+                        <Button variant="primary" className="fz-16" onClick={handleSave}>
+                            Xác nhận
+                        </Button>
+                    </div>
+                </Modal.Footer>
+            </Modal>
             <div
                 className={clsx(styles['chat-header'], {
                     [[styles['is-focus']]]: isFocus,
@@ -115,12 +469,23 @@ const ChatPopupGroup = ({ group }) => {
                         <img src={group?.avatar || defaultAvatar} />
                     </div>
                     {group?.name && <div className={clsx(styles['name'])}>{`${group?.name}`}</div>}
+                    <FontAwesomeIcon
+                        ref={btnSettingRef}
+                        className={clsx(styles['chat-setting'])}
+                        icon={faChevronDown}
+                        onClick={handleShowSetting}
+                    />
                 </div>
                 <FontAwesomeIcon
                     icon={faXmark}
                     className={clsx(styles['chat-close'])}
                     onClick={() => handleCloseChatPopup(false)}
                 />
+                {showSetting && (
+                    <div ref={settingMenuRef} className={clsx(styles['setting-wrapper'])}>
+                        <Menu ref={menuRef} top={0} left={0} menu={menuItems} />
+                    </div>
+                )}
             </div>
             <div ref={endOfMessagesRef} className={clsx(styles['chat-container'])}>
                 {messages?.length > 0 ? (

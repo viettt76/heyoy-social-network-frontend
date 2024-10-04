@@ -1,19 +1,13 @@
 import clsx from 'clsx';
 import { useEffect, useState } from 'react';
-import _ from 'lodash';
 import styles from './FriendsList.module.scss';
-import ChatPopup from '~/components/ChatPopup';
 import socket from '~/socket';
 import defaultAvatar from '~/assets/imgs/default-avatar.png';
 import * as actions from '~/redux/actions';
-import { useDispatch, useSelector } from 'react-redux';
-import { openChatsSelector } from '~/redux/selectors';
-import ChatGroupPopup from '~/components/ChatGroupPopup';
+import { useDispatch } from 'react-redux';
 
 const FriendsList = () => {
     const dispatch = useDispatch();
-
-    const openChats = useSelector(openChatsSelector);
 
     const [onlineFriends, setOnlineFriends] = useState([]);
 
@@ -59,12 +53,6 @@ const FriendsList = () => {
                     );
                 })}
             </ul>
-            {openChats?.slice(0, 2)?.map((item) => {
-                if (item?.isGroupChat) {
-                    return <ChatGroupPopup key={`group-chat-${item?.id}`} group={item} />;
-                }
-                return <ChatPopup key={`friend-chat-${item?.id}`} friend={item} />;
-            })}
         </div>
     );
 };

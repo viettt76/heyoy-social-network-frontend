@@ -3,14 +3,16 @@ import styles from './Messenger.module.scss';
 import defaultAvatar from '~/assets/imgs/default-avatar.png';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faArrowLeft, faMagnifyingGlass, faUsers } from '@fortawesome/free-solid-svg-icons';
-import { createGroupChatService, getGroupChatsService } from '~/services/chatServices';
+import { createGroupChatService, getGroupChatsService, getLatestConversationsService } from '~/services/chatServices';
 import { useEffect, useState } from 'react';
 import socket from '~/socket';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import * as actions from '~/redux/actions';
 import { Tooltip as ReactTooltip } from 'react-tooltip';
+import { userInfoSelector } from '~/redux/selectors';
 
-const Messenger = ({ messengerRef, showMessenger }) => {
+const Messenger = ({ messengerRef, showMessenger, setShowMessenger }) => {
+    const userInfo = useSelector(userInfoSelector);
     const dispatch = useDispatch();
 
     const [showCreateNewGroup, setShowCreateNewGroup] = useState(false);
@@ -25,7 +27,7 @@ const Messenger = ({ messengerRef, showMessenger }) => {
 
     const [onlineFriends, setOnlineFriends] = useState([]);
 
-    const [groupChats, setGroupChats] = useState([]);
+    const [latestConversations, setLatestConversations] = useState([]);
 
     useEffect(() => {
         socket.emit('getFriendsOnline');
@@ -40,8 +42,14 @@ const Messenger = ({ messengerRef, showMessenger }) => {
         };
     }, []);
 
+    const [isInValidNameGroup, setIsInvalidNameGroup] = useState(false);
+
     const handleCreateGroupChat = async () => {
         try {
+            if (!infoNewGroupChat.name) {
+                setIsInvalidNameGroup(true);
+                return;
+            }
             await createGroupChatService({
                 name: infoNewGroupChat.name,
                 avatar: infoNewGroupChat.avatar,
@@ -52,28 +60,24 @@ const Messenger = ({ messengerRef, showMessenger }) => {
         }
     };
 
-    console.log(groupChats);
+    const addToOpenChatList = (chat) => {
+        dispatch(actions.openChat(chat));
+        setShowMessenger(false);
+    };
 
     useEffect(() => {
-        const fetchGetGroupChats = async () => {
+        const fetchLatestConversations = async () => {
             try {
-                const res = await getGroupChatsService();
-                setGroupChats(res);
+                const res = await getLatestConversationsService();
+                setLatestConversations(res);
             } catch (error) {
                 console.log(error);
             }
         };
-        fetchGetGroupChats();
-    }, []);
-
-    const addGroupToChatList = (group) => {
-        dispatch(
-            actions.openChat({
-                ...group,
-                isGroupChat: true,
-            }),
-        );
-    };
+        if (showMessenger) {
+            fetchLatestConversations();
+        }
+    }, [showMessenger]);
 
     return (
         <div
@@ -111,27 +115,58 @@ const Messenger = ({ messengerRef, showMessenger }) => {
                         </div>
                     </div>
                 </div> */}
-                    {groupChats?.length > 0 &&
-                        groupChats?.map((groupChat) => {
-                            return (
-                                <div
-                                    key={`group-chat-${groupChat?.id}`}
-                                    className={clsx(styles['conversation-wrapper'])}
-                                    onClick={() => addGroupToChatList(groupChat)}
-                                >
-                                    <div className={clsx(styles['conversation'])}>
-                                        <img
-                                            className={clsx(styles['avatar'])}
-                                            src={groupChat?.avatar || defaultAvatar}
-                                        />
-                                        <div>
-                                            <h6 className={clsx(styles['name'])}>{groupChat?.name}</h6>
-                                            <div className={clsx(styles['last-message'])}>Không biết nữa</div>
+                    {latestConversations?.map((conversation) => {
+                        return (
+                            <div
+                                key={`group-chat-${conversation?.id}`}
+                                className={clsx(styles['conversation-wrapper'])}
+                                onClick={() =>
+                                    addToOpenChatList(
+                                        conversation?.groupId
+                                            ? {
+                                                  id: conversation?.groupId,
+                                                  name: conversation?.groupName,
+                                                  avatar: conversation?.groupAvatar,
+                                                  administratorId: conversation?.administratorId,
+                                                  isGroupChat: true,
+                                              }
+                                            : {
+                                                  id: conversation?.friendId,
+                                                  firstName: conversation?.friendFirstName,
+                                                  lastName: conversation?.friendLastName,
+                                                  avatar: conversation?.friendAvatar,
+                                              },
+                                    )
+                                }
+                            >
+                                <div className={clsx(styles['conversation'])}>
+                                    <img
+                                        className={clsx(styles['avatar'])}
+                                        src={
+                                            (conversation?.groupId
+                                                ? conversation?.groupAvatar
+                                                : conversation?.friendAvatar) || defaultAvatar
+                                        }
+                                    />
+                                    <div>
+                                        <h6 className={clsx(styles['name'])}>
+                                            {conversation?.groupId
+                                                ? conversation?.groupName
+                                                : `${conversation?.friendLastName} ${conversation?.friendFirstName}`}
+                                        </h6>
+                                        <div className={clsx(styles['last-message'])}>
+                                            {conversation?.senderId === userInfo?.id
+                                                ? 'Bạn: '
+                                                : conversation?.groupId &&
+                                                  `${conversation?.senderLastName} ${conversation?.senderFirstName}: `}
+
+                                            {conversation?.message}
                                         </div>
                                     </div>
                                 </div>
-                            );
-                        })}
+                            </div>
+                        );
+                    })}
                 </div>
             ) : (
                 <div>
@@ -146,23 +181,31 @@ const Messenger = ({ messengerRef, showMessenger }) => {
                         </div>
                         <div
                             className={clsx(styles['create-group-header-btn'], {
-                                [[styles['active']]]: false,
+                                [[styles['inactive']]]: !infoNewGroupChat.name || infoNewGroupChat.members?.length < 2,
                             })}
-                            onClick={handleCreateGroupChat}
+                            onClick={() =>
+                                infoNewGroupChat.name &&
+                                infoNewGroupChat.members?.length >= 2 &&
+                                handleCreateGroupChat()
+                            }
                         >
                             Tạo
                         </div>
                     </div>
                     <input
-                        className={clsx(styles['create-group-name'])}
+                        className={clsx('form-control', styles['create-group-name'], {
+                            [[styles['invalid']]]: isInValidNameGroup,
+                        })}
                         placeholder="Tên nhóm"
-                        onChange={(e) =>
+                        onChange={(e) => {
                             setInfoNewGroupChat((prev) => ({
                                 ...prev,
                                 name: e.target.value,
-                            }))
-                        }
+                            }));
+                        }}
+                        onFocus={() => setIsInvalidNameGroup(false)}
                     />
+
                     <div className={clsx(styles['create-group-search'])}>
                         <FontAwesomeIcon
                             className={clsx(styles['create-group-search-icon'])}
@@ -174,8 +217,9 @@ const Messenger = ({ messengerRef, showMessenger }) => {
                     <div className={clsx(styles['create-group-suggestion-members'])}>
                         {onlineFriends?.map((friend) => {
                             return (
-                                <div
+                                <label
                                     key={`friend-${friend?.id}`}
+                                    htmlFor={`create-group-suggestion-member-checkbox-${friend?.id}`}
                                     className={clsx(styles['create-group-suggestion-member'])}
                                 >
                                     <div className={clsx(styles['create-group-suggestion-member-info'])}>
@@ -192,18 +236,26 @@ const Messenger = ({ messengerRef, showMessenger }) => {
                                             id={`create-group-suggestion-member-checkbox-${friend?.id}`}
                                             value={friend?.id}
                                             type="checkbox"
-                                            onChange={(e) =>
-                                                setInfoNewGroupChat((prev) => ({
-                                                    ...prev,
-                                                    members: [...prev.members, e.target.value],
-                                                }))
-                                            }
+                                            onChange={(e) => {
+                                                const { value, checked } = e.target;
+                                                if (checked) {
+                                                    setInfoNewGroupChat((prev) => ({
+                                                        ...prev,
+                                                        members: [...prev.members, value],
+                                                    }));
+                                                } else {
+                                                    setInfoNewGroupChat((prev) => ({
+                                                        ...prev,
+                                                        members: prev.members.filter((item) => item !== value),
+                                                    }));
+                                                }
+                                            }}
                                         />
                                         <label
                                             htmlFor={`create-group-suggestion-member-checkbox-${friend?.id}`}
                                         ></label>
                                     </div>
-                                </div>
+                                </label>
                             );
                         })}
                     </div>
