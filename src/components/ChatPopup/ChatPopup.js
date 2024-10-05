@@ -77,7 +77,7 @@ const ChatPopup = ({ index, friend }) => {
     };
 
     useEffect(() => {
-        const handleNewMessage = (newMessage) => {
+        const handleNewMessage = ({ newMessage }) => {
             if (newMessage.receiver === userInfo?.id) {
                 setMessages((prev) => [
                     ...prev,
@@ -123,6 +123,10 @@ const ChatPopup = ({ index, friend }) => {
         };
     }, [friend?.id]);
 
+    const handleStartCallAudio = () => {
+        socket.emit('requestPrivateCall', { callerId: userInfo?.id, receiverId: friend?.id });
+    };
+
     return (
         <div
             style={{ right: index === 0 ? '3rem' : '38rem', zIndex: 2 - index }}
@@ -151,7 +155,11 @@ const ChatPopup = ({ index, friend }) => {
                         icon={faChevronDown}
                         onClick={handleShowSetting}
                     />
-                    <FontAwesomeIcon className={clsx(styles['chat-options'])} icon={faPhone} />
+                    <FontAwesomeIcon
+                        className={clsx(styles['chat-options'])}
+                        icon={faPhone}
+                        onClick={handleStartCallAudio}
+                    />
                     <FontAwesomeIcon className={clsx(styles['chat-options'])} icon={faVideo} />
                 </div>
                 <FontAwesomeIcon

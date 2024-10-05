@@ -1,7 +1,14 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 import clsx from 'clsx';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faChevronDown, faThumbsUp, faXmark } from '@fortawesome/free-solid-svg-icons';
+import {
+    faArrowRightFromBracket,
+    faChevronDown,
+    faThumbsUp,
+    faUserGroup,
+    faUserPlus,
+    faXmark,
+} from '@fortawesome/free-solid-svg-icons';
 import styles from './ChatGroupPopup.module.scss';
 import defaultAvatar from '~/assets/imgs/default-avatar.png';
 import { useDispatch, useSelector } from 'react-redux';
@@ -10,6 +17,7 @@ import * as actions from '~/redux/actions';
 import {
     getGroupMembersService,
     getMessagesOfGroupChatService,
+    leaveGroupChatService,
     sendGroupChatMessageService,
     updateGroupAvatarService,
     updateGroupMembersService,
@@ -22,7 +30,6 @@ import { Link } from 'react-router-dom';
 import { ArrowIcon } from '../Icons';
 import { Button, Modal } from 'react-bootstrap';
 import Cropper from 'react-easy-crop';
-import axios from 'axios';
 import { getCroppedImg, uploadToCloudinary } from '~/utils/commonUtils';
 
 const GroupMembersLayout = ({ groupId }) => {
@@ -334,6 +341,21 @@ const ChatPopupGroup = ({ index, group }) => {
         }
     };
 
+    const [isShowModalLeaveGroup, setIsShowModalLeaveGroup] = useState(false);
+
+    const handleShowModalLeaveGroup = () => setIsShowModalLeaveGroup(true);
+    const handleHideModalLeaveGroup = () => setIsShowModalLeaveGroup(false);
+
+    const handleLeaveGroup = async () => {
+        try {
+            await leaveGroupChatService(group?.id);
+        } catch (error) {
+            console.log(error);
+        } finally {
+            handleHideModalLeaveGroup();
+        }
+    };
+
     const menuItems = [
         {
             id: 'main',
@@ -347,6 +369,7 @@ const ChatPopupGroup = ({ index, group }) => {
                                     htmlFor="change-group-chat-avatar-input"
                                     className={clsx(styles['edit-profile-btn'])}
                                 >
+                                    <img src={group?.avatar} className={clsx(styles['menu-item-avatar'])} />
                                     <span>Ảnh đại diện nhóm</span>
                                 </label>
                                 <input
@@ -361,17 +384,34 @@ const ChatPopupGroup = ({ index, group }) => {
                 ],
                 [
                     {
+                        leftIcon: <FontAwesomeIcon icon={faUserGroup} />,
                         label: 'Thành viên nhóm',
                         goToMenu: 'groupMembers',
                     },
                     ...(userInfo?.id === group?.administratorId
                         ? [
                               {
+                                  leftIcon: <FontAwesomeIcon icon={faUserPlus} />,
                                   label: 'Thêm thành viên',
                                   goToMenu: 'addGroupMembers',
                               },
                           ]
                         : []),
+                ],
+                [
+                    {
+                        leftIcon: (
+                            <FontAwesomeIcon
+                                className={clsx(styles['menu-item-leave-group-icon'])}
+                                icon={faArrowRightFromBracket}
+                            />
+                        ),
+                        label: (
+                            <div className={clsx(styles['menu-item-leave-group'])} onClick={handleShowModalLeaveGroup}>
+                                Rời nhóm
+                            </div>
+                        ),
+                    },
                 ],
             ],
         },
@@ -457,6 +497,24 @@ const ChatPopupGroup = ({ index, group }) => {
                             Xác nhận
                         </Button>
                     </div>
+                </Modal.Footer>
+            </Modal>
+            <Modal show={isShowModalLeaveGroup} onHide={handleHideModalLeaveGroup}>
+                <Modal.Header>
+                    <Modal.Title>
+                        <div className="fw-bold">Rời nhóm</div>
+                    </Modal.Title>
+                </Modal.Header>
+                <Modal.Body>
+                    <div className="fz-16">Bạn có chắc chắn muốn rời nhóm</div>
+                </Modal.Body>
+                <Modal.Footer>
+                    <Button className="fz-16" variant="warning" onClick={handleHideModalLeaveGroup}>
+                        Huỷ
+                    </Button>
+                    <Button className="fz-16" variant="danger" onClick={handleLeaveGroup}>
+                        Rời nhóm
+                    </Button>
                 </Modal.Footer>
             </Modal>
             <div

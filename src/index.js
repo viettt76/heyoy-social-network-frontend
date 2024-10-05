@@ -8,6 +8,7 @@ import 'bootstrap/dist/css/bootstrap.min.css';
 import 'react-toastify/dist/ReactToastify.css';
 import 'react-datepicker/dist/react-datepicker.css';
 import 'react-photo-view/dist/react-photo-view.css';
+import '@livekit/components-styles';
 
 import '~/styles/index.scss';
 

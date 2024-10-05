@@ -12,6 +12,7 @@ import { useSelector } from 'react-redux';
 import { openChatsSelector } from '~/redux/selectors';
 import ChatGroupPopup from '~/components/ChatGroupPopup';
 import ChatPopup from '~/components/ChatPopup';
+import CallRequestWindow from '~/components/CallRequestWindow';
 
 const ScrollToTop = () => {
     const { pathname } = useLocation();
@@ -42,6 +43,7 @@ function App() {
             <NavigateFunctionComponent />
             <ScrollToTop />
             <FetchUserInfo />
+            <CallRequestWindow />
             {openChats?.slice(0, 2)?.map((item, index) => {
                 if (item?.isGroupChat) {
                     return <ChatGroupPopup index={index} key={`group-chat-${item?.id}`} group={item} />;

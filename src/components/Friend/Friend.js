@@ -3,6 +3,7 @@ import styles from './Friend.module.scss';
 import defaultAvatar from '~/assets/imgs/default-avatar.png';
 
 const Friend = ({
+    className,
     type,
     id,
     firstName = '',
@@ -16,7 +17,7 @@ const Friend = ({
     handleCancelFriendRequest,
 }) => {
     return (
-        <div className={clsx(styles['friend-wrapper'])}>
+        <div className={clsx(styles['friend-wrapper'], className)}>
             <img className={clsx(styles['friend-avatar'])} src={avatar || defaultAvatar} />
             <div className={clsx(styles['friend-detail'])}>
                 <div className={clsx(styles['friend-name'])}>{`${lastName} ${firstName}`}</div>
@@ -60,7 +61,7 @@ const Friend = ({
                             className="btn btn-danger fz-16 w-100 mt-2"
                             onClick={() => handleCancelFriendRequest(id)}
                         >
-                            Huỷ
+                            Thu hồi
                         </button>
                     </div>
                 )}

@@ -137,7 +137,7 @@ const UserProfileViewerPost = () => {
                     </div>
                 </div>
                 <div className={clsx('col-7')}>
-                    <WritePost />
+                    {/* <WritePost /> */}
                     {myPosts?.map((post) => (
                         <Post key={`post-${post?.id}`} postInfo={post} />
                     ))}

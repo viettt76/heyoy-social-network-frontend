@@ -46,6 +46,10 @@ export const updateGroupMembersService = ({ groupChatId, members }) => {
     });
 };
 
+export const leaveGroupChatService = (groupChatId) => {
+    return axios.delete(`/chat/group-chat/member/${groupChatId}`);
+};
+
 export const getLatestConversationsService = () => {
     return axios.get('/chat/latest');
 };

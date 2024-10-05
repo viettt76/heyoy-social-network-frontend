@@ -1,0 +1,16 @@
+.friends-wrapper {
+    max-width: 88rem !important;
+    margin: 0 auto;
+    flex: 1;
+    display: grid;
+    grid-template-columns: 25% 25% 25% 25%;
+    gap: 0.8rem;
+
+    .box-sizing-content {
+        box-sizing: content-box;
+    }
+
+    .friend-wrapper {
+        margin-right: 1rem;
+    }
+}

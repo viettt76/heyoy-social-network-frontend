@@ -19,9 +19,10 @@ const UserDashboard = ({ userDashboardRef, showUserDashboard }) => {
 
     const handleLogout = async () => {
         try {
-            dispatch(actions.clearUserInfo());
             localStorage.removeItem('isAuthenticated');
             await logoutService();
+            dispatch(actions.clearUserInfo());
+            dispatch(actions.closeAllChat());
             socket.disconnect();
         } catch (error) {
             console.log(error);
@@ -43,6 +44,12 @@ const UserDashboard = ({ userDashboardRef, showUserDashboard }) => {
                     {`${userInfo?.lastName} ${userInfo?.firstName}`}
                 </Link>
             </li>
+            {/* <li className={clsx(styles['dashboard-item'])}>
+                <Link className={clsx(styles['dashboard-link'])}>
+                    <FontAwesomeIcon icon={faGear} className={clsx(styles['dashboard-link-icon'])} />
+                    Tài khoản
+                </Link>
+            </li> */}
             <li className={clsx(styles['dashboard-item'])}>
                 <Link className={clsx(styles['dashboard-link'])}>
                     <FontAwesomeIcon icon={faGear} className={clsx(styles['dashboard-link-icon'])} />

@@ -18,13 +18,13 @@ const Home = () => {
     useEffect(() => {
         const fetchAllPosts = async () => {
             try {
-                dispatch(actions.startLoading('HomePosts'));
+                dispatch(actions.startLoading('homePosts'));
                 const res = await getAllPostsService();
                 setPosts(res);
             } catch (error) {
                 console.log(error);
             } finally {
-                dispatch(actions.stopLoading('HomePosts'));
+                dispatch(actions.stopLoading('homePosts'));
             }
         };
         fetchAllPosts();
@@ -45,7 +45,7 @@ const Home = () => {
     return (
         <div className="mt-5" style={{ width: '50rem' }}>
             <WritePost />
-            {loading?.HomePosts ? (
+            {loading?.homePosts ? (
                 <Facebook />
             ) : posts?.length === 0 ? (
                 <div className="text-center fz-16">

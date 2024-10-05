@@ -2,7 +2,7 @@ import clsx from 'clsx';
 import styles from './FriendSuggestions.module.scss';
 import Friend from '~/components/Friend';
 import { useEffect, useState } from 'react';
-import { friendSuggestionsService, sendFriendRequestService } from '~/services/relationshipServices';
+import { getFriendSuggestionsService, sendFriendRequestService } from '~/services/relationshipServices';
 import _ from 'lodash';
 
 const FriendSuggestions = () => {
@@ -11,7 +11,7 @@ const FriendSuggestions = () => {
     useEffect(() => {
         const fetchCommonFriends = async () => {
             try {
-                const res = await friendSuggestionsService();
+                const res = await getFriendSuggestionsService();
                 setSuggestions(res);
             } catch (error) {
                 console.log(error);

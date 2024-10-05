@@ -2,26 +2,31 @@ import clsx from 'clsx';
 import Friend from '~/components/Friend';
 import styles from './MyFriends.module.scss';
 import { useEffect, useState } from 'react';
-import { allFriendsService, unfriendService } from '~/services/relationshipServices';
+import { getAllFriendsService, unfriendService } from '~/services/relationshipServices';
 import { Link } from 'react-router-dom';
 import { Button, Modal } from 'react-bootstrap';
 import socket from '~/socket';
+import { useSelector } from 'react-redux';
+import { userInfoSelector } from '~/redux/selectors';
 
 const MyFriends = () => {
+    const userInfo = useSelector(userInfoSelector);
     const [friends, setFriends] = useState([]);
 
     useEffect(() => {
         const fetchAllFriends = async () => {
             try {
-                const res = await allFriendsService();
-                setFriends(res);
+                if (userInfo?.id) {
+                    const res = await getAllFriendsService(userInfo.id);
+                    setFriends(res);
+                }
             } catch (error) {
                 console.log(error);
             }
         };
 
         fetchAllFriends();
-    }, []);
+    }, [userInfo?.id]);
 
     useEffect(() => {
         const handleAcceptFriendRequest = (friendInfo) => {

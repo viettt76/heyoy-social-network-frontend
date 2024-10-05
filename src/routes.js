@@ -10,6 +10,7 @@ const MyFriends = lazy(() => import('~/pages/MyFriends'));
 const FriendRequests = lazy(() => import('~/pages/FriendRequests'));
 const FriendSuggestions = lazy(() => import('~/pages/FriendSuggestions'));
 const SentFriendRequests = lazy(() => import('~/pages/SentFriendRequests'));
+const CallingWindow = lazy(() => import('~/pages/CallingWindow'));
 
 const routes = [
     { path: '/', element: Home },
@@ -19,6 +20,7 @@ const routes = [
     { path: '/friends/requests', element: FriendRequests, layout: FriendsLayout },
     { path: '/friends/sent-requests', element: SentFriendRequests, layout: FriendsLayout },
     { path: '/friends/suggestions', element: FriendSuggestions, layout: FriendsLayout },
+    { path: '/calling', element: CallingWindow, layout: null },
 ];
 
 export default routes;

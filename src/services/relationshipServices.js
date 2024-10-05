@@ -1,10 +1,10 @@
 import axios from '~/utils/axios';
 
-export const allFriendsService = () => {
-    return axios.get('/relationships/friends');
+export const getAllFriendsService = (userId) => {
+    return axios.get(`/relationships/friends/${userId}`);
 };
 
-export const friendSuggestionsService = () => {
+export const getFriendSuggestionsService = () => {
     return axios.get('/relationships/suggestion');
 };
 

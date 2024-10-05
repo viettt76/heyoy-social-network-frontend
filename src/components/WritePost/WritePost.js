@@ -9,11 +9,10 @@ import { Tooltip as ReactTooltip } from 'react-tooltip';
 import { submitPostService } from '~/services/postServices';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faXmark } from '@fortawesome/free-solid-svg-icons';
-import axios from 'axios';
 import { useDispatch, useSelector } from 'react-redux';
 import { loadingSelector, userInfoSelector } from '~/redux/selectors';
 import * as actions from '~/redux/actions';
-import OverlayLoading from '~/components/OverlayLoading';
+import LoadingOverlay from '~/components/LoadingOverlay';
 import { uploadToCloudinary } from '~/utils/commonUtils';
 
 const WritePost = () => {
@@ -64,7 +63,7 @@ const WritePost = () => {
     const handleSubmitPost = async () => {
         try {
             const imagesUrl = [];
-            dispatch(actions.startLoading('WritePost'));
+            dispatch(actions.startLoading('writePost'));
             if (imagesUpload.length > 0) {
                 const uploadPromises = imagesUpload.map((fileUpload) => uploadToCloudinary(fileUpload));
 
@@ -73,7 +72,7 @@ const WritePost = () => {
             }
 
             await submitPostService({ visibility, content, images: imagesUrl });
-            dispatch(actions.stopLoading('WritePost'));
+            dispatch(actions.stopLoading('writePost'));
             handleCloseModalWritePost();
         } catch (error) {
             console.log(error);
@@ -82,7 +81,7 @@ const WritePost = () => {
 
     return (
         <div className={clsx(styles['write-post'])}>
-            {loading?.WritePost && <OverlayLoading />}
+            {loading?.writePost && <LoadingOverlay />}
             <Link to={`/profile/${userInfo?.id}`}>
                 <img className={clsx(styles['avatar'])} src={userInfo?.avatar || defaultAvatar} />
             </Link>
@@ -97,7 +96,9 @@ const WritePost = () => {
                     <div className="d-flex align-items-center">
                         <img className={clsx(styles['avatar'])} src={userInfo?.avatar || defaultAvatar} />
                         <div>
-                            <h6 className={clsx(styles['name'])}>Hoàng Việt</h6>
+                            <h6 className={clsx(styles['name'])}>
+                                {userInfo?.lastName} {userInfo?.firstName}
+                            </h6>
                             <div className={clsx(styles['visibility'])}>Bạn bè</div>
                         </div>
                     </div>

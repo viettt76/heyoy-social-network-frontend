@@ -2,7 +2,7 @@ import clsx from 'clsx';
 import { useEffect, useRef, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { Button, Col, Form, Modal, Row } from 'react-bootstrap';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faEye, faEyeSlash } from '@fortawesome/free-regular-svg-icons';
 import styles from './Login.module.scss';
@@ -11,10 +11,14 @@ import { getMyInfoService } from '~/services/userServices';
 import { loginService, signUpService } from '~/services/authServices';
 import * as actions from '~/redux/actions';
 import socket from '~/socket';
+import { loadingSelector } from '~/redux/selectors';
+import Loading from '~/components/Loading';
 
 function Login() {
     const navigate = useNavigate(null);
     const dispatch = useDispatch();
+
+    const loading = useSelector(loadingSelector);
 
     useEffect(() => {
         if (localStorage.getItem('isAuthenticated')) {
@@ -78,28 +82,32 @@ function Login() {
                 e.stopPropagation();
                 setValidatedFormLogin(true);
             } else {
+                dispatch(actions.startLoading('login'));
                 await loginService(loginInfo);
                 localStorage.setItem('isAuthenticated', true);
                 navigate('/');
-                const fetchPersonalInfo = async () => {
-                    const res = await getMyInfoService();
+                (async () => {
+                    try {
+                        const res = await getMyInfoService();
+                        dispatch(
+                            actions.saveUserInfo({
+                                id: res?.id,
+                                firstName: res?.firstName,
+                                lastName: res?.lastName,
+                                birthday: res?.birthday,
+                                avatar: res?.avatar,
+                                homeTown: res?.homeTown,
+                                school: res?.school,
+                                workplace: res?.workplace,
+                            }),
+                        );
 
-                    dispatch(
-                        actions.saveUserInfo({
-                            id: res?.id,
-                            firstName: res?.firstName,
-                            lastName: res?.lastName,
-                            birthday: res?.birthday,
-                            avatar: res?.avatar,
-                            homeTown: res?.homeTown,
-                            school: res?.school,
-                            workplace: res?.workplace,
-                        }),
-                    );
-
-                    socket.connect();
-                };
-                fetchPersonalInfo();
+                        socket.connect();
+                    } catch (error) {
+                        console.log(error);
+                    }
+                })();
+                dispatch(actions.stopLoading('login'));
             }
         } catch (error) {
             console.log(error);
@@ -211,12 +219,13 @@ function Login() {
                         </div>
                     )}
                 </Form>
+                {loading?.login && <Loading className={clsx(styles['login-loading'])} />}
                 <Button className="w-100 fz-16" onClick={handleSubmitFormLogin}>
                     Đăng nhập
                 </Button>
-                <Link to="forgot-password" className={clsx(styles['forgot-password'])}>
+                {/* <Link to="forgot-password" className={clsx(styles['forgot-password'])}>
                     Quên mật khẩu?
-                </Link>
+                </Link> */}
                 <div className={clsx('d-flex justify-content-center', styles['sign-up-wrapper'])}>
                     <Button className={clsx(styles['sign-up-btn'])} onClick={handleShowFormSignUp}>
                         Tạo tài khoản mới

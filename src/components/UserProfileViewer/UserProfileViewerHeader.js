@@ -5,7 +5,7 @@ import { getUserInfoService } from '~/services/userServices';
 import defaultAvatar from '~/assets/imgs/default-avatar.png';
 import { Link, useParams } from 'react-router-dom';
 
-const UserProfileViewerHeader = () => {
+const UserProfileViewerHeader = ({ numberOfFriends }) => {
     const { userId } = useParams();
 
     const [userInfo, setUserInfo] = useState({});
@@ -28,7 +28,7 @@ const UserProfileViewerHeader = () => {
                     <img className={clsx(styles['avatar'])} src={userInfo?.avatar || defaultAvatar} />
                     <div>
                         <h3 className={clsx(styles['full-name'])}>{`${userInfo?.lastName} ${userInfo?.firstName}`}</h3>
-                        <div className={clsx(styles['number-of-friends'])}>207 bạn bè</div>
+                        <div className={clsx(styles['number-of-friends'])}>{numberOfFriends} bạn bè</div>
                     </div>
                 </div>
             </div>

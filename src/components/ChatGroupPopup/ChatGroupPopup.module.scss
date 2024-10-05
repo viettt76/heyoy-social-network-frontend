@@ -413,3 +413,22 @@
         }
     }
 }
+
+.edit-profile-btn {
+    display: flex;
+    align-items: center;
+
+    .menu-item-avatar {
+        width: 4rem;
+        height: 4rem;
+        border-radius: 50%;
+        margin-right: 0.5rem;
+    }
+}
+
+.menu-item-leave-group-icon {
+    color: #dc3536;
+}
+.menu-item-leave-group {
+    color: #dc3536;
+}

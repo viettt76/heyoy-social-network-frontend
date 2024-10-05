@@ -1,5 +1,5 @@
 import clsx from 'clsx';
-import styles from './OverlayLoading.module.scss';
+import styles from './LoadingOverlay.module.scss';
 import { Spinner } from 'react-bootstrap';
 import { useEffect } from 'react';
 

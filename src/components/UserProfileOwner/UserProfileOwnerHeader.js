@@ -3,20 +3,21 @@ import { faEllipsis, faPencil } from '@fortawesome/free-solid-svg-icons';
 import clsx from 'clsx';
 import styles from './UserProfileOwner.module.scss';
 import { useDispatch, useSelector } from 'react-redux';
-import { userInfoSelector } from '~/redux/selectors';
+import { loadingSelector, userInfoSelector } from '~/redux/selectors';
 import { useState } from 'react';
 import { Button, Dropdown, Modal } from 'react-bootstrap';
 import { updateMyInfoService } from '~/services/userServices';
 import * as actions from '~/redux/actions';
 import Cropper from 'react-easy-crop';
-import axios from 'axios';
 import defaultAvatar from '~/assets/imgs/default-avatar.png';
 import { Link, useLocation } from 'react-router-dom';
 import { getCroppedImg, uploadToCloudinary } from '~/utils/commonUtils';
+import LoadingOverlay from '~/components/LoadingOverlay';
 
-const UserProfileOwnerHeader = ({ handleOnViewMode }) => {
+const UserProfileOwnerHeader = ({ handleOnViewMode, numberOfFriends }) => {
     const dispatch = useDispatch();
     const userInfo = useSelector(userInfoSelector);
+    const loading = useSelector(loadingSelector);
 
     const location = useLocation();
 
@@ -50,6 +51,7 @@ const UserProfileOwnerHeader = ({ handleOnViewMode }) => {
 
     const handleSave = async () => {
         try {
+            dispatch(actions.startLoading('updateAvatar'));
             const croppedImage = await getCroppedImg(updateAvatar, croppedAreaPixels);
             const file = await fetch(croppedImage)
                 .then((res) => res.blob())
@@ -59,6 +61,7 @@ const UserProfileOwnerHeader = ({ handleOnViewMode }) => {
 
             dispatch(actions.saveUserInfo({ avatar: imageUrl }));
             handleHideModalUpdateAvatar();
+            dispatch(actions.stopLoading('updateAvatar'));
         } catch (error) {
             console.error('Failed to crop image', error);
         }
@@ -66,12 +69,13 @@ const UserProfileOwnerHeader = ({ handleOnViewMode }) => {
 
     return (
         <>
+            {loading?.updateAvatar && <LoadingOverlay />}
             <div className={clsx(styles['header'])}>
                 <div className={clsx(styles['header-left'])}>
                     <img className={clsx(styles['avatar'])} src={userInfo?.avatar || defaultAvatar} />
                     <div>
                         <h3 className={clsx(styles['full-name'])}>{`${userInfo.lastName} ${userInfo.firstName}`}</h3>
-                        <div className={clsx(styles['number-of-friends'])}>207 bạn bè</div>
+                        <div className={clsx(styles['number-of-friends'])}>{numberOfFriends} bạn bè</div>
                     </div>
                 </div>
                 <div className={clsx(styles['header-right'])}>
