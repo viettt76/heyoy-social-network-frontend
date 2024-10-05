@@ -28,7 +28,7 @@ function Login() {
 
     useEffect(() => {
         if (localStorage.getItem('showToastOnLogin')) {
-            customToastify.info('Bạn đã hết phiên đăng nhập');
+            // customToastify.info('Bạn đã hết phiên đăng nhập');
             localStorage.removeItem('showToastOnLogin');
         }
     }, []);

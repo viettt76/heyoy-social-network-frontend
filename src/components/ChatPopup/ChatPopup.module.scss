@@ -94,52 +94,58 @@
         height: 35rem;
         overflow-y: auto;
 
-        .message-wrapper {
-            align-self: flex-start;
-            align-items: center;
+        .chat-item {
             display: flex;
-            max-width: 70%;
+            flex-direction: column;
 
-            &.message-current-user {
-                align-self: flex-end;
-
-                .message {
-                    color: #fff;
-                    background-color: #0084ff;
-                }
-
-                .message:first-child {
-                    margin-left: 0;
-                }
-            }
-
-            & + .message-wrapper {
+            & + .chat-item {
                 margin-top: 0.2rem;
             }
 
-            .message-avatar {
-                width: 2.8rem;
-                height: 2.8rem;
-                border-radius: 50%;
-            }
+            .message-wrapper {
+                align-self: flex-start;
+                align-items: center;
+                display: flex;
+                max-width: 70%;
+                position: relative;
 
-            .message:first-child {
-                margin-left: 3.4rem;
-            }
+                &.message-current-user {
+                    align-self: flex-end;
 
-            .message {
-                font-size: 1.5rem;
-                background-color: $background-color-medium-gray;
-                border-radius: 0.8rem;
-                padding: 0.6rem 1rem;
-                margin-left: 0.6rem;
-                word-break: break-word;
-            }
+                    .message {
+                        color: #fff;
+                        background-color: #0084ff;
+                    }
 
-            .process-message {
-                font-size: 1.3rem;
-                color: $text-color-gray;
-                margin-left: 0.8rem;
+                    .message:first-child {
+                        margin-left: 0;
+                    }
+                }
+
+                .message-avatar {
+                    width: 2.8rem;
+                    height: 2.8rem;
+                    border-radius: 50%;
+                }
+
+                .message:first-child {
+                    margin-left: 3.4rem;
+                }
+
+                .message {
+                    font-size: 1.5rem;
+                    background-color: $background-color-medium-gray;
+                    border-radius: 0.8rem;
+                    padding: 0.6rem 1rem;
+                    margin-left: 0.6rem;
+                    word-break: break-word;
+                }
+
+                .process-message {
+                    font-size: 1.3rem;
+                    color: $text-color-gray;
+                    margin-left: 0.8rem;
+                }
             }
         }
     }
