@@ -72,10 +72,11 @@ const WritePost = () => {
             }
 
             await submitPostService({ visibility, content, images: imagesUrl });
-            dispatch(actions.stopLoading('writePost'));
             handleCloseModalWritePost();
         } catch (error) {
             console.log(error);
+        } finally {
+            dispatch(actions.stopLoading('writePost'));
         }
     };
 

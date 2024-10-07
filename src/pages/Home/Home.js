@@ -8,6 +8,8 @@ import * as actions from '~/redux/actions';
 import { loadingSelector } from '~/redux/selectors';
 import { Facebook } from 'react-content-loader';
 import socket from '~/socket';
+import styles from './Home.module.scss';
+import clsx from 'clsx';
 
 const Home = () => {
     const dispatch = useDispatch();
@@ -43,7 +45,7 @@ const Home = () => {
     }, []);
 
     return (
-        <div className="mt-5" style={{ width: '50rem' }}>
+        <div className={clsx(styles['home-wrapper'])}>
             <WritePost />
             {loading?.homePosts ? (
                 <Facebook />

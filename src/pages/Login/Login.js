@@ -107,11 +107,12 @@ function Login() {
                         console.log(error);
                     }
                 })();
-                dispatch(actions.stopLoading('login'));
             }
         } catch (error) {
             console.log(error);
             setErrorLogin('Tài khoản hoặc mật khẩu của bạn không chính xác');
+        } finally {
+            dispatch(actions.stopLoading('login'));
         }
     };
 
@@ -214,7 +215,7 @@ function Login() {
                         )}
                     </Form.Group>
                     {errorLogin && (
-                        <div className={clsx('mb-3', styles['invalid-feedback'])}>
+                        <div className={clsx('mb-3', styles['invalid-feedback'], styles['login-error'])}>
                             Tài khoản hoặc mật khẩu của bạn không chính xác
                         </div>
                     )}

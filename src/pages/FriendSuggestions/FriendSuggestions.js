@@ -37,6 +37,7 @@ const FriendSuggestions = () => {
             {suggestions?.map((suggestion, index) => {
                 return (
                     <Friend
+                        className={clsx(styles['friend-wrapper'])}
                         key={`suggestion-${index}`}
                         type="friend-suggestion"
                         id={suggestion?.id}

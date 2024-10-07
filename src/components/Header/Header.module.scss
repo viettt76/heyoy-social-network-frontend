@@ -44,3 +44,13 @@
         }
     }
 }
+
+@media (max-width: 739px) {
+    .header {
+        .search-wrapper {
+            .search-input {
+                display: none;
+            }
+        }
+    }
+}

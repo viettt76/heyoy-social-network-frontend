@@ -44,6 +44,11 @@
     color: #dc3545;
     margin-top: 0.25rem;
     white-space: nowrap;
+
+    &.login-error {
+        white-space: wrap;
+        text-align: center;
+    }
 }
 
 .show-hide-password {

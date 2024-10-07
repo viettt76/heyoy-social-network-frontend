@@ -76,6 +76,7 @@ const FriendRequests = () => {
                 <div className={clsx(styles['friends-wrapper'])}>
                     {friendRequests?.map((request) => (
                         <Friend
+                            className={clsx(styles['friend-wrapper'])}
                             key={`request-${request?.id}`}
                             type="friend-request"
                             id={request?.id}

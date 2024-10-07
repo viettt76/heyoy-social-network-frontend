@@ -1,14 +1,40 @@
 @import '~/styles/variables';
 
-.friends-list-wrapper {
-    margin-top: 2rem;
-    width: 28rem;
-    margin-right: 2.6rem;
-    overflow-y: hidden;
-    max-height: 84vh;
-    position: sticky;
+.btn-show__mobile-label {
+    position: fixed;
     right: 0;
+    display: none;
+    margin-right: 1rem;
+    margin-top: 1rem;
+    width: 5rem;
+    height: 5rem;
+    background-color: $background-color-medium-gray;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    box-shadow: 0 0 0 1px $box-shadow;
+}
+
+.btn-show__mobile-checkbox {
+    display: none;
+}
+
+.wrapper {
+    flex: 1;
+    width: 100%;
+    overflow-y: auto;
+    max-height: 84vh;
+    margin-top: 2rem;
+    margin-right: 2.6rem;
     top: 7.6rem;
+    position: sticky;
+    background-color: #fff;
+    right: 0;
+    max-width: 28rem;
+}
+
+.friends-list-wrapper {
+    width: 100%;
 
     &:hover {
         overflow-y: scroll;
@@ -72,6 +98,35 @@
         .friend-name {
             font-size: 1.6rem;
             font-weight: 500;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
         }
+    }
+}
+
+@media (max-width: 940px) {
+    .wrapper {
+        display: none;
+        position: fixed;
+        box-shadow: 0 0 0 2px $box-shadow;
+        padding: 1.2rem 1.2rem;
+        top: 10.4rem;
+
+        .friends-list-wrapper {
+            padding-left: 0;
+        }
+    }
+
+    .btn-show__mobile-label {
+        display: flex;
+
+        .btn-show__mobile-icon {
+            font-size: 2rem;
+        }
+    }
+
+    .btn-show__mobile-checkbox:checked ~ .wrapper {
+        display: block;
     }
 }

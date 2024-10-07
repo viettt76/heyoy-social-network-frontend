@@ -3,7 +3,7 @@
     margin: 0 auto;
     flex: 1;
     display: grid;
-    grid-template-columns: 25% 25% 25% 25%;
+    grid-template-columns: repeat(4, 1fr);
     gap: 0.8rem;
 
     .box-sizing-content {
@@ -12,5 +12,17 @@
 
     .friend-wrapper {
         margin-right: 1rem;
+    }
+}
+
+@media (min-width: 468px) and (max-width: 768px) {
+    .friends-wrapper {
+        grid-template-columns: repeat(3, 1fr);
+    }
+}
+
+@media (max-width: 468px) {
+    .friends-wrapper {
+        grid-template-columns: repeat(2, 1fr);
     }
 }

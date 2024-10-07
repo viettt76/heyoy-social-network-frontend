@@ -61,9 +61,10 @@ const UserProfileOwnerHeader = ({ handleOnViewMode, numberOfFriends }) => {
 
             dispatch(actions.saveUserInfo({ avatar: imageUrl }));
             handleHideModalUpdateAvatar();
-            dispatch(actions.stopLoading('updateAvatar'));
         } catch (error) {
             console.error('Failed to crop image', error);
+        } finally {
+            dispatch(actions.stopLoading('updateAvatar'));
         }
     };
 

@@ -106,15 +106,6 @@ const Messenger = ({ messengerRef, showMessenger, setShowMessenger }) => {
                         </div>
                     </div>
 
-                    {/* <div className={clsx(styles['conversation-wrapper'])}>
-                    <div className={clsx(styles['conversation'])}>
-                        <img className={clsx(styles['avatar'])} src={defaultAvatar} />
-                        <div>
-                            <h6 className={clsx(styles['name'])}>Hoàng Việt</h6>
-                            <div className={clsx(styles['last-message'])}>Không biết nữa</div>
-                        </div>
-                    </div>
-                </div> */}
                     {latestConversations?.map((conversation) => {
                         return (
                             <div

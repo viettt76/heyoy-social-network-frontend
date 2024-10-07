@@ -85,6 +85,7 @@ const MyFriends = () => {
                 <div className={clsx(styles['friends-wrapper'])}>
                     {friends?.map((friend) => (
                         <Friend
+                            className={clsx(styles['friend-wrapper'])}
                             key={`friend-${friend?.id}`}
                             type="friend"
                             id={friend?.id}

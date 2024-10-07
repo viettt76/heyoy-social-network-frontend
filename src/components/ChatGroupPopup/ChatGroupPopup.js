@@ -30,7 +30,7 @@ import { Link } from 'react-router-dom';
 import { ArrowIcon } from '../Icons';
 import { Button, Modal } from 'react-bootstrap';
 import Cropper from 'react-easy-crop';
-import { getCroppedImg, uploadToCloudinary } from '~/utils/commonUtils';
+import { calculateTime, getCroppedImg, uploadToCloudinary } from '~/utils/commonUtils';
 
 const GroupMembersLayout = ({ groupId }) => {
     const [groupMembers, setGroupMembers] = useState([]);
@@ -548,32 +548,63 @@ const ChatPopupGroup = ({ index, group }) => {
             <div ref={endOfMessagesRef} className={clsx(styles['chat-container'])}>
                 {messages?.length > 0 ? (
                     messages?.map((message, index) => {
+                        let minDiff = 0;
+                        let isSameDay = true;
+                        let latestTime = {};
+                        if (index === 0) {
+                            latestTime = calculateTime(message?.createdAt);
+                        } else if (index >= 1) {
+                            const date1 = new Date(message?.createdAt);
+                            const date2 = new Date(messages[index - 1]?.createdAt);
+
+                            const diff = date1 - date2;
+                            minDiff = diff / (1000 * 60);
+
+                            if (minDiff >= 10) {
+                                latestTime = calculateTime(message?.createdAt);
+                                const beforeTime = calculateTime(messages[index - 1]?.createdAt);
+                                if (
+                                    latestTime?.year !== beforeTime?.year ||
+                                    latestTime?.month !== beforeTime?.month ||
+                                    latestTime?.day !== beforeTime?.day
+                                ) {
+                                    isSameDay = false;
+                                }
+                            }
+                        }
                         return (
-                            <div
-                                key={`chat-${index}`}
-                                className={clsx(styles['message-wrapper'], {
-                                    [[styles['message-current-user']]]: message?.sender === userInfo?.id,
-                                    ['mt-3']: messages[index - 1]?.sender !== messages[index]?.sender,
-                                })}
-                            >
-                                {messages[index - 1]?.sender !== messages[index]?.sender &&
-                                    message.sender !== userInfo?.id && (
-                                        <img
-                                            className={clsx(styles['message-avatar'])}
-                                            src={message?.senderAvatar || defaultAvatar}
-                                        />
-                                    )}
-                                <div className={clsx(styles['message'])}>{message?.message}</div>
-                                {processingMessage &&
-                                    _.findLast(messages, { sender: userInfo?.id }) &&
-                                    _.isEqual(_.findLast(messages, { sender: userInfo?.id }), message) && (
-                                        <div className={clsx(styles['process-message'])}>{processingMessage}</div>
-                                    )}
+                            <div className={clsx(styles['chat-item'])} key={`chat-${index}`}>
+                                {(index === 0 || minDiff >= 10) && (
+                                    <div className="fz-14 text-center mt-4 mb-2">
+                                        {!isSameDay && `${latestTime?.day}/${latestTime?.month}`} {latestTime?.hours}:
+                                        {latestTime?.minutes}
+                                    </div>
+                                )}
+                                <div
+                                    className={clsx(styles['message-wrapper'], {
+                                        [[styles['message-current-user']]]: message?.sender === userInfo?.id,
+                                        ['mt-3']: messages[index - 1]?.sender !== messages[index]?.sender,
+                                    })}
+                                >
+                                    {messages[index - 1]?.sender !== messages[index]?.sender &&
+                                        message.sender !== userInfo?.id && (
+                                            <img
+                                                className={clsx(styles['message-avatar'])}
+                                                src={message?.senderAvatar || defaultAvatar}
+                                            />
+                                        )}
+                                    <div className={clsx(styles['message'])}>{message?.message}</div>
+                                    {processingMessage &&
+                                        _.findLast(messages, { sender: userInfo?.id }) &&
+                                        _.isEqual(_.findLast(messages, { sender: userInfo?.id }), message) && (
+                                            <div className={clsx(styles['process-message'])}>{processingMessage}</div>
+                                        )}
+                                </div>
                             </div>
                         );
                     })
                 ) : (
-                    <div className="mt-5 text-center fz-16">Hãy bắt đầu cuộc trò chuyện với {group?.name}</div>
+                    <div className="mt-5 text-center fz-16">Hãy bắt đầu cuộc trò chuyện trong {group?.name}</div>
                 )}
                 <div></div>
             </div>

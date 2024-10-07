@@ -177,7 +177,9 @@ const ChatPopup = ({ index, friend }) => {
                         let minDiff = 0;
                         let isSameDay = true;
                         let latestTime = {};
-                        if (index >= 1) {
+                        if (index === 0) {
+                            latestTime = calculateTime(message?.createdAt);
+                        } else if (index >= 1) {
                             const date1 = new Date(message?.createdAt);
                             const date2 = new Date(messages[index - 1]?.createdAt);
 
@@ -200,7 +202,7 @@ const ChatPopup = ({ index, friend }) => {
                             <div className={clsx(styles['chat-item'])} key={`chat-${index}`}>
                                 {(index === 0 || minDiff >= 10) && (
                                     <div className="fz-14 text-center mt-4 mb-2">
-                                        {!isSameDay && `${latestTime?.day}/${latestTime?.month}`} {latestTime?.hours}{' '}
+                                        {!isSameDay && `${latestTime?.day}/${latestTime?.month}`} {latestTime?.hours}:
                                         {latestTime?.minutes}
                                     </div>
                                 )}
