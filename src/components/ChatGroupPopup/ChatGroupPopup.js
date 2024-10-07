@@ -250,6 +250,7 @@ const ChatPopupGroup = ({ index, group }) => {
                     id: null,
                     sender: userInfo?.id,
                     message: sendMessage,
+                    createdAt: new Date().toISOString(),
                 },
             ]);
             const clone = sendMessage;
@@ -548,12 +549,13 @@ const ChatPopupGroup = ({ index, group }) => {
             <div ref={endOfMessagesRef} className={clsx(styles['chat-container'])}>
                 {messages?.length > 0 ? (
                     messages?.map((message, index) => {
+                        console.log(message);
                         let minDiff = 0;
                         let isSameDay = true;
                         let latestTime = {};
-                        if (index === 0) {
-                            latestTime = calculateTime(message?.createdAt);
-                        } else if (index >= 1) {
+                        latestTime = calculateTime(message?.createdAt);
+
+                        if (index >= 1) {
                             const date1 = new Date(message?.createdAt);
                             const date2 = new Date(messages[index - 1]?.createdAt);
 
@@ -561,7 +563,6 @@ const ChatPopupGroup = ({ index, group }) => {
                             minDiff = diff / (1000 * 60);
 
                             if (minDiff >= 10) {
-                                latestTime = calculateTime(message?.createdAt);
                                 const beforeTime = calculateTime(messages[index - 1]?.createdAt);
                                 if (
                                     latestTime?.year !== beforeTime?.year ||
@@ -580,19 +581,29 @@ const ChatPopupGroup = ({ index, group }) => {
                                         {latestTime?.minutes}
                                     </div>
                                 )}
+                                {message?.senderId !== userInfo?.id &&
+                                    messages[index - 1]?.sender !== messages[index]?.sender && (
+                                        <div
+                                            className={clsx(styles['message-sender-name'], {
+                                                ['mt-3']: messages[index - 1]?.sender !== messages[index]?.sender,
+                                            })}
+                                        >
+                                            {message?.senderLastName} {message?.senderFirstName}
+                                        </div>
+                                    )}
                                 <div
                                     className={clsx(styles['message-wrapper'], {
                                         [[styles['message-current-user']]]: message?.sender === userInfo?.id,
-                                        ['mt-3']: messages[index - 1]?.sender !== messages[index]?.sender,
                                     })}
                                 >
-                                    {messages[index - 1]?.sender !== messages[index]?.sender &&
+                                    {(messages[index - 1]?.sender !== messages[index]?.sender || minDiff >= 10) &&
                                         message.sender !== userInfo?.id && (
                                             <img
                                                 className={clsx(styles['message-avatar'])}
                                                 src={message?.senderAvatar || defaultAvatar}
                                             />
                                         )}
+
                                     <div className={clsx(styles['message'])}>{message?.message}</div>
                                     {processingMessage &&
                                         _.findLast(messages, { sender: userInfo?.id }) &&
@@ -600,6 +611,15 @@ const ChatPopupGroup = ({ index, group }) => {
                                             <div className={clsx(styles['process-message'])}>{processingMessage}</div>
                                         )}
                                 </div>
+                                {index === messages?.length - 1 && (
+                                    <div
+                                        className={clsx(styles['time-of-last-message'], {
+                                            [[styles['message-of-friend']]]: message?.sender !== userInfo?.id,
+                                        })}
+                                    >
+                                        {latestTime?.hours}:{latestTime?.minutes}
+                                    </div>
+                                )}
                             </div>
                         );
                     })

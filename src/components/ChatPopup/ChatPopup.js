@@ -88,6 +88,7 @@ const ChatPopup = ({ index, friend }) => {
                         id: newMessage?.id,
                         sender: newMessage?.sender,
                         message: newMessage?.message,
+                        createdAt: newMessage?.createdAt,
                     },
                 ]);
             }
@@ -177,9 +178,9 @@ const ChatPopup = ({ index, friend }) => {
                         let minDiff = 0;
                         let isSameDay = true;
                         let latestTime = {};
-                        if (index === 0) {
-                            latestTime = calculateTime(message?.createdAt);
-                        } else if (index >= 1) {
+                        latestTime = calculateTime(message?.createdAt);
+
+                        if (index >= 1) {
                             const date1 = new Date(message?.createdAt);
                             const date2 = new Date(messages[index - 1]?.createdAt);
 
@@ -187,7 +188,6 @@ const ChatPopup = ({ index, friend }) => {
                             minDiff = diff / (1000 * 60);
 
                             if (minDiff >= 10) {
-                                latestTime = calculateTime(message?.createdAt);
                                 const beforeTime = calculateTime(messages[index - 1]?.createdAt);
                                 if (
                                     latestTime?.year !== beforeTime?.year ||
@@ -225,6 +225,15 @@ const ChatPopup = ({ index, friend }) => {
                                             <div className={clsx(styles['process-message'])}>{processingMessage}</div>
                                         )}
                                 </div>
+                                {index === messages?.length - 1 && (
+                                    <div
+                                        className={clsx(styles['time-of-last-message'], {
+                                            [[styles['message-of-friend']]]: message?.sender === friend?.id,
+                                        })}
+                                    >
+                                        {latestTime?.hours}:{latestTime?.minutes}
+                                    </div>
+                                )}
                             </div>
                         );
                     })
