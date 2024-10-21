@@ -15,3 +15,23 @@ export const getUserInfoService = (userId) => {
 export const getPicturesOfUserService = (userId) => {
     return axios.get(`/user/pictures/${userId}`);
 };
+
+export const getNotificationsService = () => {
+    return axios.get('/user/notifications');
+};
+
+export const readNotificationService = (notificationId) => {
+    return axios.patch(`/user/notification/${notificationId}`);
+};
+
+export const getNotificationsTypeService = () => {
+    return axios.get('/user/notifications-type');
+};
+
+export const readMenuNotificationMessengerService = () => {
+    return axios.patch('/user/notification/messenger/open');
+};
+
+export const readMenuNotificationOtherService = () => {
+    return axios.patch('/user/notification/other/open');
+};

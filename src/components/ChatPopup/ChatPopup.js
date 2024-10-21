@@ -5,17 +5,19 @@ import { faChevronDown, faPhone, faThumbsUp, faVideo, faXmark } from '@fortaweso
 import styles from './ChatPopup.module.scss';
 import defaultAvatar from '~/assets/imgs/default-avatar.png';
 import { useDispatch, useSelector } from 'react-redux';
-import { userInfoSelector } from '~/redux/selectors';
+import { notificationsMessengerSelector, userInfoSelector } from '~/redux/selectors';
 import * as actions from '~/redux/actions';
 import { getMessagesWithFriendService, sendMessageWithFriendService } from '~/services/chatServices';
 import socket from '~/socket';
 import _ from 'lodash';
 import useClickOutside from '~/hook/useClickOutside';
 import { calculateTime } from '~/utils/commonUtils';
+import { readNotificationService } from '~/services/userServices';
 
 const ChatPopup = ({ index, friend }) => {
     const { ref: chatPopupRef, isComponentVisible: isFocus, setIsComponentVisible: setIsFocus } = useClickOutside(true);
     const userInfo = useSelector(userInfoSelector);
+    const notificationsMessenger = useSelector(notificationsMessengerSelector);
     const dispatch = useDispatch();
 
     const endOfMessagesRef = useRef(null);
@@ -57,7 +59,6 @@ const ChatPopup = ({ index, friend }) => {
                     createdAt: new Date().toISOString(),
                 },
             ]);
-            console.log(userInfo?.id, userInfo?.firstName);
             const clone = sendMessage;
             setSendMessage('');
             setProcessingMessage('Đang xử lý');
@@ -99,6 +100,21 @@ const ChatPopup = ({ index, friend }) => {
             socket.off('newMessage', handleNewMessage);
         };
     }, [userInfo?.id, friend?.id]);
+
+    useEffect(() => {
+        const notificationId = notificationsMessenger?.find((noti) => noti?.senderId === friend?.id)?.id;
+        if (isFocus && notificationId) {
+            (async () => {
+                try {
+                    await readNotificationService(notificationId);
+                    dispatch(actions.readMessage(notificationId));
+                } catch (error) {
+                    console.log(error);
+                }
+            })();
+        }
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [isFocus, friend?.id]);
 
     useEffect(() => {
         window.onkeydown = (e) => {
@@ -207,7 +223,9 @@ const ChatPopup = ({ index, friend }) => {
                                         [[styles['message-current-user']]]: message?.sender === userInfo?.id,
                                     })}
                                 >
-                                    {messages[index - 1]?.sender !== message?.sender &&
+                                    {(index === 0 ||
+                                        minDiff >= 10 ||
+                                        messages[index - 1]?.sender !== message?.sender) &&
                                         message?.sender === friend?.id && (
                                             <img
                                                 className={clsx(styles['message-avatar'])}

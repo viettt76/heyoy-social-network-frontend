@@ -138,9 +138,11 @@ const UserProfileViewerPost = () => {
                 </div>
                 <div className={clsx('col-7')}>
                     {/* <WritePost /> */}
-                    {myPosts?.map((post) => (
-                        <Post key={`post-${post?.id}`} postInfo={post} />
-                    ))}
+                    {myPosts?.length > 0 ? (
+                        myPosts?.map((post) => <Post key={`post-${post?.id}`} postInfo={post} />)
+                    ) : (
+                        <div className="fz-16 text-center">Người này chưa có bài viết nào</div>
+                    )}
                 </div>
             </div>
         </div>

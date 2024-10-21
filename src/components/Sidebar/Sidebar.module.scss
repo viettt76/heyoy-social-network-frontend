@@ -114,6 +114,7 @@
 
 @media (max-width: 739px) {
     .sidebar-wrapper {
+        border-radius: 0.8rem;
         display: none;
         position: fixed;
         box-shadow: 0 0 0 2px $box-shadow;
@@ -139,6 +140,3 @@
         display: block;
     }
 }
-// @media (max-width: 940px) {
-
-// }

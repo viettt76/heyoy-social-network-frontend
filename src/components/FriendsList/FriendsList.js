@@ -52,7 +52,11 @@ const FriendsList = () => {
                 id="checkbox-show-friends-list"
             />
             <div className={clsx(styles['wrapper'])}>
-                <ul className={clsx(styles['friends-list-wrapper'])}>
+                <ul
+                    className={clsx(styles['friends-list-wrapper'], {
+                        [['scroll']]: onlineFriends?.length > 0,
+                    })}
+                >
                     <div className={clsx(styles['title'])}>Bạn bè</div>
                     {onlineFriends?.map((friend, index) => {
                         return (
@@ -75,7 +79,11 @@ const FriendsList = () => {
                         );
                     })}
                 </ul>
-                <ul className={clsx(styles['friends-list-wrapper'])}>
+                <ul
+                    className={clsx(styles['friends-list-wrapper'], {
+                        [['scroll']]: myChatGroups?.length > 0,
+                    })}
+                >
                     <div className={clsx(styles['title'])}>Nhóm chat</div>
                     {myChatGroups?.map((group, index) => {
                         return (

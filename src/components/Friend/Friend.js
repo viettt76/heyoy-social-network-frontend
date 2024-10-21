@@ -1,6 +1,8 @@
 import clsx from 'clsx';
 import styles from './Friend.module.scss';
 import defaultAvatar from '~/assets/imgs/default-avatar.png';
+import { useDispatch } from 'react-redux';
+import * as actions from '~/redux/actions';
 
 const Friend = ({
     className,
@@ -16,6 +18,19 @@ const Friend = ({
     handleShowModalUnfriend,
     handleCancelFriendRequest,
 }) => {
+    const dispatch = useDispatch();
+
+    const handleOpenChat = () => {
+        dispatch(
+            actions.openChat({
+                id,
+                firstName,
+                lastName,
+                avatar,
+            }),
+        );
+    };
+
     return (
         <div className={clsx(styles['friend-wrapper'], className)}>
             <img className={clsx(styles['friend-avatar'])} src={avatar || defaultAvatar} />
@@ -26,7 +41,9 @@ const Friend = ({
                 )}
                 {type === 'friend' && (
                     <div className={clsx(styles['actions'])}>
-                        <button className="btn btn-primary fz-16 w-100">Nhắn tin</button>
+                        <button className="btn btn-primary fz-16 w-100" onClick={handleOpenChat}>
+                            Nhắn tin
+                        </button>
                         <button
                             className="btn btn-danger fz-16 w-100 mt-2"
                             onClick={() => handleShowModalUnfriend(id, firstName, lastName)}

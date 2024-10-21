@@ -36,8 +36,8 @@
 .friends-list-wrapper {
     width: 100%;
 
-    &:hover {
-        overflow-y: scroll;
+    &.scroll:hover {
+        overflow-y: auto;
 
         &::-webkit-scrollbar {
             width: 0.8rem;
@@ -107,6 +107,7 @@
 
 @media (max-width: 940px) {
     .wrapper {
+        border-radius: 0.8rem;
         display: none;
         position: fixed;
         box-shadow: 0 0 0 2px $box-shadow;

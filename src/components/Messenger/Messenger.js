@@ -9,10 +9,11 @@ import socket from '~/socket';
 import { useDispatch, useSelector } from 'react-redux';
 import * as actions from '~/redux/actions';
 import { Tooltip as ReactTooltip } from 'react-tooltip';
-import { userInfoSelector } from '~/redux/selectors';
+import { notificationsMessengerSelector, userInfoSelector } from '~/redux/selectors';
 
 const Messenger = ({ messengerRef, showMessenger, setShowMessenger }) => {
     const userInfo = useSelector(userInfoSelector);
+    const notificationsMessenger = useSelector(notificationsMessengerSelector);
     const dispatch = useDispatch();
 
     const [showCreateNewGroup, setShowCreateNewGroup] = useState(false);
@@ -110,7 +111,11 @@ const Messenger = ({ messengerRef, showMessenger, setShowMessenger }) => {
                         return (
                             <div
                                 key={`group-chat-${conversation?.id}`}
-                                className={clsx(styles['conversation-wrapper'])}
+                                className={clsx(styles['conversation-wrapper'], {
+                                    [[styles['unread']]]: notificationsMessenger?.some(
+                                        (noti) => noti?.senderId === conversation?.friendId && !noti?.isRead,
+                                    ),
+                                })}
                                 onClick={() =>
                                     addToOpenChatList(
                                         conversation?.groupId

@@ -62,3 +62,27 @@ export const uploadToCloudinary = async (image) => {
         console.error('Error uploading image to Cloudinary:', error);
     }
 };
+
+export const timeDifferenceFromNow = (isoDate) => {
+    const now = new Date();
+    const past = new Date(isoDate);
+    const diffMs = now - past;
+
+    const seconds = Math.floor(diffMs / 1000);
+    const minutes = Math.floor(seconds / 60);
+    const hours = Math.floor(minutes / 60);
+    const days = Math.floor(hours / 24);
+    const weeks = Math.floor(days / 7);
+
+    if (weeks >= 1) {
+        return `${weeks} tuần`;
+    } else if (days >= 1) {
+        return `${days} ngày`;
+    } else if (hours >= 1) {
+        return `${hours} giờ`;
+    } else if (minutes >= 1) {
+        return `${minutes} phút`;
+    } else {
+        return `${seconds} giây`;
+    }
+};

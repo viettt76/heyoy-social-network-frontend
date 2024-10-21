@@ -70,7 +70,7 @@ const UserProfileFriends = ({ friends: friendsProp, viewModeAsOther }) => {
     return (
         <>
             {friends?.length <= 0 ? (
-                <div>Không có bạn bè</div>
+                <div className="text-center fz-16">Không có bạn bè</div>
             ) : (
                 <div className={clsx('container')}>
                     <div className={clsx(styles['friends-wrapper'])}>
