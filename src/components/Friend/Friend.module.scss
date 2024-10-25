@@ -26,6 +26,11 @@
             font-size: 1.7rem;
             font-weight: 600;
             line-height: 2rem;
+            color: $text;
+
+            &:hover {
+                text-decoration: underline;
+            }
         }
 
         .mutual-friends {

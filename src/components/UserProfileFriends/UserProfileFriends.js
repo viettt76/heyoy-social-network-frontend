@@ -92,6 +92,9 @@ const UserProfileFriends = ({ friends: friendsProp, viewModeAsOther }) => {
                                 type = 'friend-suggestion';
                                 hasHandleSendFriendRequest = true;
                             }
+                            if (userInfo?.id === friend?.id) {
+                                type = null;
+                            }
 
                             return (
                                 <Friend

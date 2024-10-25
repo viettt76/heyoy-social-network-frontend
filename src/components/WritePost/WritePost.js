@@ -65,9 +65,9 @@ const WritePost = () => {
             const imagesUrl = [];
             dispatch(actions.startLoading('writePost'));
             if (imagesUpload.length > 0) {
-                const uploadPromises = imagesUpload.map((fileUpload) => uploadToCloudinary(fileUpload));
-
-                const uploadedUrls = await Promise.all(uploadPromises);
+                const uploadedUrls = await Promise.all(
+                    imagesUpload.map((fileUpload) => uploadToCloudinary(fileUpload)),
+                );
                 imagesUrl.push(...uploadedUrls);
             }
 

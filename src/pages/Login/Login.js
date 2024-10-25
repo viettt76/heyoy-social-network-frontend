@@ -37,6 +37,7 @@ function Login() {
     const [showPasswordLogin, setShowPasswordLogin] = useState(false);
     const [validatedFormLogin, setValidatedFormLogin] = useState(false);
     const [errorLogin, setErrorLogin] = useState('');
+    const [isAccountDeleted, setIsAccountDeleted] = useState(false);
 
     const loginFormRef = useRef(null);
     const signUpFormRef = useRef(null);
@@ -89,18 +90,7 @@ function Login() {
                 (async () => {
                     try {
                         const res = await getMyInfoService();
-                        dispatch(
-                            actions.saveUserInfo({
-                                id: res?.id,
-                                firstName: res?.firstName,
-                                lastName: res?.lastName,
-                                birthday: res?.birthday,
-                                avatar: res?.avatar,
-                                homeTown: res?.homeTown,
-                                school: res?.school,
-                                workplace: res?.workplace,
-                            }),
-                        );
+                        dispatch(actions.saveUserInfo(res));
 
                         socket.connect();
                     } catch (error) {
@@ -110,7 +100,13 @@ function Login() {
             }
         } catch (error) {
             console.log(error);
-            setErrorLogin('Tài khoản hoặc mật khẩu của bạn không chính xác');
+            if (error.status === 410) {
+                console.log('lỗi 410');
+                setErrorLogin('Tài khoản của bạn đã bị xoá');
+                setIsAccountDeleted(true);
+            } else {
+                setErrorLogin('Tài khoản hoặc mật khẩu của bạn không chính xác');
+            }
         } finally {
             dispatch(actions.stopLoading('login'));
         }
@@ -215,9 +211,12 @@ function Login() {
                         )}
                     </Form.Group>
                     {errorLogin && (
-                        <div className={clsx('mb-3', styles['invalid-feedback'], styles['login-error'])}>
-                            Tài khoản hoặc mật khẩu của bạn không chính xác
-                        </div>
+                        <>
+                            <div className={clsx('mb-3', styles['invalid-feedback'], styles['login-error'])}>
+                                {errorLogin}
+                            </div>
+                            <div className={clsx(styles['restore'])}>Khôi phục</div>
+                        </>
                     )}
                 </Form>
                 {loading?.login && <Loading className={clsx(styles['login-loading'])} />}

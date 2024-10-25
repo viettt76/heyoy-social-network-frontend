@@ -88,9 +88,22 @@
 
                 :global(.dropdown-menu) {
                     font-size: 1.6rem;
+                    border-radius: 0.8rem;
+                    min-width: 30rem;
 
                     :global(.dropdown-item) {
-                        padding: 0.4rem 0.8rem;
+                        padding: 0.6rem 1.2rem;
+
+                        &.dropdown-item {
+                            display: flex;
+                            align-items: center;
+                            gap: 0.8rem;
+
+                            .dropdown-item-icon {
+                                width: 2rem;
+                                flex-shrink: 0;
+                            }
+                        }
                     }
                 }
             }
@@ -303,6 +316,28 @@
         &:hover {
             background-color: $background-color-gray;
         }
+    }
+}
+
+.modal-private-profile {
+    .modal-title {
+        font-size: 2.2rem;
+        font-weight: 600;
+    }
+
+    .modal-text {
+        font-size: 1.6rem;
+    }
+
+    .not-allowed {
+        background-color: #e4e6eb !important;
+        border-color: #e4e6eb !important;
+        cursor: not-allowed;
+    }
+
+    .spinner {
+        border-width: 0.15rem;
+        margin-right: 1.2rem;
     }
 }
 

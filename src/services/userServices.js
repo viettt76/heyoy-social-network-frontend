@@ -35,3 +35,11 @@ export const readMenuNotificationMessengerService = () => {
 export const readMenuNotificationOtherService = () => {
     return axios.patch('/user/notification/other/open');
 };
+
+export const setPrivateProfileService = () => {
+    return axios.patch('/user/profile/private');
+};
+
+export const setPublicProfileService = () => {
+    return axios.patch('/user/profile/public');
+};

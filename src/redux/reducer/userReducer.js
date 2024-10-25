@@ -9,6 +9,7 @@ const initialState = {
     homeTown: null,
     school: null,
     workplace: null,
+    isPrivate: false,
 };
 
 const userReducer = (state = initialState, action) => {
@@ -33,6 +34,7 @@ const userReducer = (state = initialState, action) => {
                 homeTown: null,
                 school: null,
                 workplace: null,
+                isPrivate: false,
             };
         default:
             return state;

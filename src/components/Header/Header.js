@@ -41,11 +41,12 @@ const Header = () => {
     } = useClickOutside(false, notificationIconRef);
 
     const userDashboardIconRef = useRef(null);
+    const modalDeleteAccountRef = useRef(null);
     const {
         ref: userDashboardRef,
         isComponentVisible: showUserDashboard,
         setIsComponentVisible: setShowUserDashboard,
-    } = useClickOutside(false, userDashboardIconRef);
+    } = useClickOutside(false, [userDashboardIconRef, modalDeleteAccountRef]);
 
     useEffect(() => {
         (async () => {
@@ -96,6 +97,7 @@ const Header = () => {
     const handleShowNotification = async () => {
         try {
             await readMenuNotificationOtherService();
+            dispatch(actions.readNotificationOther());
             setShowNotification(!showNotification);
         } catch (error) {
             console.log(error);
@@ -181,7 +183,11 @@ const Header = () => {
                             content="Tài khoản"
                         />
                     </div>
-                    <UserDashboard userDashboardRef={userDashboardRef} showUserDashboard={showUserDashboard} />
+                    <UserDashboard
+                        userDashboardRef={userDashboardRef}
+                        modalDeleteAccountRef={modalDeleteAccountRef}
+                        showUserDashboard={showUserDashboard}
+                    />
                 </div>
             </div>
         </div>

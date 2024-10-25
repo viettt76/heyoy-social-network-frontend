@@ -4,10 +4,11 @@ export const getMessagesWithFriendService = (friendId) => {
     return axios.get(`/chat/messages?friendId=${friendId}`);
 };
 
-export const sendMessageWithFriendService = ({ friendId, message }) => {
+export const sendMessageWithFriendService = ({ friendId, message, file }) => {
     return axios.post('/chat/message', {
-        friendId: friendId,
-        message: message,
+        friendId,
+        message,
+        file,
     });
 };
 
@@ -56,4 +57,11 @@ export const getLatestConversationsService = () => {
 
 export const updateGroupAvatarService = ({ groupChatId, avatar }) => {
     return axios.patch(`/chat/group-chat/avatar/${groupChatId}`, { avatar });
+};
+
+export const emotionMessageService = ({ messageId, emotionType }) => {
+    return axios.post('/chat/message/emotion', {
+        messageId,
+        emotionType,
+    });
 };

@@ -87,18 +87,7 @@ function FetchUserInfo() {
         const fetchPersonalInfo = async () => {
             try {
                 const res = await getMyInfoService();
-                dispatch(
-                    actions.saveUserInfo({
-                        id: res?.id,
-                        firstName: res?.firstName,
-                        lastName: res?.lastName,
-                        birthday: res?.birthday,
-                        avatar: res?.avatar,
-                        homeTown: res?.homeTown,
-                        school: res?.school,
-                        workplace: res?.workplace,
-                    }),
-                );
+                dispatch(actions.saveUserInfo(res));
             } catch (error) {
                 console.log(error);
             }

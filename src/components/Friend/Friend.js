@@ -3,6 +3,7 @@ import styles from './Friend.module.scss';
 import defaultAvatar from '~/assets/imgs/default-avatar.png';
 import { useDispatch } from 'react-redux';
 import * as actions from '~/redux/actions';
+import { Link } from 'react-router-dom';
 
 const Friend = ({
     className,
@@ -33,9 +34,13 @@ const Friend = ({
 
     return (
         <div className={clsx(styles['friend-wrapper'], className)}>
-            <img className={clsx(styles['friend-avatar'])} src={avatar || defaultAvatar} />
+            <Link to={`/profile/${id}`}>
+                <img className={clsx(styles['friend-avatar'])} src={avatar || defaultAvatar} />
+            </Link>
             <div className={clsx(styles['friend-detail'])}>
-                <div className={clsx(styles['friend-name'])}>{`${lastName} ${firstName}`}</div>
+                <Link to={`/profile/${id}`}>
+                    <div className={clsx(styles['friend-name'])}>{`${lastName} ${firstName}`}</div>
+                </Link>
                 {numberOfCommonFriends > 0 && (
                     <div className={clsx(styles['mutual-friends'])}>{numberOfCommonFriends} bạn chung</div>
                 )}

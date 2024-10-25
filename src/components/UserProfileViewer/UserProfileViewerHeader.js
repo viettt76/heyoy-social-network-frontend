@@ -32,32 +32,38 @@ const UserProfileViewerHeader = ({ numberOfFriends }) => {
                     </div>
                 </div>
             </div>
-            <div className={clsx(styles['profile-tabs-wrapper'])}>
-                <Link
-                    className={clsx(styles['profile-tabs'], {
-                        [[styles['active']]]: location.pathname === `/profile/${userInfo?.id}`,
-                    })}
-                    to={`/profile/${userInfo?.id}`}
-                >
-                    Bài đăng
-                </Link>
-                <Link
-                    className={clsx(styles['profile-tabs'], {
-                        [[styles['active']]]: location.pathname === `/profile/${userInfo?.id}/friends`,
-                    })}
-                    to={`/profile/${userInfo?.id}/friends`}
-                >
-                    Bạn bè
-                </Link>
-                <Link
-                    className={clsx(styles['profile-tabs'], {
-                        [[styles['active']]]: location.pathname === `/profile/${userInfo?.id}/photos`,
-                    })}
-                    to={`/profile/${userInfo?.id}/photos`}
-                >
-                    Ảnh
-                </Link>
-            </div>
+            {userInfo?.isPrivate === undefined ? (
+                <></>
+            ) : (
+                !userInfo?.isPrivate && (
+                    <div className={clsx(styles['profile-tabs-wrapper'])}>
+                        <Link
+                            className={clsx(styles['profile-tabs'], {
+                                [[styles['active']]]: location.pathname === `/profile/${userInfo?.id}`,
+                            })}
+                            to={`/profile/${userInfo?.id}`}
+                        >
+                            Bài đăng
+                        </Link>
+                        <Link
+                            className={clsx(styles['profile-tabs'], {
+                                [[styles['active']]]: location.pathname === `/profile/${userInfo?.id}/friends`,
+                            })}
+                            to={`/profile/${userInfo?.id}/friends`}
+                        >
+                            Bạn bè
+                        </Link>
+                        <Link
+                            className={clsx(styles['profile-tabs'], {
+                                [[styles['active']]]: location.pathname === `/profile/${userInfo?.id}/photos`,
+                            })}
+                            to={`/profile/${userInfo?.id}/photos`}
+                        >
+                            Ảnh
+                        </Link>
+                    </div>
+                )
+            )}
         </div>
     );
 };

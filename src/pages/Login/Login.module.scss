@@ -51,6 +51,19 @@
     }
 }
 
+.restore {
+    color: $main-color;
+    text-align: center;
+    font-size: 1.6rem;
+    cursor: pointer;
+    margin-top: -1rem;
+    margin-bottom: 1rem;
+
+    &:hover {
+        text-decoration: underline;
+    }
+}
+
 .show-hide-password {
     position: absolute;
     right: 3rem;

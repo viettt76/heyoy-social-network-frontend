@@ -304,7 +304,7 @@ const PostContent = ({ postInfo, handleShowWriteComment, showModal, handleShowMo
                         </div>
                     )}
                     {showEmotionList && (
-                        <ul className={clsx(styles['emotion-list'], {})}>
+                        <ul className={clsx(styles['emotion-list'])}>
                             {emotionsType?.map((emotion) => {
                                 const Icon = emotionComponentMap[emotion?.name];
                                 return (

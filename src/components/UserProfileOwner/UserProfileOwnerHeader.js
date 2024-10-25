@@ -1,12 +1,12 @@
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faEllipsis, faPencil } from '@fortawesome/free-solid-svg-icons';
+import { faEllipsis, faLock, faPencil, faEye, faUnlock } from '@fortawesome/free-solid-svg-icons';
 import clsx from 'clsx';
 import styles from './UserProfileOwner.module.scss';
 import { useDispatch, useSelector } from 'react-redux';
 import { loadingSelector, userInfoSelector } from '~/redux/selectors';
 import { useState } from 'react';
-import { Button, Dropdown, Modal } from 'react-bootstrap';
-import { updateMyInfoService } from '~/services/userServices';
+import { Button, Dropdown, Modal, Spinner } from 'react-bootstrap';
+import { setPrivateProfileService, setPublicProfileService, updateMyInfoService } from '~/services/userServices';
 import * as actions from '~/redux/actions';
 import Cropper from 'react-easy-crop';
 import defaultAvatar from '~/assets/imgs/default-avatar.png';
@@ -65,6 +65,42 @@ const UserProfileOwnerHeader = ({ handleOnViewMode, numberOfFriends }) => {
             console.error('Failed to crop image', error);
         } finally {
             dispatch(actions.stopLoading('updateAvatar'));
+        }
+    };
+
+    const [showModalSetPrivateProfile, setShowModalSetPrivateProfile] = useState(false);
+
+    const handleShowModalSetPrivateProfile = () => setShowModalSetPrivateProfile(true);
+    const handleHideModalSetPrivateProfile = () => setShowModalSetPrivateProfile(false);
+
+    const handleSetPrivateProfile = async () => {
+        try {
+            dispatch(actions.startLoading('SetPrivateProfile'));
+            await setPrivateProfileService();
+        } catch (error) {
+            console.log(error);
+        } finally {
+            dispatch(actions.stopLoading('SetPrivateProfile'));
+            handleHideModalSetPrivateProfile();
+            window.location.reload();
+        }
+    };
+
+    const [showModalSetPublicProfile, setShowModalSetPublicProfile] = useState(false);
+
+    const handleShowModalSetPublicProfile = () => setShowModalSetPublicProfile(true);
+    const handleHideModalSetPublicProfile = () => setShowModalSetPublicProfile(false);
+
+    const handleSetPublicProfile = async () => {
+        try {
+            dispatch(actions.startLoading('SetPublicProfile'));
+            await setPublicProfileService();
+        } catch (error) {
+            console.log(error);
+        } finally {
+            dispatch(actions.stopLoading('SetPublicProfile'));
+            handleHideModalSetPublicProfile();
+            window.location.reload();
         }
     };
 
@@ -140,9 +176,86 @@ const UserProfileOwnerHeader = ({ handleOnViewMode, numberOfFriends }) => {
                             </Dropdown.Toggle>
 
                             <Dropdown.Menu>
-                                <Dropdown.Item onClick={handleOnViewMode}>Xem với view người khác</Dropdown.Item>
+                                <Dropdown.Item onClick={handleOnViewMode} className={clsx(styles['dropdown-item'])}>
+                                    <FontAwesomeIcon className={clsx(styles['dropdown-item-icon'])} icon={faEye} />{' '}
+                                    <span>Xem với view người khác</span>
+                                </Dropdown.Item>
+                                {userInfo?.isPrivate ? (
+                                    <Dropdown.Item
+                                        onClick={handleShowModalSetPublicProfile}
+                                        className={clsx(styles['dropdown-item'])}
+                                    >
+                                        <FontAwesomeIcon
+                                            className={clsx(styles['dropdown-item-icon'])}
+                                            icon={faUnlock}
+                                        />
+                                        <span>Đặt trang cá nhân công khai</span>
+                                    </Dropdown.Item>
+                                ) : (
+                                    <Dropdown.Item
+                                        onClick={handleShowModalSetPrivateProfile}
+                                        className={clsx(styles['dropdown-item'])}
+                                    >
+                                        <FontAwesomeIcon className={clsx(styles['dropdown-item-icon'])} icon={faLock} />
+                                        <span>Đặt trang cá nhân riêng tư</span>
+                                    </Dropdown.Item>
+                                )}
                             </Dropdown.Menu>
                         </Dropdown>
+                        <Modal
+                            show={showModalSetPrivateProfile}
+                            onHide={handleHideModalSetPrivateProfile}
+                            className={clsx(styles['modal-private-profile'])}
+                        >
+                            <Modal.Header>
+                                <Modal.Title>
+                                    <div className={clsx(styles['modal-title'])}>Đặt trang cá nhân riêng tư</div>
+                                </Modal.Title>
+                            </Modal.Header>
+                            <Modal.Body>
+                                <div className={clsx(styles['modal-text'])}>
+                                    Những người khác sẽ chỉ nhìn thấy tên và ảnh đại diện của bạn
+                                </div>
+                            </Modal.Body>
+                            <Modal.Footer>
+                                <Button
+                                    className={clsx('w-100 fz-16 d-flex align-items-center justify-content-center', {
+                                        [[styles['not-allowed']]]: loading?.SetPrivateProfile,
+                                    })}
+                                    onClick={!loading?.SetPrivateProfile && handleSetPrivateProfile}
+                                >
+                                    {loading?.SetPrivateProfile && <Spinner className={clsx(styles['spinner'])} />}Đặt
+                                    trang cá nhân riêng tư
+                                </Button>
+                            </Modal.Footer>
+                        </Modal>
+                        <Modal
+                            show={showModalSetPublicProfile}
+                            onHide={handleHideModalSetPublicProfile}
+                            className={clsx(styles['modal-private-profile'])}
+                        >
+                            <Modal.Header>
+                                <Modal.Title>
+                                    <div className={clsx(styles['modal-title'])}>Đặt trang cá nhân công khai</div>
+                                </Modal.Title>
+                            </Modal.Header>
+                            <Modal.Body>
+                                <div className={clsx(styles['modal-text'])}>
+                                    Mọi người đều có thể xem ảnh và bài viết trên dòng thời gian của bạn
+                                </div>
+                            </Modal.Body>
+                            <Modal.Footer>
+                                <Button
+                                    className={clsx('w-100 fz-16 d-flex align-items-center justify-content-center', {
+                                        [[styles['not-allowed']]]: loading?.SetPublicProfile,
+                                    })}
+                                    onClick={!loading?.SetPublicProfile && handleSetPublicProfile}
+                                >
+                                    {loading?.SetPublicProfile && <Spinner className={clsx(styles['spinner'])} />}Đặt
+                                    trang cá nhân công khai
+                                </Button>
+                            </Modal.Footer>
+                        </Modal>
                     </div>
                 </div>
             </div>

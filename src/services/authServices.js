@@ -19,3 +19,7 @@ export const loginService = ({ username, password }) => {
 export const logoutService = () => {
     return axios.post('/auth/logout');
 };
+
+export const deleteAccountService = (password) => {
+    return axios.delete('/auth/delete-account', { data: { password } });
+};

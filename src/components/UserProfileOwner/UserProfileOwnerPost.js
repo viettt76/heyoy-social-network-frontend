@@ -1,5 +1,5 @@
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faBuilding, faCakeCandles, faGraduationCap, faLocationDot } from '@fortawesome/free-solid-svg-icons';
+import { faBuilding, faCakeCandles, faGraduationCap, faLocationDot, faLock } from '@fortawesome/free-solid-svg-icons';
 import clsx from 'clsx';
 import styles from './UserProfileOwner.module.scss';
 import Post from '~/components/Post';
@@ -157,6 +157,13 @@ const UserProfileOwnerPost = () => {
                             [[styles['sticky']]]: isSticky,
                         })}
                     >
+                        {userInfo?.isPrivate && (
+                            <div className={clsx(styles['sidebar-item'])}>
+                                <div className="fz-16">
+                                    <FontAwesomeIcon icon={faLock} /> Trang cá nhân của bạn đang ở trạng thái riêng tư
+                                </div>
+                            </div>
+                        )}
                         <div className={clsx(styles['sidebar-item'])}>
                             <h6 className={clsx(styles['sidebar-item-title'])}>Giới thiệu</h6>
                             <div className={clsx(styles['sidebar-item-content'], styles['introduction'])}>
