@@ -3,11 +3,11 @@
 @keyframes fadeIn {
     from {
         opacity: 0;
-        transform: translateY(2rem);
+        transform: translate(-56%, -20px);
     }
     to {
         opacity: 1;
-        transform: translateY(0);
+        transform: translate(-56%, -44px);
     }
 }
 
@@ -210,15 +210,6 @@
                         left: -4.6rem;
                         right: unset;
                     }
-
-                    .emotion-list {
-                        right: unset;
-                        left: -6rem;
-
-                        &.left--9 {
-                            left: -9rem;
-                        }
-                    }
                 }
             }
 
@@ -232,12 +223,6 @@
                 transform: translateY(-50%);
                 padding: 1rem;
 
-                &:hover {
-                    .emotion-list {
-                        display: flex;
-                    }
-                }
-
                 &::after {
                     content: '';
                     display: block;
@@ -248,29 +233,35 @@
                     right: -4rem;
                 }
             }
+        }
+    }
 
-            .emotion-list {
-                display: none;
-                padding-left: 0;
-                padding: 0.4rem;
-                position: absolute;
-                right: -5.6rem;
-                left: unset;
-                bottom: 2rem;
-                background-color: #fff;
-                border-radius: 3rem;
-                box-shadow: 0 0 0.6rem 0.3rem $box-shadow;
-                align-items: center;
-                animation: fadeIn 0.2s linear;
+    .emotion-list {
+        display: none;
+        padding-left: 0;
+        padding: 0.4rem;
+        position: fixed;
+        transform: translate(-56%, -44px);
+        background-color: #fff;
+        border-radius: 3rem;
+        box-shadow: 0 0 0.6rem 0.3rem $box-shadow;
+        align-items: center;
+        animation: fadeIn 0.2s linear;
 
-                .emotion {
-                    margin-right: 0.6rem;
-                }
+        &.show {
+            display: flex;
+        }
 
-                .emotion:last-child {
-                    margin-right: 0;
-                }
-            }
+        &.right--5 {
+            right: -4.6rem;
+        }
+
+        .emotion {
+            margin-right: 0.6rem;
+        }
+
+        .emotion:last-child {
+            margin-right: 0;
         }
     }
 

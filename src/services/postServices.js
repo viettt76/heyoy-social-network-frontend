@@ -44,3 +44,9 @@ export const getCommentsService = ({ postId, sortField = 'createdAt', sortType =
         },
     });
 };
+
+export const releaseEmotionCommentService = ({ commentId, emotionId }) => {
+    return axios.put(`/posts/comment/emotion/${commentId}`, {
+        emotionId,
+    });
+};

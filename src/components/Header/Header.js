@@ -15,11 +15,14 @@ import {
     getNotificationsService,
     readMenuNotificationMessengerService,
     readMenuNotificationOtherService,
+    searchService,
 } from '~/services/userServices';
 import { useDispatch, useSelector } from 'react-redux';
 import * as actions from '~/redux/actions';
 import { notificationsMessengerSelector, notificationsOtherSelector } from '~/redux/selectors';
 import Notification from '~/components/Notification';
+import useDebounce from '~/hook/useDebounce';
+import defaultAvatar from '~/assets/imgs/default-avatar.png';
 
 const Header = () => {
     const dispatch = useDispatch();
@@ -42,11 +45,12 @@ const Header = () => {
 
     const userDashboardIconRef = useRef(null);
     const modalDeleteAccountRef = useRef(null);
+    const modalChangePasswordRef = useRef(null);
     const {
         ref: userDashboardRef,
         isComponentVisible: showUserDashboard,
         setIsComponentVisible: setShowUserDashboard,
-    } = useClickOutside(false, [userDashboardIconRef, modalDeleteAccountRef]);
+    } = useClickOutside(false, [userDashboardIconRef, modalDeleteAccountRef, modalChangePasswordRef]);
 
     useEffect(() => {
         (async () => {
@@ -84,6 +88,24 @@ const Header = () => {
         };
     }, []);
 
+    const [searchKeyword, setSearchKeyword] = useState('');
+    const searchKeywordDebounced = useDebounce(searchKeyword, 500);
+
+    const [searchResult, setSearchResult] = useState([]);
+
+    useEffect(() => {
+        (async () => {
+            try {
+                if (searchKeywordDebounced.trim() !== '') {
+                    const res = await searchService(searchKeywordDebounced.trim());
+                    setSearchResult(res);
+                }
+            } catch (error) {
+                console.log(error);
+            }
+        })();
+    }, [searchKeywordDebounced]);
+
     const handleShowMessenger = async () => {
         try {
             await readMenuNotificationMessengerService();
@@ -104,6 +126,8 @@ const Header = () => {
         }
     };
 
+    const x = () => {};
+
     return (
         <div className={clsx('d-flex justify-content-between', styles['header'])}>
             <div className="d-flex">
@@ -112,7 +136,37 @@ const Header = () => {
                 </Link>
                 <div className={clsx('d-flex align-items-center', styles['search-wrapper'])}>
                     <FontAwesomeIcon className={clsx(styles['search-icon'])} icon={faMagnifyingGlass} />
-                    <input className={clsx('fz-16 ms-3', styles['search-input'])} placeholder="Tìm kiếm trên Heyoy" />
+                    <input
+                        className={clsx('fz-16 ms-3', styles['search-input'])}
+                        placeholder="Tìm kiếm trên Heyoy"
+                        onChange={(e) => setSearchKeyword(e.target.value)}
+                    />
+                    {searchResult?.length > 0 && (
+                        <div className={clsx(styles['search-result-wrapper'])}>
+                            {searchResult?.map((item, index) => {
+                                return (
+                                    <Link
+                                        to={`/profile/${item?.id}`}
+                                        key={`search-result-item-${index}`}
+                                        className={clsx(styles['search-result-item'])}
+                                    >
+                                        <img
+                                            className={clsx(styles['search-result-item-image'])}
+                                            src={item?.avatar || defaultAvatar}
+                                        />
+                                        <div className={clsx(styles[''])}>
+                                            <div className={clsx(styles['search-result-item-name'])}>
+                                                <b>
+                                                    {item?.lastName} {item?.firstName}
+                                                </b>
+                                            </div>
+                                            {/* <div className={clsx(styles['search-result-item-more-info'])}>Bạn bè</div> */}
+                                        </div>
+                                    </Link>
+                                );
+                            })}
+                        </div>
+                    )}
                 </div>
             </div>
             <div className="d-flex">
@@ -185,8 +239,10 @@ const Header = () => {
                     </div>
                     <UserDashboard
                         userDashboardRef={userDashboardRef}
-                        modalDeleteAccountRef={modalDeleteAccountRef}
                         showUserDashboard={showUserDashboard}
+                        setShowUserDashboard={setShowUserDashboard}
+                        modalDeleteAccountRef={modalDeleteAccountRef}
+                        modalChangePasswordRef={modalChangePasswordRef}
                     />
                 </div>
             </div>

@@ -43,3 +43,11 @@ export const setPrivateProfileService = () => {
 export const setPublicProfileService = () => {
     return axios.patch('/user/profile/public');
 };
+
+export const searchService = (keyword) => {
+    return axios.get('/user/search', {
+        params: {
+            keyword,
+        },
+    });
+};

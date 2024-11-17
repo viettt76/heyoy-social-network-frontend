@@ -202,6 +202,33 @@ const ChatPopup = ({ index, friend }) => {
         }
     };
 
+    const [currentMessageExpandId, setCurrentMessageExpandId] = useState(null);
+
+    const expandEmotionListRef = useRef([]);
+    const {
+        ref: emotionListRef,
+        isComponentVisible: showEmotionList,
+        setIsComponentVisible: setShowEmotionList,
+    } = useClickOutside(false, expandEmotionListRef);
+
+    const [positionOfEmotionList, setPositionOfEmotionList] = useState({
+        x: 0,
+        y: 0,
+    });
+
+    useEffect(() => {
+        setShowEmotionList(false);
+    }, [currentMessageExpandId]);
+
+    const handleShowEmotionList = (e, messageId) => {
+        setCurrentMessageExpandId(messageId);
+        setShowEmotionList(true);
+        setPositionOfEmotionList({
+            x: e.clientX,
+            y: e.clientY,
+        });
+    };
+
     return (
         <div
             style={{ right: index === 0 ? '3rem' : '38rem', zIndex: 2 - index }}
@@ -311,7 +338,11 @@ const ChatPopup = ({ index, friend }) => {
                                                     {processingMessage}
                                                 </div>
                                             )}
-                                        <div className={clsx(styles['message-expand'])}>
+                                        <div
+                                            ref={(el) => (expandEmotionListRef.current[index] = el)}
+                                            className={clsx(styles['message-expand'])}
+                                            onClick={(e) => handleShowEmotionList(e, message?.id)}
+                                        >
                                             <svg
                                                 viewBox="0 0 20 20"
                                                 width="16"
@@ -336,78 +367,6 @@ const ChatPopup = ({ index, friend }) => {
                                                     ry="9"
                                                 ></ellipse>
                                             </svg>
-                                            <ul
-                                                className={clsx(styles['emotion-list'], {
-                                                    [[styles['left--9']]]: message?.message?.length < 4,
-                                                })}
-                                            >
-                                                <li
-                                                    className={clsx(styles['emotion'])}
-                                                    onClick={() =>
-                                                        handleEmotionMessage({
-                                                            messageId: message?.id,
-                                                            emotionType: 'like',
-                                                        })
-                                                    }
-                                                >
-                                                    <LikeIcon width={20} height={20} />
-                                                </li>
-                                                <li
-                                                    className={clsx(styles['emotion'])}
-                                                    onClick={() =>
-                                                        handleEmotionMessage({
-                                                            messageId: message?.id,
-                                                            emotionType: 'love',
-                                                        })
-                                                    }
-                                                >
-                                                    <LoveIcon width={20} height={20} />
-                                                </li>
-                                                <li
-                                                    className={clsx(styles['emotion'])}
-                                                    onClick={() =>
-                                                        handleEmotionMessage({
-                                                            messageId: message?.id,
-                                                            emotionType: 'haha',
-                                                        })
-                                                    }
-                                                >
-                                                    <HaHaIcon width={20} height={20} />
-                                                </li>
-                                                <li
-                                                    className={clsx(styles['emotion'])}
-                                                    onClick={() =>
-                                                        handleEmotionMessage({
-                                                            messageId: message?.id,
-                                                            emotionType: 'wow',
-                                                        })
-                                                    }
-                                                >
-                                                    <WowIcon width={20} height={20} />
-                                                </li>
-                                                <li
-                                                    className={clsx(styles['emotion'])}
-                                                    onClick={() =>
-                                                        handleEmotionMessage({
-                                                            messageId: message?.id,
-                                                            emotionType: 'sad',
-                                                        })
-                                                    }
-                                                >
-                                                    <SadIcon width={20} height={20} />
-                                                </li>
-                                                <li
-                                                    className={clsx(styles['emotion'])}
-                                                    onClick={() =>
-                                                        handleEmotionMessage({
-                                                            messageId: message?.id,
-                                                            emotionType: 'angry',
-                                                        })
-                                                    }
-                                                >
-                                                    <AngryIcon width={20} height={20} />
-                                                </li>
-                                            </ul>
                                         </div>
                                     </div>
                                     {index === messages?.length - 1 && (
@@ -430,6 +389,74 @@ const ChatPopup = ({ index, friend }) => {
                 )}
                 <div></div>
             </div>
+            <ul
+                ref={emotionListRef}
+                style={{ top: `${positionOfEmotionList?.y}px`, left: `${positionOfEmotionList?.x}px` }}
+                className={clsx(styles['emotion-list'], {
+                    [[styles['show']]]: showEmotionList,
+                })}
+            >
+                <li
+                    className={clsx(styles['emotion'])}
+                    onClick={() =>
+                        handleEmotionMessage({
+                            emotionType: 'like',
+                        })
+                    }
+                >
+                    <LikeIcon width={20} height={20} />
+                </li>
+                <li
+                    className={clsx(styles['emotion'])}
+                    onClick={() =>
+                        handleEmotionMessage({
+                            emotionType: 'love',
+                        })
+                    }
+                >
+                    <LoveIcon width={20} height={20} />
+                </li>
+                <li
+                    className={clsx(styles['emotion'])}
+                    onClick={() =>
+                        handleEmotionMessage({
+                            emotionType: 'haha',
+                        })
+                    }
+                >
+                    <HaHaIcon width={20} height={20} />
+                </li>
+                <li
+                    className={clsx(styles['emotion'])}
+                    onClick={() =>
+                        handleEmotionMessage({
+                            emotionType: 'wow',
+                        })
+                    }
+                >
+                    <WowIcon width={20} height={20} />
+                </li>
+                <li
+                    className={clsx(styles['emotion'])}
+                    onClick={() =>
+                        handleEmotionMessage({
+                            emotionType: 'sad',
+                        })
+                    }
+                >
+                    <SadIcon width={20} height={20} />
+                </li>
+                <li
+                    className={clsx(styles['emotion'])}
+                    onClick={() =>
+                        handleEmotionMessage({
+                            emotionType: 'angry',
+                        })
+                    }
+                >
+                    <AngryIcon width={20} height={20} />
+                </li>
+            </ul>
             <div className={clsx(styles['chat-footer'])}>
                 <div className={clsx(styles['send-message-wrapper'])}>
                     <label htmlFor="chatpopup-attachment">

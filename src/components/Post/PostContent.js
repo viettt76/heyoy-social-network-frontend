@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, memo, useState, useContext } from 'react';
 import { Link } from 'react-router-dom';
 import clsx from 'clsx';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
@@ -9,7 +9,6 @@ import { LikeIcon, LoveIcon, LoveLoveIcon, HaHaIcon, WowIcon, SadIcon, AngryIcon
 import defaultAvatar from '~/assets/imgs/default-avatar.png';
 import {
     cancelReleasedEmotionPostService,
-    getAllEmotionsService,
     getCommentsService,
     releaseEmotionPostService,
 } from '~/services/postServices';
@@ -18,8 +17,19 @@ import socket from '~/socket';
 import { useSelector } from 'react-redux';
 import { userInfoSelector } from '~/redux/selectors';
 import { format } from 'date-fns';
+import { EmotionsTypeContext } from '~/App';
 
-const PostContent = ({ postInfo, handleShowWriteComment, showModal, handleShowModal, handleFocusSendComment }) => {
+const PostContent = ({
+    postInfo,
+    handleShowWriteComment,
+    showModal,
+    currentEmotionNameCustom,
+    setCurrentEmotionNameCustom,
+    copyEmotions,
+    setCopyEmotions,
+    handleShowModal,
+    handleFocusSendComment,
+}) => {
     const {
         id,
         posterId,
@@ -31,16 +41,11 @@ const PostContent = ({ postInfo, handleShowWriteComment, showModal, handleShowMo
         visibility,
         content,
         currentEmotionId,
-        currentEmotionName,
-        emotions = [],
         pictures = [],
     } = postInfo;
     const userInfo = useSelector(userInfoSelector);
 
-    const [copyEmotions, setCopyEmotions] = useState(emotions);
-    const [emotionsCustom, setEmotionsCustom] = useState([]);
     const [mostEmotions, setMostEmotions] = useState([]);
-    const [currentEmotionNameCustom, setCurrentEmotionNameCustom] = useState(currentEmotionName);
 
     const [numberOfComments, setNumberOfComments] = useState(0);
 
@@ -58,7 +63,6 @@ const PostContent = ({ postInfo, handleShowWriteComment, showModal, handleShowMo
 
     useEffect(() => {
         const emoCus = _.groupBy(copyEmotions, 'emotion.name');
-        setEmotionsCustom(emoCus);
 
         const mostEmo = _.sortBy(emoCus, 'length').reverse();
         if (mostEmo.length > 0) {
@@ -81,19 +85,7 @@ const PostContent = ({ postInfo, handleShowWriteComment, showModal, handleShowMo
         visibleImages = [...pictures];
     }
 
-    const [emotionsType, setEmotionsType] = useState([]);
-
-    useEffect(() => {
-        const fetchAllEmotions = async () => {
-            try {
-                const res = await getAllEmotionsService();
-                setEmotionsType(res);
-            } catch (error) {
-                console.log(error);
-            }
-        };
-        fetchAllEmotions();
-    }, []);
+    const emotionsType = useContext(EmotionsTypeContext);
 
     const emotionComponentMap = {
         Thích: LikeIcon,
@@ -116,60 +108,6 @@ const PostContent = ({ postInfo, handleShowWriteComment, showModal, handleShowMo
     };
 
     const CurrentEmotion = emotionComponentMap[currentEmotionNameCustom];
-
-    useEffect(() => {
-        const handleReleaseEmotion = ({
-            id: emoPostId,
-            postId,
-            userId: reactorId,
-            firstName: reactorFirstName,
-            lastName: reactorLastName,
-            avatar: reactorAvatar,
-            emotionTypeId,
-            emotionTypeName,
-        }) => {
-            if (id === postId) {
-                setCopyEmotions((prev) => [
-                    ...prev,
-                    {
-                        id: emoPostId,
-                        emotion: {
-                            id: emotionTypeId,
-                            name: emotionTypeName,
-                        },
-                        userInfo: {
-                            id: reactorId,
-                            firstName: reactorFirstName,
-                            lastName: reactorLastName,
-                            avatar: reactorAvatar,
-                        },
-                    },
-                ]);
-            }
-        };
-
-        const handleUpdateEmotion = ({ id: emoPostId, postId, emotionTypeId, emotionTypeName }) => {
-            if (id === postId) {
-                setCopyEmotions((prev) => {
-                    const clone = _.cloneDeep(prev);
-                    const emo = _.find(clone, { id: emoPostId });
-                    if (emo) {
-                        emo.emotion.id = emotionTypeId;
-                        emo.emotion.name = emotionTypeName;
-                    }
-                    return clone;
-                });
-            }
-        };
-
-        socket.on('releaseEmotion', handleReleaseEmotion);
-        socket.on('updateEmotion', handleUpdateEmotion);
-
-        return () => {
-            socket.off('releaseEmotiff', handleReleaseEmotion);
-            socket.off('updateEmotion', handleUpdateEmotion);
-        };
-    }, [id]);
 
     const [showEmotionList, setShowEmotionList] = useState(false);
     const handleReleaseEmotion = async (emotionId) => {
@@ -198,7 +136,7 @@ const PostContent = ({ postInfo, handleShowWriteComment, showModal, handleShowMo
         return () => {
             socket.off('cancelReleasedEmotion', handleCancelReleasedEmotion);
         };
-    }, [id, userInfo.id]);
+    }, [id, userInfo.id, setCopyEmotions, setCurrentEmotionNameCustom]);
 
     const handleCancelReleasedEmotion = async () => {
         try {
@@ -280,7 +218,7 @@ const PostContent = ({ postInfo, handleShowWriteComment, showModal, handleShowMo
 
                 <div className={clsx(styles['amount-of-comments-wrapper'])}>
                     <span onClick={handleShowModal}>{numberOfComments || 0} bình luận</span>
-                    <span>32 chia sẻ</span>
+                    {/* <span>0 chia sẻ</span> */}
                 </div>
             </div>
             <div className={clsx(styles['user-actions-wrapper'])}>
@@ -327,13 +265,13 @@ const PostContent = ({ postInfo, handleShowWriteComment, showModal, handleShowMo
                     <FontAwesomeIcon icon={faComment} />
                     <span>Bình luận</span>
                 </div>
-                <div className={clsx(styles['user-action'])}>
+                {/* <div className={clsx(styles['user-action'])}>
                     <FontAwesomeIcon icon={faShare} />
                     <span>Chia sẻ</span>
-                </div>
+                </div> */}
             </div>
         </div>
     );
 };
 
-export default PostContent;
+export default memo(PostContent);

@@ -8,7 +8,7 @@ import { faEye, faEyeSlash } from '@fortawesome/free-regular-svg-icons';
 import styles from './Login.module.scss';
 import customToastify from '~/utils/customToastify';
 import { getMyInfoService } from '~/services/userServices';
-import { loginService, signUpService } from '~/services/authServices';
+import { loginService, recoverAccountService, signUpService } from '~/services/authServices';
 import * as actions from '~/redux/actions';
 import socket from '~/socket';
 import { loadingSelector } from '~/redux/selectors';
@@ -101,11 +101,14 @@ function Login() {
         } catch (error) {
             console.log(error);
             if (error.status === 410) {
-                console.log('lỗi 410');
                 setErrorLogin('Tài khoản của bạn đã bị xoá');
                 setIsAccountDeleted(true);
-            } else {
+            } else if (error.status === 401) {
                 setErrorLogin('Tài khoản hoặc mật khẩu của bạn không chính xác');
+                setIsAccountDeleted(false);
+            } else {
+                setErrorLogin('Có lỗi xảy ra vui lòng thử lại');
+                setIsAccountDeleted(false);
             }
         } finally {
             dispatch(actions.stopLoading('login'));
@@ -169,6 +172,15 @@ function Login() {
         }
     };
 
+    const handleAccountRecovery = async () => {
+        try {
+            await recoverAccountService(loginInfo);
+            setErrorLogin('');
+        } catch (error) {
+            console.log(error);
+        }
+    };
+
     return (
         <div className="d-flex justify-content-center mt-5">
             <div className={clsx('p-4', styles['login-wrapper'])}>
@@ -215,7 +227,11 @@ function Login() {
                             <div className={clsx('mb-3', styles['invalid-feedback'], styles['login-error'])}>
                                 {errorLogin}
                             </div>
-                            <div className={clsx(styles['restore'])}>Khôi phục</div>
+                            {isAccountDeleted && (
+                                <div className={clsx(styles['restore'])} onClick={handleAccountRecovery}>
+                                    Khôi phục
+                                </div>
+                            )}
                         </>
                     )}
                 </Form>

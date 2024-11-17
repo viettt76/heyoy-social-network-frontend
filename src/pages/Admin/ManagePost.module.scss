@@ -39,6 +39,7 @@
 }
 
 .post-content-wrapper {
+    max-width: 50rem;
     box-shadow: 0 0 0.4rem 0 $box-shadow;
     border-radius: 0.8rem;
 
@@ -393,41 +394,6 @@
                                 }
                             }
 
-                            .comment-current-emotion {
-                                margin-left: 0.6rem;
-                                line-height: 2.4rem;
-                                white-space: nowrap;
-                                font-weight: 600;
-
-                                &.like-emotion {
-                                    color: #0866ff;
-                                }
-
-                                &.love-emotion {
-                                    color: #f33e58;
-                                }
-
-                                &.loveLove-emotion {
-                                    color: #f7b125;
-                                }
-
-                                &.haha-emotion {
-                                    color: #f7b125;
-                                }
-
-                                &.wow-emotion {
-                                    color: #f7b125;
-                                }
-
-                                &.sad-emotion {
-                                    color: #f7b125;
-                                }
-
-                                &.angry-emotion {
-                                    color: #e9710f;
-                                }
-                            }
-
                             .emotion-list {
                                 display: none;
                                 padding-left: 0;
@@ -440,16 +406,6 @@
                                 box-shadow: 0 0 0.6rem 0.3rem $box-shadow;
                                 align-items: center;
                                 animation: fadeIn 0.2s linear;
-
-                                &:after {
-                                    content: '';
-                                    display: block;
-                                    width: 20rem;
-                                    height: 1rem;
-                                    position: absolute;
-                                    bottom: -0.6rem;
-                                    left: 4rem;
-                                }
 
                                 .emotion {
                                     margin-right: 0.6rem;
@@ -596,5 +552,31 @@
         &.active {
             filter: invert(19%) sepia(70%) saturate(5671%) hue-rotate(203deg) brightness(96%) contrast(101%);
         }
+    }
+}
+
+.approve-wrapper {
+    display: flex;
+    padding: 0.6rem 1.8rem 1.2rem;
+    .btn-accept {
+        background-color: $main-color;
+        color: #fff;
+        font-size: 1.6rem;
+        flex: 1;
+        padding: 0.4rem 1rem;
+        text-align: center;
+        border-radius: 0.8rem;
+        margin-right: 1.8rem;
+        cursor: pointer;
+    }
+
+    .btn-deny {
+        background-color: $background-color-gray;
+        font-size: 1.6rem;
+        flex: 1;
+        padding: 0.4rem 1rem;
+        text-align: center;
+        border-radius: 0.8rem;
+        cursor: pointer;
     }
 }

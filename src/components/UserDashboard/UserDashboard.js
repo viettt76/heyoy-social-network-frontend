@@ -1,7 +1,7 @@
 import clsx from 'clsx';
 import styles from './UserDashboard.module.scss';
 import { Link, useNavigate } from 'react-router-dom';
-import { deleteAccountService, logoutService } from '~/services/authServices';
+import { changePasswordService, deleteAccountService, logoutService } from '~/services/authServices';
 import { useDispatch } from 'react-redux';
 import * as actions from '~/redux/actions';
 import socket from '~/socket';
@@ -9,12 +9,19 @@ import defaultAvatar from '~/assets/imgs/default-avatar.png';
 import { useSelector } from 'react-redux';
 import { userInfoSelector } from '~/redux/selectors';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faGear, faRightFromBracket } from '@fortawesome/free-solid-svg-icons';
+import { faGear, faRightFromBracket, faUser } from '@fortawesome/free-solid-svg-icons';
 import Menu from '~/components/Menu';
-import { useEffect, useState } from 'react';
-import { Button, Modal } from 'react-bootstrap';
+import { useEffect, useRef, useState } from 'react';
+import { Button, Form, Modal } from 'react-bootstrap';
+import customToastify from '~/utils/customToastify';
 
-const UserDashboard = ({ userDashboardRef, showUserDashboard, modalDeleteAccountRef }) => {
+const UserDashboard = ({
+    userDashboardRef,
+    showUserDashboard,
+    setShowUserDashboard,
+    modalDeleteAccountRef,
+    modalChangePasswordRef,
+}) => {
     const navigate = useNavigate();
     const dispatch = useDispatch();
 
@@ -36,20 +43,73 @@ const UserDashboard = ({ userDashboardRef, showUserDashboard, modalDeleteAccount
 
     const [showModalDeleteAccount, setShowModalDeleteAccount] = useState(false);
     const [password, setPassword] = useState('');
+    const [errorDetail, setErrorDetail] = useState('');
 
     const handleShowModalDeleteAccount = () => setShowModalDeleteAccount(true);
-    const handleHideModalDeleteAccount = () => {
-        setShowModalDeleteAccount(false);
-    };
+    const handleHideModalDeleteAccount = () => setShowModalDeleteAccount(false);
 
     const handleDeleteAccount = async () => {
         try {
-            const res = await deleteAccountService(password);
-            console.log(res);
+            await deleteAccountService(password);
+            localStorage.removeItem('isAuthenticated');
+            dispatch(actions.clearUserInfo());
+            dispatch(actions.closeAllChat());
+            socket.disconnect();
+            navigate('/login');
         } catch (error) {
             console.log(error);
-        } finally {
-            handleHideModalDeleteAccount();
+            if (error.status === 400 || error.status === 422) {
+                setErrorDetail('Mật khẩu không chính xác');
+            }
+        }
+    };
+
+    const formChangePasswordRef = useRef(null);
+
+    const [showModalChangePassword, setShowModalChangePassword] = useState(false);
+    const [validatedFormChangePassword, setValidatedFormChangePassword] = useState(false);
+    const [formChangePassword, setFormChangePassword] = useState({
+        currentPassword: '',
+        newPassword: '',
+        confirmNewPassword: '',
+    });
+    const [errorMessageChangePassword, setErrorMessageChangePassword] = useState('');
+
+    const handleShowModalChangePassword = () => setShowModalChangePassword(true);
+    const handleHideModalChangePassword = () => setShowModalChangePassword(false);
+
+    const handleChangeFormChangePassword = (e) => {
+        const { name, value } = e.target;
+
+        setFormChangePassword({
+            ...formChangePassword,
+            [name]: value,
+        });
+    };
+
+    const handleChangePassword = async (e) => {
+        try {
+            if (formChangePasswordRef.current.checkValidity() === false) {
+                e.preventDefault();
+                e.stopPropagation();
+                setValidatedFormChangePassword(true);
+            } else {
+                await changePasswordService({
+                    currentPassword: formChangePassword?.currentPassword,
+                    newPassword: formChangePassword?.newPassword,
+                });
+
+                setShowModalChangePassword(false);
+                setShowUserDashboard(false);
+                customToastify.success('Đổi mật khẩu thành công');
+            }
+        } catch (error) {
+            console.log(error);
+            if (error?.status === 400) {
+                setErrorMessageChangePassword('Mật khẩu hiện tại không chính xác');
+            } else {
+                setErrorMessageChangePassword('Đã xảy ra lỗi vui lòng thử lại');
+            }
         }
     };
 
@@ -75,11 +135,11 @@ const UserDashboard = ({ userDashboardRef, showUserDashboard, modalDeleteAccount
                     {
                         label: (
                             <Link className={clsx(styles['dashboard-link'])}>
-                                <FontAwesomeIcon icon={faGear} className={clsx(styles['dashboard-link-icon'])} />
-                                Cài đặt
+                                <FontAwesomeIcon icon={faUser} className={clsx(styles['dashboard-link-icon'])} />
+                                Tài khoản
                             </Link>
                         ),
-                        goToMenu: 'settings',
+                        goToMenu: 'account',
                     },
                     {
                         label: (
@@ -96,10 +156,13 @@ const UserDashboard = ({ userDashboardRef, showUserDashboard, modalDeleteAccount
             ],
         },
         {
-            id: 'settings',
+            id: 'account',
             depthLevel: 2,
             back: 'main',
             menu: [
+                {
+                    label: <div onClick={handleShowModalChangePassword}>Đổi mật khẩu</div>,
+                },
                 {
                     label: <div onClick={handleShowModalDeleteAccount}>Xoá tài khoản</div>,
                 },
@@ -146,9 +209,10 @@ const UserDashboard = ({ userDashboardRef, showUserDashboard, modalDeleteAccount
                             className="form-control mt-3"
                             name="password"
                             type="password"
-                            placeholder="Password"
+                            placeholder="Mật khẩu"
                             onChange={(e) => setPassword(e.target.value)}
                         />
+                        {errorDetail && <div className={clsx(styles['error-detail'])}>{errorDetail}</div>}
                     </div>
                 </Modal.Body>
                 <Modal.Footer>
@@ -158,6 +222,84 @@ const UserDashboard = ({ userDashboardRef, showUserDashboard, modalDeleteAccount
                         </div>
                         <Button className="fz-16" variant="danger" onClick={handleDeleteAccount}>
                             Xoá tài khoản
+                        </Button>
+                    </div>
+                </Modal.Footer>
+            </Modal>
+
+            <Modal
+                ref={showModalChangePassword ? modalChangePasswordRef : null}
+                show={showModalChangePassword}
+                onHide={handleHideModalChangePassword}
+                className={clsx(styles['modal'])}
+            >
+                <Modal.Header className="fz-16" closeButton>
+                    <Modal.Title>
+                        <div className={clsx(styles['modal-title'])}>Đổi mật khẩu</div>
+                    </Modal.Title>
+                </Modal.Header>
+                <Modal.Body>
+                    <Form ref={formChangePasswordRef} noValidate validated={validatedFormChangePassword}>
+                        <Form.Group className="mb-3" md="12">
+                            <Form.Label>Mật khẩu hiện tại</Form.Label>
+                            <Form.Control
+                                value={formChangePassword.currentPassword}
+                                name="currentPassword"
+                                className={clsx('fz-16', {
+                                    [[styles['invalid']]]: errorMessageChangePassword,
+                                })}
+                                minLength={6}
+                                type="password"
+                                required
+                                isInvalid={errorMessageChangePassword}
+                                onChange={handleChangeFormChangePassword}
+                            />
+                            {errorMessageChangePassword && (
+                                <Form.Control.Feedback type="invalid" className="fz-16">
+                                    Mật khẩu hiện tại không đúng
+                                </Form.Control.Feedback>
+                            )}
+                        </Form.Group>
+                        <Form.Group className="mb-3" md="12">
+                            <Form.Label>Mật khẩu mới</Form.Label>
+                            <Form.Control
+                                value={formChangePassword.newPassword}
+                                name="newPassword"
+                                className="fz-16"
+                                minLength={6}
+                                type="password"
+                                required
+                                onChange={handleChangeFormChangePassword}
+                            />
+                            <Form.Control.Feedback type="invalid" className="fz-16">
+                                Mật khẩu phải ít nhất 6 ký tự
+                            </Form.Control.Feedback>
+                        </Form.Group>
+                        <Form.Group className="mb-3" md="12">
+                            <Form.Label>Xác nhận mật khẩu mới</Form.Label>
+                            <Form.Control
+                                value={formChangePassword.confirmNewPassword}
+                                name="confirmNewPassword"
+                                className="fz-16"
+                                minLength={6}
+                                pattern={formChangePassword?.newPassword}
+                                type="password"
+                                required
+                                onChange={handleChangeFormChangePassword}
+                            />
+                            <Form.Control.Feedback type="invalid" className="fz-16">
+                                Mật khẩu xác nhận không chính xác
+                            </Form.Control.Feedback>
+                        </Form.Group>
+                    </Form>
+                </Modal.Body>
+                <Modal.Footer>
+                    <div className="d-flex align-items-revert">
+                        <div className={clsx(styles['btn-cancel'])} onClick={handleHideModalChangePassword}>
+                            Huỷ
+                        </div>
+                        <Button className="fz-16" onClick={handleChangePassword}>
+                            Đổi mật khẩu
                         </Button>
                     </div>
                 </Modal.Footer>

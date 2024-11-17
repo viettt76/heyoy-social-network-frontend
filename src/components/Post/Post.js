@@ -2,11 +2,15 @@ import clsx from 'clsx';
 import PostContent from './PostContent';
 import styles from './Post.module.scss';
 import { sendCommentService } from '~/services/postServices';
-import { useEffect, useRef, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import ModalPost from './ModalPost';
+import socket from '~/socket';
+import _ from 'lodash';
 
 const Post = ({ postInfo }) => {
-    const { id } = postInfo;
+    const { id, currentEmotionName, emotions } = postInfo;
+    const [currentEmotionNameCustom, setCurrentEmotionNameCustom] = useState(currentEmotionName);
+    const [copyEmotions, setCopyEmotions] = useState(emotions);
 
     const [writeComment, setWriteComment] = useState('');
     const [showWriteComment, setShowWriteComment] = useState(false);
@@ -15,7 +19,7 @@ const Post = ({ postInfo }) => {
 
     const [showModal, setShowModal] = useState(false);
 
-    const handleShowModal = () => setShowModal(true);
+    const handleShowModal = useCallback(() => setShowModal(true), []);
     const handleCloseModal = () => setShowModal(false);
 
     const handleSendComment = async (e) => {
@@ -29,10 +33,10 @@ const Post = ({ postInfo }) => {
         }
     };
 
-    const handleShowWriteComment = () => {
+    const handleShowWriteComment = useCallback(() => {
         setShowWriteComment(true);
         handleFocusSendComment();
-    };
+    }, []);
 
     const handleFocusSendComment = () => {
         writeCommentRef.current.focus();
@@ -44,6 +48,60 @@ const Post = ({ postInfo }) => {
         }
     }, [showWriteComment]);
 
+    useEffect(() => {
+        const handleReleaseEmotion = ({
+            id: emoPostId,
+            postId,
+            userId: reactorId,
+            firstName: reactorFirstName,
+            lastName: reactorLastName,
+            avatar: reactorAvatar,
+            emotionTypeId,
+            emotionTypeName,
+        }) => {
+            if (id === postId) {
+                setCopyEmotions((prev) => [
+                    ...prev,
+                    {
+                        id: emoPostId,
+                        emotion: {
+                            id: emotionTypeId,
+                            name: emotionTypeName,
+                        },
+                        userInfo: {
+                            id: reactorId,
+                            firstName: reactorFirstName,
+                            lastName: reactorLastName,
+                            avatar: reactorAvatar,
+                        },
+                    },
+                ]);
+            }
+        };
+
+        const handleUpdateEmotion = ({ id: emoPostId, postId, emotionTypeId, emotionTypeName }) => {
+            if (id === postId) {
+                setCopyEmotions((prev) => {
+                    const clone = _.cloneDeep(prev);
+                    const emo = _.find(clone, { id: emoPostId });
+                    if (emo) {
+                        emo.emotion.id = emotionTypeId;
+                        emo.emotion.name = emotionTypeName;
+                    }
+                    return clone;
+                });
+            }
+        };
+
+        socket.on('releaseEmotion', handleReleaseEmotion);
+        socket.on('updateEmotion', handleUpdateEmotion);
+
+        return () => {
+            socket.off('releaseEmotiff', handleReleaseEmotion);
+            socket.off('updateEmotion', handleUpdateEmotion);
+        };
+    }, [id, setCopyEmotions]);
+
     return (
         <div className={clsx(styles['post-wrapper'])}>
             <div>
@@ -51,6 +109,10 @@ const Post = ({ postInfo }) => {
                     postInfo={postInfo}
                     handleShowWriteComment={handleShowWriteComment}
                     showModal={showModal}
+                    currentEmotionNameCustom={currentEmotionNameCustom}
+                    setCurrentEmotionNameCustom={setCurrentEmotionNameCustom}
+                    copyEmotions={copyEmotions}
+                    setCopyEmotions={setCopyEmotions}
                     handleShowModal={handleShowModal}
                 />
                 <div
@@ -73,7 +135,15 @@ const Post = ({ postInfo }) => {
                     ></i>
                 </div>
             </div>
-            {showModal && <ModalPost postInfo={postInfo} show={showModal} handleClose={handleCloseModal} />}
+            <ModalPost
+                postInfo={postInfo}
+                show={showModal}
+                currentEmotionNameCustom={currentEmotionNameCustom}
+                setCurrentEmotionNameCustom={setCurrentEmotionNameCustom}
+                copyEmotions={copyEmotions}
+                setCopyEmotions={setCopyEmotions}
+                handleClose={handleCloseModal}
+            />
         </div>
     );
 };

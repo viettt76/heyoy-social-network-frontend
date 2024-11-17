@@ -244,16 +244,18 @@ const ChatPopupGroup = ({ index, group }) => {
 
     const handleSendMessage = async () => {
         try {
+            if (sendMessage.trim() === '') return;
+
+            const clone = sendMessage.trim();
             setMessages((prev) => [
                 ...prev,
                 {
                     id: null,
                     sender: userInfo?.id,
-                    message: sendMessage,
+                    message: clone,
                     createdAt: new Date().toISOString(),
                 },
             ]);
-            const clone = sendMessage;
             setSendMessage('');
             setProcessingMessage('Đang xử lý');
 
@@ -549,7 +551,6 @@ const ChatPopupGroup = ({ index, group }) => {
             <div ref={endOfMessagesRef} className={clsx(styles['chat-container'])}>
                 {messages?.length > 0 ? (
                     messages?.map((message, index) => {
-                        console.log(message);
                         let minDiff = 0;
                         let isSameDay = true;
                         const latestTime = calculateTime(message?.createdAt);

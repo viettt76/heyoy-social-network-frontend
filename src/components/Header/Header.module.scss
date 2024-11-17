@@ -28,6 +28,45 @@
             outline: none;
             background-color: $background-color-medium-gray;
         }
+
+        .search-result-wrapper {
+            position: fixed;
+            top: 5.6rem;
+            left: 0;
+            background-color: #fff;
+            z-index: 9999;
+            width: 32rem;
+            box-shadow: 1rem 1rem 1rem 1rem $box-shadow;
+            padding: 0.8rem;
+
+            .search-result-item {
+                display: flex;
+                align-items: center;
+                padding: 0.4rem 0.8rem;
+                border-radius: 0.8rem;
+                cursor: pointer;
+                color: $text;
+
+                &:hover {
+                    background-color: $background-color-gray;
+                }
+
+                .search-result-item-image {
+                    width: 3.6rem;
+                    height: 3.6rem;
+                    border-radius: 50%;
+                    margin-right: 1rem;
+                }
+
+                .search-result-item-name {
+                    font-size: 1.5rem;
+                }
+
+                .search-result-item-more-info {
+                    font-size: 1.3rem;
+                }
+            }
+        }
     }
 
     .action-user {

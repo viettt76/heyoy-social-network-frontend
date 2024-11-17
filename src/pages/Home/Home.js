@@ -10,6 +10,7 @@ import { Facebook } from 'react-content-loader';
 import socket from '~/socket';
 import styles from './Home.module.scss';
 import clsx from 'clsx';
+import { Modal } from 'react-bootstrap';
 
 const Home = () => {
     const dispatch = useDispatch();

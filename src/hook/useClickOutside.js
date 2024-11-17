@@ -16,7 +16,14 @@ const useClickOutside = (initialIsVisible, exceptionTarget) => {
                 if (
                     ref.current &&
                     !ref.current.contains(e.target) &&
-                    arrayException.every((a) => !a.current?.contains(e.target))
+                    arrayException.every((a) => {
+                        if (a?.current?.dialog) {
+                            return !a?.current.dialog?.contains(e.target);
+                        } else if (a?.current?.length > 0) {
+                            return a?.current?.every((i) => !i.contains(e.target));
+                        }
+                        return !a?.current?.contains(e.target);
+                    })
                 ) {
                     setIsComponentVisible(false);
                 }

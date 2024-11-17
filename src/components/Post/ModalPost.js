@@ -1,14 +1,15 @@
-import { forwardRef, useEffect, useRef, useState } from 'react';
+import { forwardRef, useCallback, useContext, useEffect, useMemo, useRef, useState } from 'react';
 import { Dropdown, Modal } from 'react-bootstrap';
 import clsx from 'clsx';
 import styles from './Post.module.scss';
 import { LikeIcon, LoveIcon, LoveLoveIcon, HaHaIcon, WowIcon, SadIcon, AngryIcon } from '~/components/Icons';
 import defaultAvatar from '~/assets/imgs/default-avatar.png';
-import { getCommentsService, sendCommentService } from '~/services/postServices';
+import { getCommentsService, releaseEmotionCommentService, sendCommentService } from '~/services/postServices';
 import PostContent from './PostContent';
 import socket from '~/socket';
 import _ from 'lodash';
 import { format } from 'date-fns';
+import { EmotionsTypeContext } from '~/App';
 
 // eslint-disable-next-line react/display-name
 const CustomToggle = forwardRef(({ children, onClick }, ref) => (
@@ -25,6 +26,33 @@ const CustomToggle = forwardRef(({ children, onClick }, ref) => (
 ));
 
 const Comment = ({ comment, postId }) => {
+    const emotionClassMap = {
+        Thích: styles['like-emotion'],
+        'Yêu thích': styles['love-emotion'],
+        'Thương thương': styles['loveLove-emotion'],
+        Haha: styles['haha-emotion'],
+        Wow: styles['wow-emotion'],
+        Buồn: styles['sad-emotion'],
+        'Phẫn nộ': styles['angry-emotion'],
+    };
+
+    const emotionComponentMap = {
+        Thích: LikeIcon,
+        'Yêu thích': LoveIcon,
+        'Thương thương': LoveLoveIcon,
+        Haha: HaHaIcon,
+        Wow: WowIcon,
+        Buồn: SadIcon,
+        'Phẫn nộ': AngryIcon,
+    };
+
+    const emotionsType = useContext(EmotionsTypeContext);
+    const [currentEmotionName, setCurrentEmotionName] = useState(null);
+
+    useEffect(() => {
+        setCurrentEmotionName(comment?.currentEmotionName);
+    }, [comment?.currentEmotionName]);
+
     const [showChildComments, setShowChildComments] = useState(false);
 
     const [replyComment, setReplyComment] = useState({
@@ -72,6 +100,18 @@ const Comment = ({ comment, postId }) => {
         }
     }, [isVisible]);
 
+    const [showEmotionList, setShowEmotionList] = useState(false);
+
+    const handleReleaseEmotionOfComment = async (emotionId) => {
+        try {
+            setShowEmotionList(false);
+            await releaseEmotionCommentService({ commentId: comment?.id, emotionId });
+            setCurrentEmotionName(emotionsType.find((emo) => emo.id === emotionId)?.name);
+        } catch (error) {
+            console.log(error);
+        }
+    };
+
     return (
         <div className={clsx(styles['comment'])}>
             <img
@@ -92,30 +132,37 @@ const Comment = ({ comment, postId }) => {
                     </span>
                     <div className={clsx(styles['comment-action'])}>
                         <span className={clsx(styles['comment-action-item'], styles['comment-action-item-emo'])}>
-                            Thích
-                            <ul className={clsx(styles['emotion-list'])}>
-                                <li className={clsx(styles['emotion'])}>
-                                    <LikeIcon width={39} height={39} />
-                                </li>
-                                <li className={clsx(styles['emotion'])}>
-                                    <LoveIcon width={39} height={39} />
-                                </li>
-                                <li className={clsx(styles['emotion'])}>
-                                    <LoveLoveIcon width={39} height={39} />
-                                </li>
-                                <li className={clsx(styles['emotion'])}>
-                                    <HaHaIcon width={39} height={39} />
-                                </li>
-                                <li className={clsx(styles['emotion'])}>
-                                    <WowIcon width={39} height={39} />
-                                </li>
-                                <li className={clsx(styles['emotion'])}>
-                                    <SadIcon width={39} height={39} />
-                                </li>
-                                <li className={clsx(styles['emotion'])}>
-                                    <AngryIcon width={39} height={39} />
-                                </li>
-                            </ul>
+                            <div onMouseEnter={() => setShowEmotionList(true)}>
+                                {currentEmotionName ? (
+                                    <div
+                                        className={clsx(
+                                            styles['comment-current-emotion'],
+                                            emotionClassMap[currentEmotionName],
+                                        )}
+                                    >
+                                        {currentEmotionName}
+                                    </div>
+                                ) : (
+                                    'Thích'
+                                )}
+
+                                {showEmotionList && (
+                                    <ul className={clsx(styles['emotion-list'])}>
+                                        {emotionsType?.map((emotion) => {
+                                            const Icon = emotionComponentMap[emotion?.name];
+                                            return (
+                                                <li
+                                                    key={`emotion-${emotion?.id}`}
+                                                    className={clsx(styles['emotion'])}
+                                                    onClick={() => handleReleaseEmotionOfComment(emotion?.id)}
+                                                >
+                                                    <Icon width={39} height={39} />
+                                                </li>
+                                            );
+                                        })}
+                                    </ul>
+                                )}
+                            </div>
                         </span>
                         <span className={clsx(styles['comment-action-item'])} onClick={toggleVisibility}>
                             Phản hồi
@@ -176,7 +223,15 @@ const Comment = ({ comment, postId }) => {
     );
 };
 
-const ModalPost = ({ postInfo, show, handleClose }) => {
+const ModalPostComponent = ({
+    postInfo,
+    show,
+    handleClose,
+    currentEmotionNameCustom,
+    setCurrentEmotionNameCustom,
+    copyEmotions,
+    setCopyEmotions,
+}) => {
     const { id } = postInfo;
 
     const [writeComment, setWriteComment] = useState('');
@@ -194,12 +249,14 @@ const ModalPost = ({ postInfo, show, handleClose }) => {
                 console.log(error);
             }
         };
-        fetchComments();
-    }, [id]);
+        if (show) {
+            fetchComments();
+        }
+    }, [id, show]);
 
-    const handleFocusSendComment = () => {
+    const handleFocusSendComment = useCallback(() => {
         wRef.current.focus();
-    };
+    }, []);
 
     const handleSendComment = async (e) => {
         if (e.key === 'Enter') {
@@ -276,7 +333,15 @@ const ModalPost = ({ postInfo, show, handleClose }) => {
         <Modal className={clsx(styles['modal'])} show={show} onHide={handleClose}>
             <Modal.Body className={clsx(styles['modal-body'])}>
                 <div className={clsx(styles['modal-post-content-wrapper'])}>
-                    <PostContent postInfo={postInfo} showModal={true} handleFocusSendComment={handleFocusSendComment} />
+                    <PostContent
+                        postInfo={postInfo}
+                        showModal={true}
+                        currentEmotionNameCustom={currentEmotionNameCustom}
+                        setCurrentEmotionNameCustom={setCurrentEmotionNameCustom}
+                        copyEmotions={copyEmotions}
+                        setCopyEmotions={setCopyEmotions}
+                        handleFocusSendComment={handleFocusSendComment}
+                    />
                     {comments?.length > 0 ? (
                         <div className={clsx(styles['comment-list-wrapper'])}>
                             <Dropdown>
@@ -323,5 +388,7 @@ const ModalPost = ({ postInfo, show, handleClose }) => {
         </Modal>
     );
 };
+
+const ModalPost = (props) => useMemo(() => <ModalPostComponent {...props} />, [props]);
 
 export default ModalPost;

@@ -1,7 +1,7 @@
 import clsx from 'clsx';
 import { Link, useLocation } from 'react-router-dom';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faBars, faGear, faHouse, faPlus, faUserGroup } from '@fortawesome/free-solid-svg-icons';
+import { faBars, faGear, faHouse, faPeopleGroup, faPlus, faUserGroup } from '@fortawesome/free-solid-svg-icons';
 import styles from './Sidebar.module.scss';
 import { useSelector } from 'react-redux';
 import { userInfoSelector } from '~/redux/selectors';
@@ -48,6 +48,15 @@ const Sidebar = () => {
                             <Link to="/friends" className={clsx(styles['sidebar-feature'])}>
                                 <FontAwesomeIcon icon={faUserGroup} className={clsx(styles['sidebar-feature-icon'])} />
                                 <div className={clsx(styles['sidebar-feature-label'])}>Bạn bè</div>
+                            </Link>
+                        </li>
+                        <li>
+                            <Link to="/groups" className={clsx(styles['sidebar-feature'])}>
+                                <FontAwesomeIcon
+                                    icon={faPeopleGroup}
+                                    className={clsx(styles['sidebar-feature-icon'])}
+                                />
+                                <div className={clsx(styles['sidebar-feature-label'])}>Nhóm</div>
                             </Link>
                         </li>
                     </ul>
