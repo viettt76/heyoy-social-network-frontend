@@ -12,12 +12,13 @@ import {
     getCommentsService,
     releaseEmotionPostService,
 } from '~/services/postServices';
-import _ from 'lodash';
+import { groupBy, sortBy, filter } from 'lodash';
 import socket from '~/socket';
 import { useSelector } from 'react-redux';
 import { userInfoSelector } from '~/redux/selectors';
 import { format } from 'date-fns';
 import { EmotionsTypeContext } from '~/App';
+import { PhotoProvider, PhotoView } from 'react-photo-view';
 
 const PostContent = ({
     postInfo,
@@ -62,9 +63,9 @@ const PostContent = ({
     }, [id]);
 
     useEffect(() => {
-        const emoCus = _.groupBy(copyEmotions, 'emotion.name');
+        const emoCus = groupBy(copyEmotions, 'emotion.name');
 
-        const mostEmo = _.sortBy(emoCus, 'length').reverse();
+        const mostEmo = sortBy(emoCus, 'length').reverse();
         if (mostEmo.length > 0) {
             setMostEmotions([mostEmo[0][0]?.emotion?.name]);
             if (mostEmo.length > 1) {
@@ -126,7 +127,7 @@ const PostContent = ({
                 setCurrentEmotionNameCustom(null);
 
                 setCopyEmotions((prev) => {
-                    const clone = _.filter(prev, (e) => e?.userInfo?.id !== userCancelReleaseEmotionId);
+                    const clone = filter(prev, (e) => e?.userInfo?.id !== userCancelReleaseEmotionId);
                     return clone;
                 });
             }
@@ -186,21 +187,25 @@ const PostContent = ({
                 </div>
             </div>
             <div className={clsx(styles['post-content'], styles['background'])}>{content && <div>{content}</div>}</div>
-            <div
-                className={clsx(styles['images-layout'], {
-                    [styles[`layout-${visibleImages?.length}`]]: remainingImages <= 0 || !remainingImages,
-                    [styles[`layout-remaining`]]: remainingImages > 0,
-                })}
-            >
-                {visibleImages?.map((img, index) => {
-                    return (
-                        <Link className={clsx(styles['image-wrapper'])} key={`image-${index}`}>
-                            <img src={img?.pictureUrl} />
-                        </Link>
-                    );
-                })}
-                {remainingImages > 0 && <Link className={clsx(styles['overlay'])}>+{remainingImages}</Link>}
-            </div>
+            <PhotoProvider>
+                <div
+                    className={clsx(styles['images-layout'], {
+                        [styles[`layout-${visibleImages?.length}`]]: remainingImages <= 0 || !remainingImages,
+                        [styles[`layout-remaining`]]: remainingImages > 0,
+                    })}
+                >
+                    {visibleImages?.map((img) => {
+                        return (
+                            <PhotoView key={`picture-${img?.id}`} src={img?.pictureUrl}>
+                                <div className={clsx(styles['image-wrapper'])}>
+                                    <img src={img?.pictureUrl} alt="" />
+                                </div>
+                            </PhotoView>
+                        );
+                    })}
+                    {remainingImages > 0 && <Link className={clsx(styles['overlay'])}>+{remainingImages}</Link>}
+                </div>
+            </PhotoProvider>
             <div className={clsx(styles['emotions-amount-of-comments'])}>
                 <div className={clsx(styles['emotions-wrapper'])}>
                     {mostEmotions?.map((emo) => {

@@ -33,12 +33,17 @@
     }
 }
 
-.post-wrapper {
+.manage-post-wrapper {
+    padding-top: 1.2rem;
     width: 100%;
-    margin-bottom: 2rem;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
 }
 
 .post-content-wrapper {
+    width: 100%;
+    margin-bottom: 2rem;
     max-width: 50rem;
     box-shadow: 0 0 0.4rem 0 $box-shadow;
     border-radius: 0.8rem;
@@ -125,6 +130,7 @@
         .image-wrapper {
             overflow: hidden;
             max-height: 60rem;
+            margin-bottom: 0.8rem;
 
             img {
                 width: 100%;
@@ -558,7 +564,8 @@
 .approve-wrapper {
     display: flex;
     padding: 0.6rem 1.8rem 1.2rem;
-    .btn-accept {
+
+    .btn-approve {
         background-color: $main-color;
         color: #fff;
         font-size: 1.6rem;

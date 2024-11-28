@@ -7,7 +7,7 @@ import {
     getFriendRequestService,
     refuseFriendRequestService,
 } from '~/services/relationshipServices';
-import _ from 'lodash';
+import { filter } from 'lodash';
 import socket from '~/socket';
 
 const FriendRequests = () => {
@@ -46,7 +46,7 @@ const FriendRequests = () => {
         try {
             await acceptFriendshipService(id);
             setFriendRequests((prev) => {
-                const frs = _.filter(prev, (f) => f.id !== id);
+                const frs = filter(prev, (f) => f.id !== id);
                 return frs;
             });
         } catch (error) {
@@ -58,7 +58,7 @@ const FriendRequests = () => {
         try {
             await refuseFriendRequestService(senderId);
             setFriendRequests((prev) => {
-                const frs = _.filter(prev, (f) => f.id !== senderId);
+                const frs = filter(prev, (f) => f.id !== senderId);
                 return frs;
             });
         } catch (error) {

@@ -3,7 +3,7 @@ import { lazy } from 'react';
 import OnlyHeaderLayout from '~/layouts/OnlyHeaderLayout';
 import FriendsLayout from '~/layouts/FriendsLayout';
 import GroupsLayout from '~/layouts/GroupsLayout';
-import ManagePost from './pages/Admin/ManagePost';
+import AdminLayout from '~/layouts/AdminLayout';
 
 const Home = lazy(() => import('~/pages/Home'));
 const Login = lazy(() => import('~/pages/Login'));
@@ -14,6 +14,7 @@ const FriendSuggestions = lazy(() => import('~/pages/Friends/FriendSuggestions')
 const SentFriendRequests = lazy(() => import('~/pages/Friends/SentFriendRequests'));
 const CallingWindow = lazy(() => import('~/pages/CallingWindow'));
 const Groups = lazy(() => import('~/pages/Groups'));
+const ManagePost = lazy(() => import('~/pages/Admin/ManagePost'));
 
 const routes = [
     { path: '/', element: Home },
@@ -27,6 +28,6 @@ const routes = [
     { path: '/groups/*', element: Groups, layout: GroupsLayout },
 ];
 
-export const protectedRoutes = [{ path: '/admin/manage-post', element: ManagePost, layout: OnlyHeaderLayout }];
+export const protectedRoutes = [{ path: '/admin/manage-post', element: ManagePost, layout: AdminLayout }];
 
 export default routes;

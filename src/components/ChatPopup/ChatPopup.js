@@ -13,7 +13,7 @@ import {
     sendMessageWithFriendService,
 } from '~/services/chatServices';
 import socket from '~/socket';
-import _ from 'lodash';
+import { findIndex, cloneDeep, findLast, isEqual } from 'lodash';
 import useClickOutside from '~/hook/useClickOutside';
 import { calculateTime, uploadToCloudinary } from '~/utils/commonUtils';
 import { readNotificationService } from '~/services/userServices';
@@ -72,11 +72,11 @@ const ChatPopup = ({ index, friend }) => {
             setProcessingMessage('Đang xử lý');
             const res = await sendMessageWithFriendService({ friendId: friend?.id, message: clone });
             setMessages((prev) => {
-                const index = _.findIndex(prev, { id: null, message: clone });
+                const index = findIndex(prev, { id: null, message: clone });
 
                 if (index === -1) return prev;
 
-                const updatedMessages = _.cloneDeep(prev);
+                const updatedMessages = cloneDeep(prev);
                 updatedMessages[index] = { ...updatedMessages[index], id: res?.id };
 
                 return updatedMessages;
@@ -332,8 +332,8 @@ const ChatPopup = ({ index, friend }) => {
                                             </div>
                                         )}
                                         {processingMessage &&
-                                            _.findLast(messages, { sender: userInfo?.id }) &&
-                                            _.isEqual(_.findLast(messages, { sender: userInfo?.id }), message) && (
+                                            findLast(messages, { sender: userInfo?.id }) &&
+                                            isEqual(findLast(messages, { sender: userInfo?.id }), message) && (
                                                 <div className={clsx(styles['process-message'])}>
                                                     {processingMessage}
                                                 </div>

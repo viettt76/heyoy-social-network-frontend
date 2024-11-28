@@ -39,7 +39,7 @@ const UserProfileViewerHeader = ({ numberOfFriends }) => {
                     <div className={clsx(styles['profile-tabs-wrapper'])}>
                         <Link
                             className={clsx(styles['profile-tabs'], {
-                                [[styles['active']]]: location.pathname === `/profile/${userInfo?.id}`,
+                                [[styles['active']]]: location.pathname.toLowerCase() === `/profile/${userInfo?.id}`,
                             })}
                             to={`/profile/${userInfo?.id}`}
                         >
@@ -47,7 +47,8 @@ const UserProfileViewerHeader = ({ numberOfFriends }) => {
                         </Link>
                         <Link
                             className={clsx(styles['profile-tabs'], {
-                                [[styles['active']]]: location.pathname === `/profile/${userInfo?.id}/friends`,
+                                [[styles['active']]]:
+                                    location.pathname.toLowerCase() === `/profile/${userInfo?.id}/friends`,
                             })}
                             to={`/profile/${userInfo?.id}/friends`}
                         >
@@ -55,7 +56,8 @@ const UserProfileViewerHeader = ({ numberOfFriends }) => {
                         </Link>
                         <Link
                             className={clsx(styles['profile-tabs'], {
-                                [[styles['active']]]: location.pathname === `/profile/${userInfo?.id}/photos`,
+                                [[styles['active']]]:
+                                    location.pathname.toLowerCase() === `/profile/${userInfo?.id}/photos`,
                             })}
                             to={`/profile/${userInfo?.id}/photos`}
                         >

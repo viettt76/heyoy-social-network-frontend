@@ -22,7 +22,7 @@ const SidebarFriends = () => {
                 <Link
                     to="/friends"
                     className={clsx(styles['sidebar-item'], {
-                        [[styles['active']]]: location.pathname === '/friends',
+                        [[styles['active']]]: location.pathname.toLowerCase() === '/friends',
                     })}
                 >
                     Danh sách bạn bè
@@ -30,7 +30,7 @@ const SidebarFriends = () => {
                 <Link
                     to="/friends/requests"
                     className={clsx(styles['sidebar-item'], {
-                        [[styles['active']]]: location.pathname === '/friends/requests',
+                        [[styles['active']]]: location.pathname.toLowerCase() === '/friends/requests',
                     })}
                 >
                     Lời mời kết bạn
@@ -38,7 +38,7 @@ const SidebarFriends = () => {
                 <Link
                     to="/friends/sent-requests"
                     className={clsx(styles['sidebar-item'], {
-                        [[styles['active']]]: location.pathname === '/friends/sent-requests',
+                        [[styles['active']]]: location.pathname.toLowerCase() === '/friends/sent-requests',
                     })}
                 >
                     Lời mời đã gửi
@@ -46,7 +46,7 @@ const SidebarFriends = () => {
                 <Link
                     to="/friends/suggestions"
                     className={clsx(styles['sidebar-item'], {
-                        [[styles['active']]]: location.pathname === '/friends/suggestions',
+                        [[styles['active']]]: location.pathname.toLowerCase() === '/friends/suggestions',
                     })}
                 >
                     Gợi ý

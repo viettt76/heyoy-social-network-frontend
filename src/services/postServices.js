@@ -50,3 +50,15 @@ export const releaseEmotionCommentService = ({ commentId, emotionId }) => {
         emotionId,
     });
 };
+
+export const getPostsNotApprovedService = () => {
+    return axios.get('/posts/not-approved');
+};
+
+export const approvePostService = (postId) => {
+    return axios.patch(`/posts/approve/${postId}`);
+};
+
+export const denyPostService = (postId) => {
+    return axios.put(`/posts/deny/${postId}`);
+};

@@ -22,7 +22,7 @@ const SidebarGroups = () => {
                 <Link
                     to="/groups/joins"
                     className={clsx(styles['sidebar-item'], {
-                        [[styles['active']]]: location.pathname === '/groups/joins',
+                        [[styles['active']]]: location.pathname.toLowerCase() === '/groups/joins',
                     })}
                 >
                     Nhóm của bạn
@@ -30,7 +30,7 @@ const SidebarGroups = () => {
                 <Link
                     to="/groups/discover"
                     className={clsx(styles['sidebar-item'], {
-                        [[styles['active']]]: location.pathname === '/groups/discover',
+                        [[styles['active']]]: location.pathname.toLowerCase() === '/groups/discover',
                     })}
                 >
                     Khám phá
@@ -38,7 +38,7 @@ const SidebarGroups = () => {
                 <Link
                     to="/groups/search"
                     className={clsx(styles['sidebar-item'], {
-                        [[styles['active']]]: location.pathname === '/groups/search',
+                        [[styles['active']]]: location.pathname.toLowerCase() === '/groups/search',
                     })}
                 >
                     Tìm kiếm

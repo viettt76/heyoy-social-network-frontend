@@ -5,7 +5,7 @@ import { sendCommentService } from '~/services/postServices';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import ModalPost from './ModalPost';
 import socket from '~/socket';
-import _ from 'lodash';
+import { cloneDeep, find } from 'lodash';
 
 const Post = ({ postInfo }) => {
     const { id, currentEmotionName, emotions } = postInfo;
@@ -82,8 +82,8 @@ const Post = ({ postInfo }) => {
         const handleUpdateEmotion = ({ id: emoPostId, postId, emotionTypeId, emotionTypeName }) => {
             if (id === postId) {
                 setCopyEmotions((prev) => {
-                    const clone = _.cloneDeep(prev);
-                    const emo = _.find(clone, { id: emoPostId });
+                    const clone = cloneDeep(prev);
+                    const emo = find(clone, { id: emoPostId });
                     if (emo) {
                         emo.emotion.id = emotionTypeId;
                         emo.emotion.name = emotionTypeName;

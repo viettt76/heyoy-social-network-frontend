@@ -7,7 +7,7 @@ import defaultAvatar from '~/assets/imgs/default-avatar.png';
 import { getCommentsService, releaseEmotionCommentService, sendCommentService } from '~/services/postServices';
 import PostContent from './PostContent';
 import socket from '~/socket';
-import _ from 'lodash';
+import { cloneDeep, find } from 'lodash';
 import { format } from 'date-fns';
 import { EmotionsTypeContext } from '~/App';
 
@@ -291,10 +291,10 @@ const ModalPostComponent = ({
         const handleNewChildComment = (newChildComment) => {
             if (id === newChildComment?.postId) {
                 setComments((prev) => {
-                    const newComments = _.cloneDeep(prev);
+                    const newComments = cloneDeep(prev);
 
                     const addChildComment = (comments) => {
-                        const commentParent = _.find(comments, (comment) => {
+                        const commentParent = find(comments, (comment) => {
                             if (comment?.id === newChildComment?.parentCommentId) return true;
                             if (comment?.children?.length > 0) return addChildComment(comment.children);
                             return false;

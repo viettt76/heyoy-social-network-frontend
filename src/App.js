@@ -8,7 +8,7 @@ import { ToastContainer } from 'react-toastify';
 import * as actions from '~/redux/actions';
 import { SetupInterceptors } from '~/utils/axios';
 import { useSelector } from 'react-redux';
-import { openChatsSelector } from '~/redux/selectors';
+import { openChatsSelector, userInfoSelector } from '~/redux/selectors';
 import ChatGroupPopup from '~/components/ChatGroupPopup';
 import ChatPopup from '~/components/ChatPopup';
 import CallRequestWindow from '~/components/CallRequestWindow';
@@ -37,6 +37,7 @@ function NavigateFunctionComponent() {
 
 function App() {
     const openChats = useSelector(openChatsSelector);
+    const userInfo = useSelector(userInfoSelector);
 
     return (
         <FetchAllEmotionsPost>
@@ -73,26 +74,27 @@ function App() {
                                 ></Route>
                             );
                         })}
-                        {protectedRoutes.map((route, index) => {
-                            const Page = route.element;
-                            let Layout = DefaultLayout;
-                            if (route.layout) {
-                                Layout = route.layout;
-                            } else if (route.layout === null) {
-                                Layout = React.Fragment;
-                            }
-                            return (
-                                <Route
-                                    key={`route-admin-${index}`}
-                                    path={route.path}
-                                    element={
-                                        <Layout>
-                                            <Page />
-                                        </Layout>
-                                    }
-                                ></Route>
-                            );
-                        })}
+                        {userInfo?.role === 'admin' &&
+                            protectedRoutes.map((route, index) => {
+                                const Page = route.element;
+                                let Layout = DefaultLayout;
+                                if (route.layout) {
+                                    Layout = route.layout;
+                                } else if (route.layout === null) {
+                                    Layout = React.Fragment;
+                                }
+                                return (
+                                    <Route
+                                        key={`route-admin-${index}`}
+                                        path={route.path}
+                                        element={
+                                            <Layout>
+                                                <Page />
+                                            </Layout>
+                                        }
+                                    ></Route>
+                                );
+                            })}
                     </Routes>
                 </Suspense>
                 <ToastContainer />
@@ -115,7 +117,7 @@ function FetchUserInfo() {
             }
         };
 
-        if (location.pathname !== '/login') {
+        if (location.pathname.toLocaleLowerCase() !== '/login') {
             fetchPersonalInfo();
         }
         // eslint-disable-next-line react-hooks/exhaustive-deps

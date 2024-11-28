@@ -3,7 +3,7 @@ import styles from './FriendSuggestions.module.scss';
 import Friend from '~/components/Friend';
 import { useEffect, useState } from 'react';
 import { getFriendSuggestionsService, sendFriendRequestService } from '~/services/relationshipServices';
-import _ from 'lodash';
+import { filter } from 'lodash';
 
 const FriendSuggestions = () => {
     const [suggestions, setSuggestions] = useState([]);
@@ -24,7 +24,7 @@ const FriendSuggestions = () => {
         try {
             await sendFriendRequestService(id);
             setSuggestions((prev) => {
-                const frs = _.filter(prev, (f) => f.id !== id);
+                const frs = filter(prev, (f) => f.id !== id);
                 return frs;
             });
         } catch (error) {

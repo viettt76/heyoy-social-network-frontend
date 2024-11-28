@@ -3,7 +3,7 @@ import clsx from 'clsx';
 import styles from './SentFriendRequests.module.scss';
 import { useEffect, useState } from 'react';
 import { getSentFriendRequestsService, cancelFriendRequestService } from '~/services/relationshipServices';
-import _ from 'lodash';
+import { filter } from 'lodash';
 import socket from '~/socket';
 
 const SentFriendRequests = () => {
@@ -40,7 +40,7 @@ const SentFriendRequests = () => {
         try {
             await cancelFriendRequestService(receiverId);
             setSentFriendRequests((prev) => {
-                const frs = _.filter(prev, (f) => f.id !== receiverId);
+                const frs = filter(prev, (f) => f.id !== receiverId);
                 return frs;
             });
         } catch (error) {

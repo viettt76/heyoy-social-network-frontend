@@ -23,7 +23,7 @@ import {
     updateGroupMembersService,
 } from '~/services/chatServices';
 import socket from '~/socket';
-import _ from 'lodash';
+import { findIndex, cloneDeep, findLast, isEqual } from 'lodash';
 import useClickOutside from '~/hook/useClickOutside';
 import Menu from '~/components/Menu';
 import { Link } from 'react-router-dom';
@@ -186,7 +186,7 @@ const AddGroupMembersLayout = ({ groupId, handleSetActiveMenu }) => {
     );
 };
 
-const ChatPopupGroup = ({ index, group }) => {
+const ChatGroupPopup = ({ index, group }) => {
     const modalUpdateAvatarRef = useRef(null);
 
     const {
@@ -261,11 +261,11 @@ const ChatPopupGroup = ({ index, group }) => {
 
             const res = await sendGroupChatMessageService({ groupChatId: group?.id, message: clone });
             setMessages((prev) => {
-                const index = _.findIndex(prev, { id: null, message: clone });
+                const index = findIndex(prev, { id: null, message: clone });
 
                 if (index === -1) return prev;
 
-                const updatedMessages = _.cloneDeep(prev);
+                const updatedMessages = cloneDeep(prev);
                 updatedMessages[index] = { ...updatedMessages[index], id: res?.id };
 
                 return updatedMessages;
@@ -603,8 +603,8 @@ const ChatPopupGroup = ({ index, group }) => {
 
                                     <div className={clsx(styles['message'])}>{message?.message}</div>
                                     {processingMessage &&
-                                        _.findLast(messages, { sender: userInfo?.id }) &&
-                                        _.isEqual(_.findLast(messages, { sender: userInfo?.id }), message) && (
+                                        findLast(messages, { sender: userInfo?.id }) &&
+                                        isEqual(findLast(messages, { sender: userInfo?.id }), message) && (
                                             <div className={clsx(styles['process-message'])}>{processingMessage}</div>
                                         )}
                                 </div>
@@ -649,4 +649,4 @@ const ChatPopupGroup = ({ index, group }) => {
     );
 };
 
-export default ChatPopupGroup;
+export default ChatGroupPopup;
